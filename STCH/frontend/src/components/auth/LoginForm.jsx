@@ -1,0 +1,206 @@
+import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const loginSchema = z.object({
+  email: z
+    .string()
+    .min(1, "Email is required")
+    .email("email"),
+
+  password: z
+    .string()
+    .min(1, "Password is required")
+    .min(6, "Minimum 6 characters"),
+});
+
+function LoginForm() {
+const navigate = useNavigate();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(loginSchema),
+  });
+
+  const onSubmit = async (data) => {
+
+  try {
+
+    const response = await fetch(
+      "http://localhost:5000/login",
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
+
+        body: JSON.stringify(data),
+      }
+    );
+
+    const result =
+      await response.json();
+
+    console.log(result);
+
+    if (result.error) {
+
+      alert(result.error);
+
+      return;
+    }
+
+    // SAVE TOKEN
+    localStorage.setItem(
+      "token",
+      result.access_token
+    );
+
+    // SAVE USER
+    localStorage.setItem(
+      "user",
+      JSON.stringify(result.user)
+    );
+
+    console.log(
+      "JWT TOKEN:",
+      result.access_token
+    );
+
+    // NAVIGATE
+    navigate("/dashboard");
+
+  } catch (error) {
+
+    console.log(error);
+
+  }
+
+};
+
+  return (
+    <div className="w-full max-w-md">
+
+      {/* HEADER */}
+      <div className="mb-10">
+
+        <h2 className="text-4xl font-semibold tracking-tight text-white">
+          Welcome Back
+        </h2>
+
+        <p className="mt-3 text-zinc-500">
+          Login to continue to STCH OS.
+        </p>
+
+      </div>
+
+      {/* FORM */}
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="space-y-6"
+      >
+
+        {/* EMAIL */}
+        <div>
+
+          <label className="block mb-2 text-sm text-zinc-400">
+            Email
+          </label>
+
+          <input
+            type="email"
+            placeholder="Enter your email"
+            {...register("email")}
+            className="
+              w-full
+              px-4
+              py-3
+              rounded-2xl
+              bg-[#151821]
+              border
+              border-[#2A3142]
+              text-white
+              placeholder:text-zinc-600
+              outline-none
+              focus:border-blue-500
+              transition-all
+            "
+          />
+
+          {errors.email && (
+            <p className="mt-2 text-sm text-rose-400">
+              {errors.email.message}
+            </p>
+          )}
+
+        </div>
+
+        {/* PASSWORD */}
+        <div>
+
+          <label className="block mb-2 text-sm text-zinc-400">
+            Password
+          </label>
+
+          <input
+            type="password"
+            placeholder="Enter your password"
+            {...register("password")}
+            className="
+              w-full
+              px-4
+              py-3
+              rounded-2xl
+              bg-[#151821]
+              border
+              border-[#2A3142]
+              text-white
+              placeholder:text-zinc-600
+              outline-none
+              focus:border-blue-500
+              transition-all
+            "
+          />
+
+          {errors.password && (
+            <p className="mt-2 text-sm text-rose-400">
+              {errors.password.message}
+            </p>
+          )}
+
+        </div>
+
+        {/* BUTTON */}
+        <button
+          type="submit"
+          className="
+            w-full
+            py-3
+            rounded-2xl
+            bg-gradient-to-r
+            from-blue-500
+            to-violet-500
+            text-white
+            font-medium
+            hover:scale-[1.02]
+            transition-all
+            duration-300
+            shadow-lg
+            shadow-blue-500/20
+          "
+        >
+          Login
+        </button>
+
+      </form>
+
+    </div>
+  );
+}
+
+export default LoginForm;

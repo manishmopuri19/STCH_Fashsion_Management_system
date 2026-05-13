@@ -1,0 +1,120 @@
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+
+from app.db.database import SessionLocal
+from app.models.user_model import User
+from app.schemas.auth_schema import (
+    UserCreate,
+    UserLogin
+)
+from app.utils.passwordEncryption import (
+    hash_password,
+    verify_password
+)
+from app.core.auth import create_access_token
+
+router = APIRouter()
+
+
+# DATABASE DEPENDENCY
+def get_db():
+    db = SessionLocal()
+
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+# REGISTER USER
+@router.post("/register")
+def register_user(
+    user: UserCreate,
+    db: Session = Depends(get_db)
+):
+
+    existing_user = db.query(User).filter(
+        User.email == user.email
+    ).first()
+
+    if existing_user:
+        raise HTTPException(
+            status_code=400,
+            detail="Email already exists"
+        )
+
+    new_user = User(
+        email=user.email,
+        password=hash_password(user.password),
+        role=user.role
+    )
+
+    db.add(new_user)
+
+    db.commit()
+
+    db.refresh(new_user)
+
+    return {
+        "message": "User registered successfully"
+    }
+
+
+# LOGIN USER
+@router.post("/login")
+def login(
+    payload: UserLogin,
+    db: Session = Depends(get_db)
+):
+
+    print("LOGIN HIT")
+
+    print(payload.email)
+
+    user = db.query(User).filter(
+        User.email == payload.email.lower()
+    ).first()
+
+    print(user)
+
+    if not user:
+
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid----email"
+        )
+
+    valid_password = verify_password(
+        payload.password,
+        user.password
+    )
+
+    print(valid_password)
+
+    if not valid_password:
+
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid password"
+        )
+
+    access_token = create_access_token(
+        data={
+            "user_id": user.id,
+            "email": user.email,
+            "role": str(user.role),
+        }
+    )
+
+    return {
+
+        "message": "Login successful",
+
+        "access_token": access_token,
+
+        "user": {
+            "id": user.id,
+            "email": user.email,
+            "role": str(user.role),
+        }
+    }
