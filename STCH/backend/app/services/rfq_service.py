@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 
+from app.models.rfqCollaborator_model import RFQCollaborator
 from app.models.rfq_model import RFQ
 
 
@@ -19,4 +20,7 @@ def get_rfq_by_id(
 
     return db.query(RFQ).filter(
         RFQ.id == rfq_id
+
     ).first()
+
+    

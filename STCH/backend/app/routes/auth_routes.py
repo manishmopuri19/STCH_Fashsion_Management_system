@@ -4,7 +4,6 @@ from sqlalchemy.orm import Session
 from app.db.database import SessionLocal
 from app.models.user_model import User
 from app.schemas.auth_schema import (
-    UserCreate,
     UserLogin
 )
 from app.utils.passwordEncryption import (
@@ -26,38 +25,38 @@ def get_db():
         db.close()
 
 
-# REGISTER USER
-@router.post("/register")
-def register_user(
-    user: UserCreate,
-    db: Session = Depends(get_db)
-):
+# # REGISTER USER
+# @router.post("/register")
+# def register_user(
+#     user: UserCreate,
+#     db: Session = Depends(get_db)
+# ):
 
-    existing_user = db.query(User).filter(
-        User.email == user.email
-    ).first()
+#     existing_user = db.query(User).filter(
+#         User.email == user.email
+#     ).first()
 
-    if existing_user:
-        raise HTTPException(
-            status_code=400,
-            detail="Email already exists"
-        )
+#     if existing_user:
+#         raise HTTPException(
+#             status_code=400,
+#             detail="Email already exists"
+#         )
 
-    new_user = User(
-        email=user.email,
-        password=hash_password(user.password),
-        role=user.role
-    )
+#     new_user = User(
+#         email=user.email,
+#         password=hash_password(user.password),
+#         role=user.role
+#     )
 
-    db.add(new_user)
+#     db.add(new_user)
 
-    db.commit()
+#     db.commit()
 
-    db.refresh(new_user)
+#     db.refresh(new_user)
 
-    return {
-        "message": "User registered successfully"
-    }
+#     return {
+#         "message": "User registered successfully"
+#     }
 
 
 # LOGIN USER

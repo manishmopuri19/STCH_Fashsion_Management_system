@@ -75,7 +75,8 @@ def get_all_rfqs(
 )
 def fetch_single_rfq(
     rfq_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),    
+    current_user = Depends(require_roles([UserRole.ADMIN, UserRole.MERCHANDISER,UserRole.MEMBER]))  
 ):
 
     rfq = get_rfq_by_id(

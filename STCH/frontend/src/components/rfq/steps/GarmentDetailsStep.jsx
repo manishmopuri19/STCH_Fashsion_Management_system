@@ -1,225 +1,92 @@
-const garmentTypes = [
-  "T-Shirt",
-  "Polo",
-  "Shirt",
-  "Hoodie",
-  "Jeans",
-  "Jacket",
-];
+// src/components/rfq/steps/GarmentDetailsStep.jsx
 
-const fabricTypes = [
-  "Cotton",
-  "Polyester",
-  "Denim",
-  "Linen",
-  "Fleece",
-  "Jersey",
-];
+const garmentTypes = ["T-Shirt", "Polo", "Shirt", "Hoodie", "Jeans", "Jacket"];
+const fabricTypes = ["Cotton", "Polyester", "Denim", "Linen", "Fleece", "Jersey"];
 
-function GarmentDetailsStep({
-  formData,
-  setFormData,
-  errors,
-}) {
-
+function GarmentDetailsStep({ formData, setFormData, errors }) {
   return (
-    <div>
+    <div className="animate-in fade-in duration-500">
+      <h2 className="text-3xl font-semibold text-white">Garment Details</h2>
+      <p className="text-zinc-400 mt-2 mb-8">Specify fabric and garment specifications for production.</p>
 
-      <h2 className="
-        text-3xl
-        font-semibold
-        text-[#111827]
-      ">
-        Garment Details
-      </h2>
-
-      <p className="
-        text-zinc-500
-        mt-2
-        mb-8
-      ">
-        Specify fabric and garment specifications
-      </p>
-
-      <div className="
-        grid
-        grid-cols-1
-        md:grid-cols-2
-        gap-6
-      ">
-
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
         <SelectField
           label="Garment Type"
           value={formData.garmentType}
-          onChange={(value) =>
-            setFormData({
-              ...formData,
-              garmentType: value,
-            })
-          }
+          onChange={(val) => setFormData({ ...formData, garmentType: val })}
           options={garmentTypes}
           error={errors.garmentType}
         />
-
         <SelectField
           label="Fabric Type"
           value={formData.fabricType}
-          onChange={(value) =>
-            setFormData({
-              ...formData,
-              fabricType: value,
-            })
-          }
+          onChange={(val) => setFormData({ ...formData, fabricType: val })}
           options={fabricTypes}
           error={errors.fabricType}
         />
-
         <InputField
           label="Fabric Weight (GSM)"
+          placeholder="e.g. 180"
           value={formData.fabricWeight}
-          onChange={(value) =>
-            setFormData({
-              ...formData,
-              fabricWeight: value,
-            })
-          }
+          onChange={(val) => setFormData({ ...formData, fabricWeight: val })}
         />
-
         <InputField
           label="Fabric Composition"
+          placeholder="e.g. 100% Cotton"
           value={formData.fabricComposition}
-          onChange={(value) =>
-            setFormData({
-              ...formData,
-              fabricComposition: value,
-            })
-          }
+          onChange={(val) => setFormData({ ...formData, fabricComposition: val })}
         />
-
         <InputField
           label="Construction"
+          placeholder="e.g. Single Jersey"
           value={formData.construction}
-          onChange={(value) =>
-            setFormData({
-              ...formData,
-              construction: value,
-            })
-          }
+          onChange={(val) => setFormData({ ...formData, construction: val })}
         />
-
         <InputField
           label="Yarn Count"
+          placeholder="e.g. 30s"
           value={formData.yarnCount}
-          onChange={(value) =>
-            setFormData({
-              ...formData,
-              yarnCount: value,
-            })
-          }
+          onChange={(val) => setFormData({ ...formData, yarnCount: val })}
         />
-
       </div>
-
     </div>
   );
 }
 
-function InputField({
-  label,
-  value,
-  onChange,
-}) {
-
+// Unified Input Component
+function InputField({ label, value, onChange, placeholder, error }) {
   return (
-    <div>
-
-      <label className="
-        block
-        mb-3
-        text-sm
-        font-medium
-        text-zinc-700
-      ">
-        {label}
-      </label>
-
+    <div className="flex flex-col">
+      <label className="mb-2 text-sm font-medium text-zinc-300">{label}</label>
       <input
         value={value}
-        onChange={(e) =>
-          onChange(e.target.value)
-        }
-        className="
-          w-full
-          px-5
-          py-4
-          rounded-xl
-          border
-          border-zinc-300
-          outline-none
-        "
+        placeholder={placeholder}
+        onChange={(e) => onChange(e.target.value)}
+        className={`w-full px-4 py-3.5 rounded-xl border bg-[#0F141D] text-white outline-none transition-all focus:border-orange-500 ${
+          error ? "border-red-500" : "border-[#2A3142]"
+        }`}
       />
-
     </div>
   );
 }
 
-function SelectField({
-  label,
-  value,
-  onChange,
-  options,
-  error,
-}) {
-
+// Unified Select Component
+function SelectField({ label, value, onChange, options, error }) {
   return (
-    <div>
-
-      <label className="
-        block
-        mb-3
-        text-sm
-        font-medium
-        text-zinc-700
-      ">
-        {label}
-      </label>
-
+    <div className="flex flex-col">
+      <label className="mb-2 text-sm font-medium text-zinc-300">{label}</label>
       <select
         value={value}
-        onChange={(e) =>
-          onChange(e.target.value)
-        }
-        className={`
-          w-full
-          px-5
-          py-4
-          rounded-xl
-          border
-          bg-white
-
-          ${
-            error
-              ? "border-red-500"
-              : "border-zinc-300"
-          }
-        `}
+        onChange={(e) => onChange(e.target.value)}
+        className={`w-full px-4 py-3.5 rounded-xl border bg-[#0F141D] text-white outline-none appearance-none transition-all focus:border-orange-500 ${
+          error ? "border-red-500" : "border-[#2A3142]"
+        }`}
       >
-
-        <option value="">
-          Select {label}
-        </option>
-
-        {options.map((option) => (
-          <option
-            key={option}
-            value={option}
-          >
-            {option}
-          </option>
+        <option value="" className="bg-[#151821]">Select {label}</option>
+        {options.map((opt) => (
+          <option key={opt} value={opt} className="bg-[#151821]">{opt}</option>
         ))}
-
       </select>
-
     </div>
   );
 }

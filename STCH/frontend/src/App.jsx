@@ -8,6 +8,7 @@ import Dashboard from "./pages/Dashboard";
 import RFQList from "./pages/RFQ/RFQList";
 import CreateRFQ from "./pages/RFQ/CreateRFQ";
 import RFQDetails from "./pages/RFQ/RFQDetails";
+import UserManagement from "./pages/userManagement";
 
 function App() {
   return (
@@ -36,6 +37,11 @@ function App() {
 <Route
   path="/rfqs/:rfqId"
   element={<RFQDetails />}
+/>
+
+<Route
+path="/users"
+element={<UserManagement />}
 />
       </Routes>
 

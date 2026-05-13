@@ -21,7 +21,11 @@ class User(Base):
         primary_key=True,
         index=True
     )
+    userName =Column(
+        String,
+        index=True
 
+    )
     email = Column(
         String,
         unique=True,

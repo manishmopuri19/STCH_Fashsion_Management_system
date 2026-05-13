@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useAuth } from "../../context/AuthContext";
 
 const loginSchema = z.object({
   email: z
@@ -16,6 +17,7 @@ const loginSchema = z.object({
 });
 
 function LoginForm() {
+  const { login } = useAuth();
 const navigate = useNavigate();
   const {
     register,
@@ -25,62 +27,42 @@ const navigate = useNavigate();
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = async (data) => {
-
+ const onSubmit = async (data) => {
   try {
+    const response = await fetch("http://localhost:5000/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
 
-    const response = await fetch(
-      "http://localhost:5000/login",
-      {
-        method: "POST",
-
-        headers: {
-          "Content-Type":
-            "application/json",
-        },
-
-        body: JSON.stringify(data),
-      }
-    );
-
-    const result =
-      await response.json();
-
-    console.log(result);
+    const result = await response.json();
 
     if (result.error) {
-
       alert(result.error);
-
       return;
     }
 
-    // SAVE TOKEN
-    localStorage.setItem(
-      "token",
-      result.access_token
-    );
+    // Clean the role string (turns "UserRole.ADMIN" into "ADMIN")
+    const cleanRole = result.user.role.split(".")[1];
+    
+    // Create a user object with a fallback for userName
+    const userData = {
+      ...result.user,
+      role: cleanRole,
+      userName: result.user.userName || result.user.email.split("@")[0]
+    };
 
-    // SAVE USER
-    localStorage.setItem(
-      "user",
-      JSON.stringify(result.user)
-    );
+    // SAVE TOKEN & USER
+    localStorage.setItem("token", result.access_token);
+    localStorage.setItem("user", JSON.stringify(userData));
 
-    console.log(
-      "JWT TOKEN:",
-      result.access_token
-    );
-
-    // NAVIGATE
+    // UPDATE CONTEXT & NAVIGATE
+    login(userData);
     navigate("/dashboard");
 
   } catch (error) {
-
-    console.log(error);
-
+    console.error("Login Error:", error);
   }
-
 };
 
   return (
