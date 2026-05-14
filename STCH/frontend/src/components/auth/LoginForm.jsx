@@ -31,33 +31,26 @@ const navigate = useNavigate();
   try {
     const response = await fetch("http://localhost:5000/login", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify(data),
     });
 
     const result = await response.json();
+
+    console.log("LOGIN RESPONSE:", result);
 
     if (result.error) {
       alert(result.error);
       return;
     }
 
-    // Clean the role string (turns "UserRole.ADMIN" into "ADMIN")
-    const cleanRole = result.user.role.split(".")[1];
     
-    // Create a user object with a fallback for userName
-    const userData = {
-      ...result.user,
-      role: cleanRole,
-      userName: result.user.userName || result.user.email.split("@")[0]
-    };
-
-    // SAVE TOKEN & USER
     localStorage.setItem("token", result.access_token);
-    localStorage.setItem("user", JSON.stringify(userData));
 
-    // UPDATE CONTEXT & NAVIGATE
-    login(userData);
+    login(result.user);
+
     navigate("/dashboard");
 
   } catch (error) {

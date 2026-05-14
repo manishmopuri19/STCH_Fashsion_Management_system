@@ -48,6 +48,7 @@ def addNew_User(
     )
     db.add(new_user_obj)
     db.commit()
+    db.refresh(new_user_obj)
 
     return {
         "message":"new user Created successfully","user":newUser

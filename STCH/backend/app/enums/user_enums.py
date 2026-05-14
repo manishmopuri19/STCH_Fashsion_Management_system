@@ -8,3 +8,5 @@ class UserRole(str, Enum):
     MEMBER = "MEMBER"
 
     MERCHANDISER = "MERCHANDISER"
+
+    SUPPLIER="SUPPLIER"

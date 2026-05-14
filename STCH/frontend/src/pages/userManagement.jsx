@@ -10,7 +10,7 @@ const UserManagement = () => {
 
   const navigate=useNavigate();
   
-  // FIXED: Changed 'name' to 'userName' to match your Pydantic schema
+  
   const [newUser, setNewUser] = useState({ 
     userName: "", 
     email: "", 
@@ -25,7 +25,7 @@ const UserManagement = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      // Ensure this matches your @router.get("/allusers") endpoint
+     
       const response = await API.get("/allusers"); 
       setUsers(response.data);
     } catch (error) {
@@ -36,23 +36,27 @@ const UserManagement = () => {
   };
 
   const handleAddUser = async (e) => {
-    e.preventDefault();
-    try {
-      // POSTs the newUser object with correct 'userName' field
-      const response = await API.post("/addNewUser", newUser);
-      
-      // Since your backend returns {message, user: id}, you might want to re-fetch 
-      // or push the new user manually if the backend returns the full object.
-      fetchUsers(); 
+  e.preventDefault();
+  try {
+    const response = await API.post("/addNewUser", newUser);
+    
+    
+    if (response.status === 200 || response.status === 201) {
+     
+      if (response.data.user_details) {
+         setUsers(prev => [...prev, response.data.user_details]);
+      } else {
+       
+         await fetchUsers(); 
+      }
+
       setIsModalOpen(false);
       setNewUser({ userName: "", email: "", password: "", role: "MEMBER" });
-      navigate("/users")
-    } catch (error) {
-      // Improved error logging to see FastAPI validation details
-      console.error("Error creating user:", error.response?.data?.detail || error.message);
     }
-  };
-
+  } catch (error) {
+    console.error("Error creating user:", error.response?.data?.detail || error.message);
+  }
+};
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
     try {
@@ -98,7 +102,7 @@ const UserManagement = () => {
               <tbody className="divide-y divide-[#2A3142]">
                 {users.length > 0 ? users.map((user) => (
                   <tr key={user.id} className="hover:bg-[#1D2230] transition-colors">
-                    {/* Fixed: Display user.userName from the backend model */}
+                    
                     <td className="px-6 py-4 text-sm text-white font-medium">{user.userName}</td>
                     <td className="px-6 py-4 text-sm text-zinc-400">{user.email}</td>
                     <td className="px-6 py-4">
@@ -135,7 +139,7 @@ const UserManagement = () => {
             </div>
             
             <form onSubmit={handleAddUser} className="p-6 space-y-4">
-              {/* FIXED: value and onChange now target userName */}
+              
               <ModalInput 
                 label="User Name" 
                 value={newUser.userName} 
@@ -163,7 +167,7 @@ const UserManagement = () => {
                   onChange={(e)=>setNewUser({...newUser, role: e.target.value})}
                   className="w-full px-3 py-2.5 rounded-lg border border-[#2A3142] bg-[#0F141D] text-white text-sm outline-none focus:border-orange-500"
                 >
-                  {/* Ensure these values match your Python UserRole enum (usually uppercase) */}
+                  
                   <option value="ADMIN">ADMIN</option>
                   <option value="MEMBER">MEMBER</option>
                   <option value="MERCHANDISER">MERCHANDISER</option>
