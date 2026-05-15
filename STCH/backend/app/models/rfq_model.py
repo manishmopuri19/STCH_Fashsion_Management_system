@@ -1,76 +1,66 @@
-from sqlalchemy import JSON, Column, Date, DateTime, Float, Integer, String, Text
-
+from sqlalchemy import JSON, Column, Date, DateTime, Float, Integer, String, Text, Enum, Boolean
+from sqlalchemy.sql import func
 from app.db.database import Base
-from sqlalchemy import Enum
-
 from app.enums.rfq_enums import RFQPriority, RFQStatus
 
 class RFQ(Base):
-
     __tablename__ = "rfqs"
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, index=True)
+    rfq_number = Column(String, unique=True, index=True)
 
-    rfq_number = Column(String, unique=True)
+    # BRAND INFO (Step 1)
+    brand = Column(String, nullable=False)
+    season = Column(String, nullable=False)
+    department = Column(String, nullable=False)
+    category = Column(String, nullable=True)
+    sub_category = Column(String, nullable=True)
+    priority = Column(Enum(RFQPriority), nullable=False)
 
-    # CLIENT
-    brand = Column(String)
-    season = Column(String)
-    department = Column(String)
-    category = Column(String)
-    sub_category = Column(String)
-    priority = Column(Enum(RFQPriority))
+    # GARMENT DETAILS (Step 2)
+    garment_type = Column(String, nullable=False)
+    fabric_type = Column(String, nullable=False)
+    fabric_weight = Column(String, nullable=False) # Store as string to handle units/GSM
+    fabric_composition = Column(String, nullable=False)
+    construction = Column(String, nullable=True)
+    yarn_count = Column(String, nullable=True)
 
-    # PRODUCT
-    garment_type = Column(String)
-    fabric_type = Column(String)
-    fabric_weight = Column(String)
-    fabric_composition = Column(String)
-    construction = Column(String)
-    yarn_count = Column(String)
+    # ORDER DETAILS (Step 3)
+    quantity = Column(Integer, nullable=False)
+    target_price = Column(Float, nullable=False)
+    currency = Column(String, nullable=False)
+    delivery_date = Column(Date, nullable=False)
+    incoterms = Column(String, nullable=False)
 
-    # ORDER
-    quantity = Column(Integer)
-    target_price = Column(Float)
-    currency = Column(String)
-    delivery_date = Column(Date)
-    incoterms = Column(String)
+    # TRIMS & ACCESSORIES (Step 4)
+    trims_details = Column(Text, nullable=False)
+    packaging_type = Column(String, nullable=False)
+    label_type = Column(String, nullable=False)
 
-    # TRIMS
-    trims_details = Column(Text)
-    packaging_type = Column(String)
-    label_type = Column(String)
+    # WASH & FINISH (Step 5)
+    garment_wash = Column(JSON, default=[]) # Coming from Chips
+    dye_type = Column(String, nullable=True)
+    print_type = Column(String, nullable=True)
+    embroidery_type = Column(String, nullable=True)
+    special_finish = Column(String, nullable=True)
 
-    # PROCESSING
-    garment_wash = Column(JSON)
-    dye_type = Column(String)
-    print_type = Column(String)
-    embroidery_type = Column(String)
-    special_finish = Column(String)
+    # COMPLIANCE (Step 6)
+    compliance_standards = Column(JSON, default=[]) # Coming from Chips
+    testing_required = Column(JSON, default=[])     # Coming from Chips
+    social_compliance = Column(String, nullable=True)
+    quality_standards = Column(String, nullable=True)
 
-    # COMPLIANCE
-    compliance_standards = Column(JSON)
-    testing_required = Column(JSON)
-    social_compliance = Column(String)
-    quality_standards = Column(String)
+    # ADDITIONAL INFO & FILES (Step 7)
+    tech_pack_url = Column(Text, nullable=True)
+    reference_images = Column(Text, nullable=True) # Stored as newline string from TextArea
+    notes = Column(Text, nullable=True)
 
-    # FILES
-    tech_pack_url = Column(Text)
-    reference_images = Column(Text)
-
-    # NOTES
-    notes = Column(Text)
-
-    # PIPELINE
-    status = Column(
-    Enum(RFQStatus),
-    default=RFQStatus.NEW
-)
-
+    # PIPELINE & STATUS
+    status = Column(Enum(RFQStatus), default=RFQStatus.NEW)
+    is_new = Column(Boolean, default=True) # New flag to track unread RFQs
 
     # META
-    created_by = Column(Integer)
-    assigned_to = Column(Integer)
-
-    created_at = Column(DateTime)
-    updated_at = Column(DateTime)
+    created_by = Column(Integer, nullable=True)
+    assigned_to = Column(Integer, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())

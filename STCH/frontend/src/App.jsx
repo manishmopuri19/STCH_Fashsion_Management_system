@@ -7,7 +7,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import RFQList from "./pages/RFQ/RFQList";
 import CreateRFQ from "./pages/RFQ/CreateRFQ";
-import RFQDetails from "./pages/RFQ/RFQDetails";
+// import RFQDetails from "./pages/RFQ/RFQDetails";
 import UserManagement from "./pages/userManagement";
 import ProtectedRoute from "./utils/ProtectedRoute";
 
@@ -50,20 +50,20 @@ function App() {
  <Route
         path="/rfqs/create"
         element={
-        <ProtectedRoute>
-        <CreateRFQ />
-        </ProtectedRoute>
+        <ProtectedRoute allowedRoles={["ADMIN", "MERCHANDISER"]}>
+      <CreateRFQ />
+    </ProtectedRoute>
         }
       />
 
-<Route
+{/* <Route
   path="/rfqs/:rfqId"
   element={
   <ProtectedRoute>
   <RFQDetails />
   </ProtectedRoute>
 }
-/>
+/> */}
 
 <Route
 path="/users"

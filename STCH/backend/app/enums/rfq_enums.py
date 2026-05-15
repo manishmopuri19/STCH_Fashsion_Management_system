@@ -3,36 +3,23 @@ from enum import Enum
 class RFQStatus(str, Enum):
 
     NEW = "NEW"
-
+    PO_CREATED="CREATED"
     CLIENT_REVIEW = "CLIENT_REVIEW"
-
     INTERNAL_COSTING = "INTERNAL_COSTING"
-
     SUPPLIER_MATCHING = "SUPPLIER_MATCHING"
-
     SAMPLING = "SAMPLING"
-
     NEGOTIATION = "NEGOTIATION"
-
     ORDER_CONFIRMED = "ORDER_CONFIRMED"
-
     PRODUCTION = "PRODUCTION"
-
     QC = "QC"
-
     SHIPPED = "SHIPPED"
-
     COMPLETED = "COMPLETED"
-
     CANCELLED = "CANCELLED"
 
 
 class RFQPriority(str, Enum):
 
     LOW = "LOW"
-
     MEDIUM = "MEDIUM"
-
     HIGH = "HIGH"
-
     URGENT = "URGENT"

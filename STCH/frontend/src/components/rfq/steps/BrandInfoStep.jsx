@@ -1,227 +1,83 @@
-// src/components/rfq/steps/BrandInfoStep.jsx
+import { RFQ_OPTIONS } from "../../../constants/rfqConstants";
+import { FormField, RFQInput, RFQSelect } from "../ui/RFQInputs";
 
-function BrandInfoStep({
-  formData,
-  setFormData,
-  errors,
-}) {
+/**
+ * Step 1 – Brand & Basic Information
+ * Fields: Brand, Season, Department, Category, Sub-Category, Priority
+ */
+function BrandInfoStep({ formData, setFormData, errors }) {
+  const update = (field, val) => setFormData({ ...formData, [field]: val });
 
   return (
-    <div>
-
-      <h2 className="
-        text-3xl
-        font-semibold
-        text-white
-      ">
-        Brand & Basic Information
-      </h2>
-
-      <p className="
-        text-zinc-400
-        mt-2
-        mb-8
-      ">
-        Select the brand and provide RFQ details
-      </p>
-
-      <div className="
-        grid
-        grid-cols-1
-        md:grid-cols-2
-        gap-6
-      ">
-
-        <InputField
-          label="Brand"
-          value={formData.brand}
-          onChange={(value) =>
-            setFormData({
-              ...formData,
-              brand: value,
-            })
-          }
-          error={errors.brand}
-        />
-
-        <InputField
-          label="Season"
-          value={formData.season}
-          onChange={(value) =>
-            setFormData({
-              ...formData,
-              season: value,
-            })
-          }
-          error={errors.season}
-        />
-
-        <InputField
-          label="Department"
-          value={formData.department}
-          onChange={(value) =>
-            setFormData({
-              ...formData,
-              department: value,
-            })
-          }
-          error={errors.department}
-        />
-
-        <InputField
-          label="Category"
-          value={formData.category}
-          onChange={(value) =>
-            setFormData({
-              ...formData,
-              category: value,
-            })
-          }
-          error={errors.category}
-        />
-
-        <InputField
-          label="Sub Category"
-          value={formData.subCategory}
-          onChange={(value) =>
-            setFormData({
-              ...formData,
-              subCategory: value,
-            })
-          }
-        />
-
-        <SelectField
-          label="Priority"
-          value={formData.priority}
-          onChange={(value) =>
-            setFormData({
-              ...formData,
-              priority: value,
-            })
-          }
-          options={["LOW", "MEDIUM", "HIGH", "URGENT"]}
-        />
-
+    <div className="space-y-8 animate-in fade-in duration-300">
+      <div>
+        <h2 className="text-2xl font-semibold text-white">Brand & Basic Information</h2>
+        <p className="text-zinc-500 mt-1 text-sm">Select the brand and provide basic RFQ details.</p>
       </div>
 
-    </div>
-  );
-}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        {/* Brand name – free text */}
+        <FormField label="Brand *" error={errors.brand}>
+          <RFQInput
+            value={formData.brand}
+            onChange={(v) => update("brand", v)}
+            placeholder="e.g. Max Fashion"
+            className={errors.brand ? "border-red-500" : ""}
+          />
+        </FormField>
 
-function InputField({
-  label,
-  value,
-  onChange,
-  error,
-}) {
+        {/* Season */}
+        <FormField label="Season *" error={errors.season}>
+          <RFQSelect
+            options={RFQ_OPTIONS.seasons}
+            value={formData.season}
+            onChange={(v) => update("season", v)}
+            placeholder="Select season"
+            className={errors.season ? "border-red-500" : ""}
+          />
+        </FormField>
 
-  return (
-    <div>
+        {/* Department */}
+        <FormField label="Department *" error={errors.department}>
+          <RFQSelect
+            options={RFQ_OPTIONS.departments}
+            value={formData.department}
+            onChange={(v) => update("department", v)}
+            placeholder="Select department"
+            className={errors.department ? "border-red-500" : ""}
+          />
+        </FormField>
 
-      <label className="
-        block
-        mb-3
-        text-sm
-        font-medium
-        text-zinc-300
-      ">
-        {label}
-      </label>
+        {/* Category */}
+        <FormField label="Category" error={errors.category}>
+          <RFQSelect
+            options={RFQ_OPTIONS.categories}
+            value={formData.category}
+            onChange={(v) => update("category", v)}
+            placeholder="Select category"
+          />
+        </FormField>
 
-      <input
-        value={value}
-        onChange={(e) =>
-          onChange(e.target.value)
-        }
-        className={`
-          w-full
-          px-5
-          py-4
-          rounded-xl
-          border
-          bg-[#0F141D]
-          text-white
-          placeholder:text-zinc-500
-          outline-none
-          focus:border-orange-500
+        {/* Sub-Category – free text */}
+        <FormField label="Sub-Category">
+          <RFQInput
+            value={formData.subCategory}
+            onChange={(v) => update("subCategory", v)}
+            placeholder="e.g. Casual, Formal, Street"
+          />
+        </FormField>
 
-          ${
-            error
-              ? "border-red-500"
-              : "border-[#2A3142]"
-          }
-        `}
-      />
-
-      {error && (
-        <p className="
-          text-red-500
-          text-sm
-          mt-2
-        ">
-          {error}
-        </p>
-      )}
-
-    </div>
-  );
-}
-
-function SelectField({
-  label,
-  value,
-  onChange,
-  options,
-}) {
-
-  return (
-    <div>
-
-      <label className="
-        block
-        mb-3
-        text-sm
-        font-medium
-        text-zinc-300
-      ">
-        {label}
-      </label>
-
-      <select
-        value={value}
-        onChange={(e) =>
-          onChange(e.target.value)
-        }
-        className="
-          w-full
-          px-5
-          py-4
-          rounded-xl
-          border
-          border-[#2A3142]
-          bg-[#0F141D]
-          text-white
-          outline-none
-          focus:border-orange-500
-        "
-      >
-
-        <option value="">
-          Select {label}
-        </option>
-
-        {options.map((option) => (
-          <option
-            key={option}
-            value={option}
-          >
-            {option}
-          </option>
-        ))}
-
-      </select>
-
+        {/* Order Priority */}
+        <FormField label="Order Priority *" error={errors.priority}>
+          <RFQSelect
+            options={RFQ_OPTIONS.priorities}
+            value={formData.priority}
+            onChange={(v) => update("priority", v)}
+            placeholder="Select priority"
+            className={errors.priority ? "border-red-500" : ""}
+          />
+        </FormField>
+      </div>
     </div>
   );
 }

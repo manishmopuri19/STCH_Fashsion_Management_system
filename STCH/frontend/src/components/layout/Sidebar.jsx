@@ -25,12 +25,48 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
   const { user } = useAuth();
 
   // Filter menu items: Only ADMIN can see User Management
-  const filteredMenuItems = menuItems.filter((item) => {
-    if (item.label === "User Management") {
-      return user?.role === "ADMIN";
-    }
-    return true;
-  });
+  const roleBasedMenus = {
+
+  ADMIN: [
+    "Dashboard",
+    "RFQ",
+    "Orders",
+    "TNA",
+    "QC",
+    "Suppliers",
+    "User Management",
+  ],
+
+  MERCHANDISER: [
+    "Dashboard",
+    "RFQ",
+    "Orders",
+    "TNA",
+    "QC",
+    "Suppliers",
+  ],
+  MEMBER:[
+    "Dashboard",
+    "RFQ",
+    "Suppliers",   
+  ]
+,
+  SUPPLIER: [
+    "RFQ",
+    "Orders",
+    "TNA",
+  ],
+};
+
+const allowedMenus =
+  roleBasedMenus[user?.role] || [];
+
+const filteredMenuItems =
+  menuItems.filter((item) =>
+    allowedMenus.includes(item.label)
+  );
+  
+
 
   return (
     <>

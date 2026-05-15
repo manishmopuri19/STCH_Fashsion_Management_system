@@ -1,139 +1,51 @@
-function TrimsStep({
-  formData,
-  setFormData,
-}) {
+import { FormField, RFQInput, RFQTextArea } from "../ui/RFQInputs";
+
+/**
+ * Step 4 – Trims & Accessories
+ * Fields: Trims Details (textarea), Packaging Type, Label Type
+ */
+function TrimsStep({ formData, setFormData, errors }) {
+  const update = (field, value) => setFormData({ ...formData, [field]: value });
 
   return (
-    <div>
-
-      <h2 className="
-        text-3xl
-        font-semibold
-        text-[#111827]
-      ">
-        Trims & Accessories
-      </h2>
-
-      <p className="
-        text-zinc-500
-        mt-2
-        mb-8
-      ">
-        Buttons, labels, zippers and packaging details
-      </p>
-
-      <div className="space-y-6">
-
-        <TextArea
-          label="Trims Details"
-          value={formData.trimsDetails}
-          onChange={(value) =>
-            setFormData({
-              ...formData,
-              trimsDetails: value,
-            })
-          }
-        />
-
-        <div className="
-          grid
-          grid-cols-1
-          md:grid-cols-2
-          gap-6
-        ">
-
-          <InputField
-            label="Packaging Type"
-            value={formData.packagingType}
-            onChange={(value) =>
-              setFormData({
-                ...formData,
-                packagingType: value,
-              })
-            }
-          />
-
-          <InputField
-            label="Label Type"
-            value={formData.labelType}
-            onChange={(value) =>
-              setFormData({
-                ...formData,
-                labelType: value,
-              })
-            }
-          />
-
-        </div>
-
+    <div className="space-y-8 animate-in fade-in duration-300">
+      <div>
+        <h2 className="text-2xl font-semibold text-white">Trims & Accessories</h2>
+        <p className="text-zinc-500 mt-1 text-sm">Buttons, zippers, labels, and packaging details.</p>
       </div>
 
-    </div>
-  );
-}
+      {/* Trims Details – full width textarea */}
+      <FormField label="Trims Details *" error={errors.trimsDetails}>
+        <RFQTextArea
+          value={formData.trimsDetails}
+          onChange={(v) => update("trimsDetails", v)}
+          placeholder="Describe trims requirements: buttons, zippers, drawcords, rivets, etc."
+          rows={5}
+          className={errors.trimsDetails ? "border-red-500" : ""}
+        />
+      </FormField>
 
-function InputField({
-  label,
-  value,
-  onChange,
-}) {
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        {/* Packaging Type */}
+        <FormField label="Packaging Type *" error={errors.packagingType}>
+          <RFQInput
+            value={formData.packagingType}
+            onChange={(v) => update("packagingType", v)}
+            placeholder="e.g. Poly bag, Hanger, Flat pack"
+            className={errors.packagingType ? "border-red-500" : ""}
+          />
+        </FormField>
 
-  return (
-    <div>
-
-      <label className="block mb-3 text-sm font-medium text-zinc-700">
-        {label}
-      </label>
-
-      <input
-        value={value}
-        onChange={(e) =>
-          onChange(e.target.value)
-        }
-        className="
-          w-full
-          px-5
-          py-4
-          rounded-xl
-          border
-          border-zinc-300
-        "
-      />
-
-    </div>
-  );
-}
-
-function TextArea({
-  label,
-  value,
-  onChange,
-}) {
-
-  return (
-    <div>
-
-      <label className="block mb-3 text-sm font-medium text-zinc-700">
-        {label}
-      </label>
-
-      <textarea
-        rows={5}
-        value={value}
-        onChange={(e) =>
-          onChange(e.target.value)
-        }
-        className="
-          w-full
-          px-5
-          py-4
-          rounded-xl
-          border
-          border-zinc-300
-          resize-none
-        "
-      />
-
+        {/* Label Type */}
+        <FormField label="Label Type *" error={errors.labelType}>
+          <RFQInput
+            value={formData.labelType}
+            onChange={(v) => update("labelType", v)}
+            placeholder="e.g. Woven, Printed, Heat transfer"
+            className={errors.labelType ? "border-red-500" : ""}
+          />
+        </FormField>
+      </div>
     </div>
   );
 }

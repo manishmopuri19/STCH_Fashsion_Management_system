@@ -1,37 +1,77 @@
+import { RFQ_OPTIONS } from "../../../constants/rfqConstants";
+import { ChipGroup, FormField, RFQInput } from "../ui/RFQInputs";
 
-const washOptions = ["Normal Wash", "Enzyme Wash", "Stone Wash", "Acid Wash", "Bleach Wash", "Garment Dye"];
+/**
+ * Step 5 – Wash & Finish
+ * Fields: Garment Wash (chips), Dye Type, Print Type,
+ *         Embroidery Type, Special Finish
+ */
+function WashFinishStep({ formData, setFormData, errors }) {
+  const update = (field, val) => setFormData({ ...formData, [field]: val });
 
-function WashFinishStep({ formData, setFormData }) {
-  const toggleWash = (wash) => {
-    const exists = formData.garmentWash.includes(wash);
-    setFormData({
-      ...formData,
-      garmentWash: exists 
-        ? formData.garmentWash.filter(i => i !== wash) 
-        : [...formData.garmentWash, wash]
-    });
+  const toggleWash = (val) => {
+    const list = formData.garmentWash.includes(val)
+      ? formData.garmentWash.filter((i) => i !== val)
+      : [...formData.garmentWash, val];
+    update("garmentWash", list);
   };
 
   return (
-    <div className="animate-in fade-in duration-500">
-      <h2 className="text-3xl font-semibold text-white">Wash & Finish</h2>
-      <p className="text-zinc-400 mt-2 mb-8">Select all applicable wash and treatment types.</p>
+    <div className="space-y-8 animate-in fade-in duration-300">
+      <div>
+        <h2 className="text-2xl font-semibold text-white">Wash & Finish</h2>
+        <p className="text-zinc-500 mt-1 text-sm">
+          Wash, dye, print, and embroidery specifications.
+        </p>
+      </div>
 
-      <div className="flex flex-wrap gap-4">
-        {washOptions.map((wash) => (
-          <button
-            key={wash}
-            type="button"
-            onClick={() => toggleWash(wash)}
-            className={`px-6 py-3 rounded-2xl border transition-all duration-200 font-medium ${
-              formData.garmentWash.includes(wash)
-                ? "bg-orange-500 border-orange-500 text-white shadow-lg shadow-orange-500/20"
-                : "bg-[#0F141D] border-[#2A3142] text-zinc-400 hover:border-zinc-500"
-            }`}
-          >
-            {wash}
-          </button>
-        ))}
+      {/* Garment Wash chips */}
+      <div>
+        <p className="text-sm font-medium text-zinc-400 mb-1">Garment Wash *</p>
+        {errors.garmentWash && (
+          <p className="text-xs text-red-400 mb-2">{errors.garmentWash}</p>
+        )}
+        <ChipGroup
+          options={RFQ_OPTIONS.washOptions}
+          selected={formData.garmentWash}
+          onToggle={toggleWash}
+          variant="outline"
+        />
+      </div>
+
+      {/* Additional finish fields */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <FormField label="Dye Type">
+          <RFQInput
+            value={formData.dyeType}
+            onChange={(v) => update("dyeType", v)}
+            placeholder="e.g. Reactive, Pigment, Vat"
+          />
+        </FormField>
+
+        <FormField label="Print Type">
+          <RFQInput
+            value={formData.printType}
+            onChange={(v) => update("printType", v)}
+            placeholder="e.g. Screen, Digital, Sublimation"
+          />
+        </FormField>
+
+        <FormField label="Embroidery Type">
+          <RFQInput
+            value={formData.embroideryType}
+            onChange={(v) => update("embroideryType", v)}
+            placeholder="e.g. Flat, 3D, Applique"
+          />
+        </FormField>
+
+        <FormField label="Special Finish">
+          <RFQInput
+            value={formData.specialFinish}
+            onChange={(v) => update("specialFinish", v)}
+            placeholder="e.g. Silicone softener, Anti-pilling"
+          />
+        </FormField>
       </div>
     </div>
   );

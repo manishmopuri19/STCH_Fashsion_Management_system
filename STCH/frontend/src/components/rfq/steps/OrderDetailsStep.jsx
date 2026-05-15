@@ -1,210 +1,82 @@
-const currencies = [
-  "INR",
-  "USD",
-  "EUR",
-];
+import { RFQ_OPTIONS } from "../../../constants/rfqConstants";
+import { FormField, RFQInput, RFQSelect } from "../ui/RFQInputs";
 
-const incoterms = [
-  "FOB",
-  "CIF",
-  "EXW",
-  "DDP",
-];
-
-function OrderDetailsStep({
-  formData,
-  setFormData,
-  errors,
-}) {
+/**
+ * Step 3 – Order Details
+ * Fields: Total Quantity (pcs), Target Price per piece, Currency,
+ *         Delivery Date, Incoterms
+ */
+function OrderDetailsStep({ formData, setFormData, errors }) {
+  const update = (field, val) => setFormData({ ...formData, [field]: val });
 
   return (
-    <div>
-
-      <h2 className="
-        text-3xl
-        font-semibold
-        text-[#111827]
-      ">
-        Order Details
-      </h2>
-
-      <p className="
-        text-zinc-500
-        mt-2
-        mb-8
-      ">
-        Set quantity, pricing, and delivery information
-      </p>
-
-      <div className="
-        grid
-        grid-cols-1
-        md:grid-cols-2
-        gap-6
-      ">
-
-        <InputField
-          label="Total Quantity (pcs)"
-          value={formData.quantity}
-          onChange={(value) =>
-            setFormData({
-              ...formData,
-              quantity: value,
-            })
-          }
-          error={errors.quantity}
-        />
-
-        <InputField
-          label="Target Price per piece"
-          value={formData.targetPrice}
-          onChange={(value) =>
-            setFormData({
-              ...formData,
-              targetPrice: value,
-            })
-          }
-          error={errors.targetPrice}
-        />
-
-        <SelectField
-          label="Currency"
-          value={formData.currency}
-          onChange={(value) =>
-            setFormData({
-              ...formData,
-              currency: value,
-            })
-          }
-          options={currencies}
-        />
-
-        <InputField
-          label="Delivery Date"
-          type="date"
-          value={formData.deliveryDate}
-          onChange={(value) =>
-            setFormData({
-              ...formData,
-              deliveryDate: value,
-            })
-          }
-        />
-
-        <SelectField
-          label="Incoterms"
-          value={formData.incoterms}
-          onChange={(value) =>
-            setFormData({
-              ...formData,
-              incoterms: value,
-            })
-          }
-          options={incoterms}
-        />
-
+    <div className="space-y-8 animate-in fade-in duration-300">
+      <div>
+        <h2 className="text-2xl font-semibold text-white">Order Details</h2>
+        <p className="text-zinc-500 mt-1 text-sm">Set quantity, pricing, and delivery information.</p>
       </div>
 
-    </div>
-  );
-}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        {/* Total Quantity */}
+        <FormField label="Total Quantity (pcs) *" error={errors.quantity}>
+          <RFQInput
+            type="number"
+            value={formData.quantity}
+            onChange={(v) => update("quantity", v)}
+            placeholder="e.g. 3000"
+            className={errors.quantity ? "border-red-500" : ""}
+          />
+        </FormField>
 
-function InputField({
-  label,
-  value,
-  onChange,
-  error,
-  type = "text",
-}) {
+        {/* Target Price per piece */}
+        <FormField label="Target Price per piece *" error={errors.targetPrice}>
+          {/* Wrapper for the currency suffix */}
+          <div className="relative">
+            <RFQInput
+              type="number"
+              value={formData.targetPrice}
+              onChange={(v) => update("targetPrice", v)}
+              placeholder="0.00"
+              className={`pr-16 ${errors.targetPrice ? "border-red-500" : ""}`}
+            />
+            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-zinc-500 pointer-events-none">
+              {formData.currency || "USD"}
+            </span>
+          </div>
+        </FormField>
 
-  return (
-    <div>
+        {/* Currency */}
+        <FormField label="Currency *" error={errors.currency}>
+          <RFQSelect
+            options={RFQ_OPTIONS.currencies}
+            value={formData.currency}
+            onChange={(v) => update("currency", v)}
+            placeholder="Select currency"
+            className={errors.currency ? "border-red-500" : ""}
+          />
+        </FormField>
 
-      <label className="
-        block
-        mb-3
-        text-sm
-        font-medium
-        text-zinc-700
-      ">
-        {label}
-      </label>
+        {/* Delivery Date */}
+        <FormField label="Delivery Date *" error={errors.deliveryDate}>
+          <RFQInput
+            type="date"
+            value={formData.deliveryDate}
+            onChange={(v) => update("deliveryDate", v)}
+            className={errors.deliveryDate ? "border-red-500" : ""}
+          />
+        </FormField>
 
-      <input
-        type={type}
-        value={value}
-        onChange={(e) =>
-          onChange(e.target.value)
-        }
-        className={`
-          w-full
-          px-5
-          py-4
-          rounded-xl
-          border
-
-          ${
-            error
-              ? "border-red-500"
-              : "border-zinc-300"
-          }
-        `}
-      />
-
-    </div>
-  );
-}
-
-function SelectField({
-  label,
-  value,
-  onChange,
-  options,
-}) {
-
-  return (
-    <div>
-
-      <label className="
-        block
-        mb-3
-        text-sm
-        font-medium
-        text-zinc-700
-      ">
-        {label}
-      </label>
-
-      <select
-        value={value}
-        onChange={(e) =>
-          onChange(e.target.value)
-        }
-        className="
-          w-full
-          px-5
-          py-4
-          rounded-xl
-          border
-          border-zinc-300
-        "
-      >
-
-        <option value="">
-          Select {label}
-        </option>
-
-        {options.map((option) => (
-          <option
-            key={option}
-            value={option}
-          >
-            {option}
-          </option>
-        ))}
-
-      </select>
-
+        {/* Incoterms */}
+        <FormField label="Incoterms *" error={errors.incoterms}>
+          <RFQSelect
+            options={RFQ_OPTIONS.incoterms}
+            value={formData.incoterms}
+            onChange={(v) => update("incoterms", v)}
+            placeholder="Select incoterms"
+            className={errors.incoterms ? "border-red-500" : ""}
+          />
+        </FormField>
+      </div>
     </div>
   );
 }

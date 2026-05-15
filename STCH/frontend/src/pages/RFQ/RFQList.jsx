@@ -33,7 +33,7 @@ function RFQList() {
     try {
 
       const response =
-        await API.get("/getAllRfqs");
+        await API.get("/rfqs");
 
       setRfqs(response.data);
 

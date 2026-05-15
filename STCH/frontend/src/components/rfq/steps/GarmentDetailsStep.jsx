@@ -1,92 +1,83 @@
-// src/components/rfq/steps/GarmentDetailsStep.jsx
+import { RFQ_OPTIONS } from "../../../constants/rfqConstants";
+import { FormField, RFQInput, RFQSelect } from "../ui/RFQInputs";
 
-const garmentTypes = ["T-Shirt", "Polo", "Shirt", "Hoodie", "Jeans", "Jacket"];
-const fabricTypes = ["Cotton", "Polyester", "Denim", "Linen", "Fleece", "Jersey"];
-
+/**
+ * Step 2 – Garment Details
+ * Fields: Garment Type, Fabric Type, Fabric Weight (GSM), Fabric Composition,
+ *         Construction, Yarn Count
+ */
 function GarmentDetailsStep({ formData, setFormData, errors }) {
-  return (
-    <div className="animate-in fade-in duration-500">
-      <h2 className="text-3xl font-semibold text-white">Garment Details</h2>
-      <p className="text-zinc-400 mt-2 mb-8">Specify fabric and garment specifications for production.</p>
+  const update = (f, v) => setFormData({ ...formData, [f]: v });
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-        <SelectField
-          label="Garment Type"
-          value={formData.garmentType}
-          onChange={(val) => setFormData({ ...formData, garmentType: val })}
-          options={garmentTypes}
-          error={errors.garmentType}
-        />
-        <SelectField
-          label="Fabric Type"
-          value={formData.fabricType}
-          onChange={(val) => setFormData({ ...formData, fabricType: val })}
-          options={fabricTypes}
-          error={errors.fabricType}
-        />
-        <InputField
-          label="Fabric Weight (GSM)"
-          placeholder="e.g. 180"
-          value={formData.fabricWeight}
-          onChange={(val) => setFormData({ ...formData, fabricWeight: val })}
-        />
-        <InputField
-          label="Fabric Composition"
-          placeholder="e.g. 100% Cotton"
-          value={formData.fabricComposition}
-          onChange={(val) => setFormData({ ...formData, fabricComposition: val })}
-        />
-        <InputField
-          label="Construction"
-          placeholder="e.g. Single Jersey"
-          value={formData.construction}
-          onChange={(val) => setFormData({ ...formData, construction: val })}
-        />
-        <InputField
-          label="Yarn Count"
-          placeholder="e.g. 30s"
-          value={formData.yarnCount}
-          onChange={(val) => setFormData({ ...formData, yarnCount: val })}
-        />
+  return (
+    <div className="space-y-8 animate-in fade-in duration-300">
+      <div>
+        <h2 className="text-2xl font-semibold text-white">Garment Details</h2>
+        <p className="text-zinc-500 mt-1 text-sm">Specify fabric and garment specifications.</p>
       </div>
-    </div>
-  );
-}
 
-// Unified Input Component
-function InputField({ label, value, onChange, placeholder, error }) {
-  return (
-    <div className="flex flex-col">
-      <label className="mb-2 text-sm font-medium text-zinc-300">{label}</label>
-      <input
-        value={value}
-        placeholder={placeholder}
-        onChange={(e) => onChange(e.target.value)}
-        className={`w-full px-4 py-3.5 rounded-xl border bg-[#0F141D] text-white outline-none transition-all focus:border-orange-500 ${
-          error ? "border-red-500" : "border-[#2A3142]"
-        }`}
-      />
-    </div>
-  );
-}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        {/* Garment Type */}
+        <FormField label="Garment Type *" error={errors.garmentType}>
+          <RFQSelect
+            options={RFQ_OPTIONS.garmentTypes}
+            value={formData.garmentType}
+            onChange={(v) => update("garmentType", v)}
+            placeholder="Select garment type"
+            className={errors.garmentType ? "border-red-500" : ""}
+          />
+        </FormField>
 
-// Unified Select Component
-function SelectField({ label, value, onChange, options, error }) {
-  return (
-    <div className="flex flex-col">
-      <label className="mb-2 text-sm font-medium text-zinc-300">{label}</label>
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className={`w-full px-4 py-3.5 rounded-xl border bg-[#0F141D] text-white outline-none appearance-none transition-all focus:border-orange-500 ${
-          error ? "border-red-500" : "border-[#2A3142]"
-        }`}
-      >
-        <option value="" className="bg-[#151821]">Select {label}</option>
-        {options.map((opt) => (
-          <option key={opt} value={opt} className="bg-[#151821]">{opt}</option>
-        ))}
-      </select>
+        {/* Fabric Type */}
+        <FormField label="Fabric Type *" error={errors.fabricType}>
+          <RFQSelect
+            options={RFQ_OPTIONS.fabricTypes}
+            value={formData.fabricType}
+            onChange={(v) => update("fabricType", v)}
+            placeholder="Select fabric type"
+            className={errors.fabricType ? "border-red-500" : ""}
+          />
+        </FormField>
+
+        {/* Fabric Weight (GSM) */}
+        <FormField label="Fabric Weight (GSM) *" error={errors.fabricWeight}>
+          <RFQInput
+            type="number"
+            value={formData.fabricWeight}
+            onChange={(v) => update("fabricWeight", v)}
+            placeholder="e.g. 180"
+            className={errors.fabricWeight ? "border-red-500" : ""}
+          />
+        </FormField>
+
+        {/* Fabric Composition */}
+        <FormField label="Fabric Composition *" error={errors.fabricComposition}>
+          <RFQInput
+            value={formData.fabricComposition}
+            onChange={(v) => update("fabricComposition", v)}
+            placeholder="e.g. 100% Cotton, 60/40 Cotton-Poly"
+            className={errors.fabricComposition ? "border-red-500" : ""}
+          />
+        </FormField>
+
+        {/* Construction */}
+        <FormField label="Construction" error={errors.construction}>
+          <RFQInput
+            value={formData.construction}
+            onChange={(v) => update("construction", v)}
+            placeholder="e.g. Single Jersey, Twill 3/1"
+          />
+        </FormField>
+
+        {/* Yarn Count */}
+        <FormField label="Yarn Count" error={errors.yarnCount}>
+          <RFQInput
+            value={formData.yarnCount}
+            onChange={(v) => update("yarnCount", v)}
+            placeholder="e.g. 30s, 40s Combed"
+          />
+        </FormField>
+      </div>
     </div>
   );
 }

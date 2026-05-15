@@ -1,119 +1,51 @@
-function AdditionalInfoStep({formData,setFormData}) {
+import { FormField, RFQInput, RFQTextArea } from "../ui/RFQInputs";
+
+/**
+ * Step 7 – Additional Information
+ * Fields: Tech Pack URL, Reference Images (one per line), Notes
+ */
+function AdditionalInfoStep({ formData, setFormData }) {
+  const update = (f, v) => setFormData({ ...formData, [f]: v });
 
   return (
-    <div>
-
-      <h2 className="
-        text-3xl
-        font-semibold
-        text-[#111827]
-      ">
-        Additional Information
-      </h2>
-
-      <p className="
-        text-zinc-500
-        mt-2
-        mb-8
-      ">
-        Tech pack, references and notes
-      </p>
-
-      <div className="space-y-6">
-
-        <InputField
-          label="Tech Pack URL"
-          value={formData.techPackUrl}
-          onChange={(value) =>
-            setFormData({
-              ...formData,
-              techPackUrl: value,
-            })
-          }
-        />
-
-        <TextArea
-          label="Reference Images"
-          value={formData.referenceImages}
-          onChange={(value) =>
-            setFormData({
-              ...formData,
-              referenceImages: value,
-            })
-          }
-        />
-
-        <TextArea
-          label="Notes"
-          value={formData.notes}
-          onChange={(value) =>
-            setFormData({
-              ...formData,
-              notes: value,
-            })
-          }
-        />
-
+    <div className="space-y-8 animate-in fade-in duration-300">
+      <div>
+        <h2 className="text-2xl font-semibold text-white">Additional Information</h2>
+        <p className="text-zinc-500 mt-1 text-sm">
+          Tech pack, reference images, and any extra notes.
+        </p>
       </div>
 
-    </div>
-  );
-}
+      <div className="space-y-5">
+        {/* Tech Pack URL */}
+        <FormField label="Tech Pack URL">
+          <RFQInput
+            value={formData.techPackUrl}
+            onChange={(v) => update("techPackUrl", v)}
+            placeholder="https://drive.google.com/..."
+          />
+        </FormField>
 
-function InputField({label,value,onChange}) {
+        {/* Reference Image URLs */}
+        <FormField label="Reference Image URLs (one per line)">
+          <RFQTextArea
+            value={formData.referenceImages}
+            onChange={(v) => update("referenceImages", v)}
+            placeholder={"https://example.com/image1.jpg\nhttps://example.com/image2.jpg"}
+            rows={4}
+          />
+        </FormField>
 
-  return (
-    <div>
-
-      <label className="block mb-3 text-sm font-medium text-zinc-700">
-        {label}
-      </label>
-
-      <input
-        value={value}
-        onChange={(e) =>
-          onChange(e.target.value)
-        }
-        className="
-          w-full
-          px-5
-          py-4
-          rounded-xl
-          border
-          border-zinc-300
-        "
-      />
-
-    </div>
-  );
-}
-
-function TextArea({label,value,onChange}) {
-
-  return (
-    <div>
-
-      <label className="block mb-3 text-sm font-medium text-zinc-700">
-        {label}
-      </label>
-
-      <textarea
-        rows={5}
-        value={value}
-        onChange={(e) =>
-          onChange(e.target.value)
-        }
-        className="
-          w-full
-          px-5
-          py-4
-          rounded-xl
-          border
-          border-zinc-300
-          resize-none
-        "
-      />
-
+        {/* General Notes */}
+        <FormField label="Notes">
+          <RFQTextArea
+            value={formData.notes}
+            onChange={(v) => update("notes", v)}
+            placeholder="Any additional notes or special requirements…"
+            rows={5}
+          />
+        </FormField>
+      </div>
     </div>
   );
 }

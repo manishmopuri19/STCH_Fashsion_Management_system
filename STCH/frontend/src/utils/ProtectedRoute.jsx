@@ -1,14 +1,18 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 
-function ProtectedRoute({ children }) {
+function ProtectedRoute({ children, allowedRoles = [] }) {
+  const token = localStorage.getItem("token");
 
-  const token =
-    localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const location = useLocation();
 
   if (!token) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
 
-    return <Navigate to="/login" replace />;
-
+  if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
+    
+    return <Navigate to="/dashboard" replace />;
   }
 
   return children;

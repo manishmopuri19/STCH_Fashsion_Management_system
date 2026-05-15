@@ -1,54 +1,6 @@
-from datetime import date
-from typing import List, Optional
-
-from pydantic import BaseModel, ConfigDict
-
-from app.enums.rfq_enums import RFQPriority, RFQStatus
-
-
-class RFQCreate(BaseModel):
-    # Required Fields (No default value)
-    rfq_number: str
-    brand: str
-    season: str
-    priority: Optional[RFQPriority]=None
-    garment_type: str
-    fabric_type: str
-    quantity: int
-    target_price: float
-    currency: str
-    delivery_date:Optional[date] =None  
-
-    # Optional Fields (Must have = None or a default to avoid 422 if empty)
-    department: Optional[str] = None
-    category: Optional[str] = None
-    sub_category: Optional[str] = None
-    fabric_weight: Optional[str] = None
-    fabric_composition: Optional[str] = None
-    construction: Optional[str] = None
-    yarn_count: Optional[str] = None
-    incoterms: Optional[str] = None
-    trims_details: Optional[str] = None
-    packaging_type: Optional[str] = None
-    label_type: Optional[str] = None
-    garment_wash: List[str] = []
-    compliance_standards: List[str] = []
-    tech_pack_url: Optional[str] = None
-    reference_images: Optional[str] = None
-    notes: Optional[str] = None
-    status: Optional[RFQStatus] = RFQStatus.NEW
-
-    model_config = ConfigDict(from_attributes=True)
-
-class CollaboratorRequest(BaseModel):
-
-    user_id: int
-
-
-from datetime import date
-from typing import Optional
-
 from pydantic import BaseModel
+from typing import Optional
+from datetime import date
 
 from app.enums.rfq_enums import (
     RFQPriority,
@@ -56,32 +8,55 @@ from app.enums.rfq_enums import (
 )
 
 
-class RFQResponse(BaseModel):
+class RFQCreate(BaseModel):
 
-    id: int
-
-    rfq_number: str
-
+    # STEP 1
     brand: str
+    season: str
+    department: str
+    category: Optional[str] = None
+    sub_category: Optional[str] = None
+    priority: RFQPriority
 
-    season: Optional[str]
+    # STEP 2
+    garment_type: str
+    fabric_type: str
+    fabric_weight: str
+    fabric_composition: str
+    construction: Optional[str] = None
+    yarn_count: Optional[str] = None
 
-    category: Optional[str]
+    # STEP 3
+    quantity: int
+    target_price: float
+    currency: str
+    delivery_date: date
+    incoterms: str
 
-    garment_type: Optional[str]
+    # STEP 4
+    trims_details: str
+    packaging_type: str
+    label_type: str
 
-    fabric_type: Optional[str]
+    # STEP 5
+    garment_wash: list[str] = []
+    dye_type: Optional[str] = None
+    print_type: Optional[str] = None
+    embroidery_type: Optional[str] = None
+    special_finish: Optional[str] = None
 
-    quantity: Optional[int]
+    # STEP 6
+    compliance_standards: list[str] = []
+    testing_required: list[str] = []
+    social_compliance: Optional[str] = None
+    quality_standards: Optional[str] = None
 
-    target_price: Optional[float]
+    # STEP 7
+    tech_pack_url: Optional[str] = None
+    reference_images: Optional[str] = None
+    notes: Optional[str] = None
 
-    delivery_date: Optional[date]
 
-    priority: Optional[RFQPriority]
+class RFQStatusUpdate(BaseModel):
 
-    status: Optional[RFQStatus]
-
-    model_config = {
-        "from_attributes": True
-    }
+    status: RFQStatus
