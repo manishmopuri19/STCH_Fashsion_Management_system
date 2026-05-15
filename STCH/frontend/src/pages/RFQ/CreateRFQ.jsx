@@ -115,33 +115,60 @@ const CreateRFQ = () => {
     }
   };
 
-  const handleSubmit = async () => {
-    // Validate the last step before submitting
-    const stepErrors = validateStep(currentStep, formData);
-    if (Object.keys(stepErrors).length > 0) {
-      setErrors(stepErrors);
-      return;
-    }
+  
+const handleSubmit = async () => {
+  const stepErrors = validateStep(currentStep, formData);
+  
+  if (Object.keys(stepErrors).length > 0) {
+    setErrors(stepErrors);
+    return;
+  }
 
-    setSubmitting(true);
-    try {
-      const payload = {
-      ...formData,
-      // Force numeric types to satisfy Pydantic
+  setSubmitting(true);
+  try {
+    const payload = {
+      brand: formData.brand,
+      season: formData.season,
+      department: formData.department,
+      category: formData.category,
+      sub_category: formData.subCategory, 
+      priority: formData.priority?.toUpperCase(),
+      garment_type: formData.garmentType, 
+      fabric_type: formData.fabricType,   
+      fabric_weight: formData.fabricWeight.toString(), 
+      fabric_composition: formData.fabricComposition,
+      construction: formData.construction,
+      yarn_count: formData.yarnCount,
       quantity: parseInt(formData.quantity, 10),
-      targetPrice: parseFloat(formData.targetPrice),
+      target_price: parseFloat(formData.targetPrice), 
+      currency: formData.currency,
+      delivery_date: formData.deliveryDate,
+      incoterms: formData.incoterms,
+      trims_details: formData.trimsDetails, 
+      packaging_type: formData.packagingType, 
+      label_type: formData.labelType,       
+      garment_wash: formData.garmentWash,
+      dye_type: formData.dyeType,
+      print_type: formData.printType,
+      embroidery_type: formData.embroideryType,
+      special_finish: formData.specialFinish,
+      compliance_standards: formData.complianceStandards, 
+      testing_required: formData.testingRequired,         
+      social_compliance: formData.socialCompliance,       
+      quality_standards: formData.qualityStandards,       
+      tech_pack_url: formData.techPackUrl,                
+      reference_images: formData.referenceImages,         
+      notes: formData.notes
     };
-      const response = await API.post("/rfqs", payload);
-    console.log("Success:", response.data);
-    navigate("/dashboard");
+
+    const response = await API.post("/rfqs/", payload);
+    navigate("/rfqs");
   } catch (err) {
-    // This will now show you EXACTLY what field is still failing
-    console.error("422 Error Detail:", err.response?.data?.detail)
-   }
-    finally {
-      setSubmitting(false);
-    }
-  };
+    console.error("Validation Error:", err.response?.data?.detail);
+  } finally {
+    setSubmitting(false);
+  }
+};
 
   return (
     <div className="min-h-screen bg-[#0F1115] px-4 py-8 sm:px-6">

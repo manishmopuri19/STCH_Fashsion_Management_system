@@ -3,13 +3,15 @@ from sqlalchemy.orm import Session
 
 from app.models.user_model import User
 
-from app.schemas.NewUser_schema import newUser
+from app.schemas.NewUser_schema import NewUser
 
 from app.utils.passwordEncryption import hash_password
+from app.models.supplier_model import Supplier
 
+from app.enums.user_enums import UserRole
 
 def create_user_service(
-    payload: newUser,
+    payload: NewUser,
     db: Session
 ):
 
@@ -42,6 +44,25 @@ def create_user_service(
     db.commit()
 
     db.refresh(new_user)
+    if new_user.role == UserRole.SUPPLIER:
+
+        supplier = Supplier(
+
+        user_id = new_user.id,
+
+        company_name =
+        payload.userName,
+
+        contact_person =
+        payload.userName,
+
+        email =
+        payload.email
+        )
+
+    db.add(supplier)
+
+    db.commit()
 
     return {
 

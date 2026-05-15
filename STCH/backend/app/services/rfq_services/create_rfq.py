@@ -1,19 +1,18 @@
 from sqlalchemy.orm import Session
 
+from datetime import datetime
 from app.models.rfq_model import RFQ
-
 from app.schemas.rfq_schema import RFQCreate
-
 from app.enums.rfq_enums import RFQStatus
 
 
-def generate_rfq_number(
-    db: Session
-):
+def generate_rfq_number():
 
-    total_rfqs = db.query(RFQ).count()
+    timestamp = datetime.now().strftime(
+        "%Y%m%d%H%M%S"
+    )
 
-    return f"RFQ-2026-{total_rfqs + 1:04d}"
+    return f"RFQ-{timestamp}"
 
 
 def create_rfq_service(
@@ -25,88 +24,101 @@ def create_rfq_service(
     current_user
 ):
 
-    rfq = RFQ(rfq_number=generate_rfq_number(db),
+    try:
 
-        brand=payload.brand,
+        rfq = RFQ(
 
-        season=payload.season,
+            rfq_number=generate_rfq_number(),
 
-        department=payload.department,
+            brand=payload.brand,
 
-        category=payload.category,
+            season=payload.season,
 
-        sub_category=payload.sub_category,
+            department=payload.department,
 
-        priority=payload.priority,
+            category=payload.category,
 
-        garment_type=payload.garment_type,
+            sub_category=payload.sub_category,
 
-        fabric_type=payload.fabric_type,
+            priority=payload.priority,
 
-        fabric_weight=payload.fabric_weight,
+            garment_type=payload.garment_type,
 
-        fabric_composition=payload.fabric_composition,
+            fabric_type=payload.fabric_type,
 
-        construction=payload.construction,
+            fabric_weight=payload.fabric_weight,
 
-        yarn_count=payload.yarn_count,
+            fabric_composition=payload.fabric_composition,
 
-        quantity=payload.quantity,
+            construction=payload.construction,
 
-        target_price=payload.target_price,
+            yarn_count=payload.yarn_count,
 
-        currency=payload.currency,
+            quantity=payload.quantity,
 
-        delivery_date=payload.delivery_date,
+            target_price=payload.target_price,
 
-        incoterms=payload.incoterms,
+            currency=payload.currency,
 
-        trims_details=payload.trims_details,
+            delivery_date=payload.delivery_date,
 
-        packaging_type=payload.packaging_type,
+            incoterms=payload.incoterms,
 
-        label_type=payload.label_type,
+            trims_details=payload.trims_details,
 
-        garment_wash=payload.garment_wash,
+            packaging_type=payload.packaging_type,
 
-        dye_type=payload.dye_type,
+            label_type=payload.label_type,
 
-        print_type=payload.print_type,
+            garment_wash=payload.garment_wash,
 
-        embroidery_type=payload.embroidery_type,
+            dye_type=payload.dye_type,
 
-        special_finish=payload.special_finish,
+            print_type=payload.print_type,
 
-        compliance_standards=payload.compliance_standards,
+            embroidery_type=payload.embroidery_type,
 
-        testing_required=payload.testing_required,
+            special_finish=payload.special_finish,
 
-        social_compliance=payload.social_compliance,
+            compliance_standards=payload.compliance_standards,
 
-        quality_standards=payload.quality_standards,
+            testing_required=payload.testing_required,
 
-        tech_pack_url=payload.tech_pack_url,
+            social_compliance=payload.social_compliance,
 
-        reference_images=payload.reference_images,
+            quality_standards=payload.quality_standards,
 
-        notes=payload.notes,
+            tech_pack_url=payload.tech_pack_url,
 
-        status=RFQStatus.NEW,
+            reference_images=payload.reference_images,
 
-        created_by=current_user.id
-    )
+            notes=payload.notes,
 
-    db.add(rfq)
+            status=RFQStatus.NEW,
 
-    db.commit()
+            created_by=current_user.id
+        )
 
-    db.refresh(rfq)
+        db.add(rfq)
 
-    return {
+        db.commit()
 
-        "message": "RFQ created successfully",
+        db.refresh(rfq)
 
-        "rfq_id": rfq.id,
+        return {
 
-        "rfq_number": rfq.rfq_number
-    }
+            "message":
+            "RFQ created successfully",
+
+            "rfq_id":
+            rfq.id,
+
+            "rfq_number":
+            rfq.rfq_number
+        }
+
+    except Exception as e:
+
+        db.rollback()
+
+        raise e

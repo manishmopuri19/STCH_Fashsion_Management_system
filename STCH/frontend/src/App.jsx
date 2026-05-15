@@ -7,9 +7,10 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import RFQList from "./pages/RFQ/RFQList";
 import CreateRFQ from "./pages/RFQ/CreateRFQ";
-// import RFQDetails from "./pages/RFQ/RFQDetails";
+import RFQDetails from "./pages/RFQ/RFQDetails";
 import UserManagement from "./pages/userManagement";
 import ProtectedRoute from "./utils/ProtectedRoute";
+import SettingsPage from "./pages/SettingsPage";
 
 function App() {
   return (
@@ -56,14 +57,19 @@ function App() {
         }
       />
 
-{/* <Route
-  path="/rfqs/:rfqId"
+      <Route
+      path="/settings"
+      element={<SettingsPage />}
+      />
+
+ <Route
+  path="/rfqs/:id"
   element={
   <ProtectedRoute>
   <RFQDetails />
   </ProtectedRoute>
 }
-/> */}
+/> 
 
 <Route
 path="/users"

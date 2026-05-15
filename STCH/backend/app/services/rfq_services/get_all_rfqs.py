@@ -33,7 +33,8 @@ def get_all_rfqs_service(
 
             "priority": rfq.priority.value,
 
-            "created_at": rfq.created_at
+            "created_at": rfq.created_at,
+            "delivery_date":rfq.delivery_date
         })
 
     return response

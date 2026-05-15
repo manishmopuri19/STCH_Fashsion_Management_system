@@ -1,12 +1,18 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserPlus, Trash2, X, Loader2 } from "lucide-react";
+import { UserPlus, Trash2, X, Loader2,Pencil } from "lucide-react";
 import API from "../api/axios";
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [editingUser, setEditingUser] =
+  useState(null);
+
+const [isEditMode, setIsEditMode] =
+  useState(false);
 
   const navigate=useNavigate();
   
@@ -17,6 +23,25 @@ const UserManagement = () => {
     password: "", 
     role: "MEMBER" 
   });
+  const handleEditClick = (user) => {
+
+  setIsEditMode(true);
+
+  setEditingUser(user);
+
+  setNewUser({
+
+    userName: user.userName,
+
+    email: user.email,
+
+    password: "",
+
+    role: user.role
+  });
+
+  setIsModalOpen(true);
+};
 
   useEffect(() => {
     fetchUsers();
@@ -26,7 +51,7 @@ const UserManagement = () => {
     try {
       setLoading(true);
      
-      const response = await API.get("/allusers"); 
+      const response = await API.get("/users"); 
       setUsers(response.data);
     } catch (error) {
       console.error("Failed to fetch users:", error);
@@ -38,18 +63,14 @@ const UserManagement = () => {
   const handleAddUser = async (e) => {
   e.preventDefault();
   try {
-    const response = await API.post("/addNewUser", newUser);
-    
+    const response = await API.post("/users", newUser);
     
     if (response.status === 200 || response.status === 201) {
-     
       if (response.data.user_details) {
          setUsers(prev => [...prev, response.data.user_details]);
       } else {
-       
          await fetchUsers(); 
       }
-
       setIsModalOpen(false);
       setNewUser({ userName: "", email: "", password: "", role: "MEMBER" });
     }
@@ -60,12 +81,47 @@ const UserManagement = () => {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
     try {
-      await API.put(`/deleteuser/${id}`); 
+      await API.delete(`/users/${id}`); 
       setUsers(users.filter(user => user.id !== id));
     } catch (error) {
       console.error("Error deleting user:", error);
     }
   };
+  const handleUpdateUser = async (e) => {
+  e.preventDefault();
+
+  try {
+
+    const response = await API.patch(`/users/${editingUser.id}`,
+      newUser
+    );
+
+    setUsers(prev =>
+      prev.map(user =>
+
+        user.id === editingUser.id? response.data.user: user
+      )
+    );
+
+    setIsModalOpen(false);
+    setIsEditMode(false);
+    setEditingUser(null);
+
+    setNewUser({
+
+      userName: "",
+
+      email: "",
+
+      password: "",
+
+      role: "MEMBER"
+    });
+
+  } catch (error) {
+    console.error(error);
+  }
+};
 
   return (
     <div className="min-h-screen bg-[#0B0F19] px-6 py-8">
@@ -76,7 +132,25 @@ const UserManagement = () => {
             <p className="text-zinc-400 mt-2">Manage team access and roles</p>
           </div>
           <button 
-            onClick={() => setIsModalOpen(true)}
+            onClick={() => {
+
+  setIsEditMode(false);
+
+  setEditingUser(null);
+
+  setNewUser({
+
+    userName: "",
+
+    email: "",
+
+    password: "",
+
+    role: "MEMBER"
+  });
+
+  setIsModalOpen(true);
+}}
             className="flex items-center gap-2 px-5 py-2.5 bg-orange-500 hover:bg-orange-400 text-white rounded-xl font-medium transition-all"
           >
             <UserPlus size={18} />
@@ -110,14 +184,37 @@ const UserManagement = () => {
                         {user.role}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-right">
-                      <button 
-                        onClick={() => handleDelete(user.id)}
-                        className="p-2 text-zinc-500 hover:text-red-500 transition-colors"
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                    </td>
+                   <td className="px-6 py-4">
+
+  <div className="flex items-center justify-end gap-3">
+
+    <button
+      onClick={() => handleEditClick(user)}
+      className="
+        p-2
+        text-zinc-500
+        hover:text-blue-500
+        transition-colors
+      "
+    >
+      <Pencil size={18} />
+    </button>
+
+    <button
+      onClick={() => handleDelete(user.id)}
+      className="
+        p-2
+        text-zinc-500
+        hover:text-red-500
+        transition-colors
+      "
+    >
+      <Trash2 size={18} />
+    </button>
+
+  </div>
+
+</td>
                   </tr>
                 )) : (
                   <tr>
@@ -134,11 +231,21 @@ const UserManagement = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="bg-[#151821] border border-[#2A3142] rounded-3xl w-full max-w-md shadow-2xl">
             <div className="p-6 border-b border-[#2A3142] flex justify-between items-center">
-              <h2 className="text-xl font-bold text-white">Create New User</h2>
+              <h2 className="text-xl font-bold text-white">{
+  isEditMode
+    ? "Update User"
+    : "Create New User"
+}</h2>
               <button onClick={() => setIsModalOpen(false)} className="text-zinc-500 hover:text-white"><X size={20}/></button>
             </div>
             
-            <form onSubmit={handleAddUser} className="p-6 space-y-4">
+            <form
+  onSubmit={
+    isEditMode
+      ? handleUpdateUser
+      : handleAddUser
+  }
+ className="p-6 space-y-4">
               
               <ModalInput 
                 label="User Name" 
@@ -187,7 +294,11 @@ const UserManagement = () => {
                   type="submit" 
                   className="flex-1 px-4 py-2.5 rounded-xl bg-orange-500 text-white font-medium hover:bg-orange-400"
                 >
-                  Create User
+                  {
+  isEditMode
+    ? "Update User"
+    : "Create User"
+}
                 </button>
               </div>
             </form>

@@ -45,6 +45,12 @@ from app.routes.qc_routes import (
     router as qc_router
 )
 
+from app.routes.collaboration_routes import(router as collaboration_router
+)
+
+from app.routes.catalogue_routes import (
+    router as catalogue_routes
+)
 
 Base.metadata.create_all(bind=engine)
 
@@ -84,6 +90,9 @@ app.include_router(po_router)
 
 app.include_router(qc_router)
 
+app.include_router(catalogue_routes)
+
+app.include_router(collaboration_router)
 
 @app.get("/")
 def root():

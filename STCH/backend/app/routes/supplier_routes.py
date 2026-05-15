@@ -39,6 +39,8 @@ from app.core.permissions import (
 from app.enums.user_enums import (
     UserRole
 )
+from app.core.security import get_current_user
+from app.models.supplier_model import Supplier
 
 router = APIRouter(
     prefix="/suppliers",
@@ -161,3 +163,4 @@ def delete_supplier(
         supplier_id,
         db
     )
+

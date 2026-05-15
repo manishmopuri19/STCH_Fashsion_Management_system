@@ -11,6 +11,7 @@ from app.utils.passwordEncryption import (
     verify_password
 )
 from app.core.auth import create_access_token
+from app.models.supplier_model import Supplier
 
 router = APIRouter()
 
@@ -23,40 +24,6 @@ def get_db():
         yield db
     finally:
         db.close()
-
-
-# # REGISTER USER
-# @router.post("/register")
-# def register_user(
-#     user: UserCreate,
-#     db: Session = Depends(get_db)
-# ):
-
-#     existing_user = db.query(User).filter(
-#         User.email == user.email
-#     ).first()
-
-#     if existing_user:
-#         raise HTTPException(
-#             status_code=400,
-#             detail="Email already exists"
-#         )
-
-#     new_user = User(
-#         email=user.email,
-#         password=hash_password(user.password),
-#         role=user.role
-#     )
-
-#     db.add(new_user)
-
-#     db.commit()
-
-#     db.refresh(new_user)
-
-#     return {
-#         "message": "User registered successfully"
-#     }
 
 
 # LOGIN USER
@@ -104,16 +71,36 @@ def login(
             "role": str(user.role),
         }
     )
+    supplier = None
 
+    if str(user.role) == "UserRole.SUPPLIER":
+
+        supplier = db.query(
+        Supplier
+         ).filter(
+        Supplier.user_id == user.id
+         ).first()
+        
+        
+   
     return {
 
-        "message": "Login successful",
+    "message": "Login successful",
+    "access_token": access_token,
+    "user": {
 
-        "access_token": access_token,
+        "id": user.id,
 
-        "user": {
-            "id": user.id,
-            "email": user.email,
-            "role": str(user.role),
-        }
+        "userName":
+        user.userName,
+
+        "email":
+        user.email,
+
+        "role":
+        str(user.role),
+
+        "supplier_id":
+        supplier.id if supplier else None
     }
+}

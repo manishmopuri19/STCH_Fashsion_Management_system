@@ -30,6 +30,8 @@ from app.utils.passwordEncryption import (
 from app.services.user_services.get_all_users import (
     getAllUsers
 )
+from app.core.security import get_current_user
+from app.models.supplier_model import Supplier
 
 router = APIRouter(
     prefix="/users",
@@ -218,3 +220,10 @@ def delete_user(user_id: int,
 
         "message": "User deleted successfully"
     }
+
+@router.get("user/me")
+def get_my_profile(
+    current_user=Depends(get_current_user)
+):
+    print(current_user)
+    return current_user

@@ -1,5 +1,6 @@
 from sqlalchemy import (
     Column,
+    ForeignKey,
     Integer,
     String,
     Text,
@@ -20,6 +21,16 @@ class Supplier(Base):
         primary_key=True,
         index=True
     )
+    user_id = Column(
+        Integer,
+        ForeignKey(
+            "users.id",
+            ondelete="CASCADE"
+        ),
+        unique=True
+    )
+
+
 
     company_name = Column(
         String,
