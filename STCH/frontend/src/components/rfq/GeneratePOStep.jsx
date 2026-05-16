@@ -20,31 +20,31 @@ function GeneratePOStep({
 
   const createPO = async () => {
 
-    try {
+  console.log("quotation", quotation);
+  console.log("quotation.id", quotation?.id);
 
-      setLoading(true);
+  try {
 
-      await API.post(
+    setLoading(true);
 
-        `/rfqs/${rfq.id}/convert-to-po`,
+    await API.post(
+      `/purchase-orders/convert-from-rfq/${rfq.id}`,
+      {
+        rfq_supplier_id: quotation.id
+      }
+    );
 
-        {
-          rfq_supplier_id:
-            quotation.id
-        }
-      );
+    onSuccess();
 
-      onSuccess();
+  } catch (error) {
 
-    } catch (error) {
+    console.log(error);
 
-      console.log(error);
+  } finally {
 
-    } finally {
-
-      setLoading(false);
-    }
-  };
+    setLoading(false);
+  }
+};
 
 
   return (

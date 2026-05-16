@@ -4,6 +4,7 @@ from app.db.database import Base
 from sqlalchemy import JSON,Column,Date,DateTime,Float,Integer,String,Text,Enum,Boolean
 from sqlalchemy.sql import func
 from app.db.database import Base
+from sqlalchemy.orm import relationship
 
 class QCAttachment(Base):
 
@@ -23,10 +24,14 @@ class QCAttachment(Base):
 
     uploaded_by = Column(
         Integer,
-        ForeignKey("users.id")
+        ForeignKey("users.id", ondelete="SET NULL")
     )
 
     created_at = Column(
         DateTime(timezone=True),
         server_default=func.now()
+    )
+    inspection = relationship(
+    "QualityInspection",
+    back_populates="attachments"
     )

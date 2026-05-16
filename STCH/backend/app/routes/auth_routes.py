@@ -75,11 +75,9 @@ def login(
 
     if str(user.role) == "UserRole.SUPPLIER":
 
-        supplier = db.query(
-        Supplier
-         ).filter(
+        supplier = db.query(Supplier).filter(
         Supplier.user_id == user.id
-         ).first()
+        ).first()
         
         
    

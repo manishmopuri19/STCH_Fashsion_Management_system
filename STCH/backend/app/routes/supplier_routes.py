@@ -133,7 +133,8 @@ def update_supplier(
     current_user=Depends(
         require_roles([
             UserRole.ADMIN,
-            UserRole.MERCHANDISER
+            UserRole.MERCHANDISER,
+            UserRole.SUPPLIER
         ])
     )
 ):

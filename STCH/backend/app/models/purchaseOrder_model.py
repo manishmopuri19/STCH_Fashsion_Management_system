@@ -3,7 +3,7 @@ from sqlalchemy import (Column, Integer,String,Float,Date, DateTime,Enum,Foreign
 from sqlalchemy.sql import func
 
 from app.db.database import Base
-
+from sqlalchemy.orm import relationship
 from app.enums.POstatus_enums import (POStatus)
 
 
@@ -23,15 +23,20 @@ class PurchaseOrder(Base):
     )
 
     rfq_id = Column(
-        Integer,
-        ForeignKey("rfqs.id")
+    Integer,
+    ForeignKey(
+        "rfqs.id",
+        ondelete="CASCADE"
+    )
     )
 
     supplier_id = Column(
-        Integer,
-        ForeignKey("suppliers.id")
+    Integer,
+    ForeignKey(
+        "suppliers.id",
+        ondelete="CASCADE"
     )
-
+    )
     quantity = Column(Integer)
 
     target_price = Column(Float)
@@ -62,4 +67,21 @@ class PurchaseOrder(Base):
     created_at = Column(
         DateTime(timezone=True),
         server_default=func.now()
+    )
+
+    supplier = relationship(
+    "Supplier",
+    back_populates="purchase_orders"
+    )
+
+    tnas = relationship(
+    "TNA",
+    back_populates="purchase_order",
+    cascade="all, delete"
+    )
+
+    quality_inspections = relationship(
+    "QualityInspection",
+    back_populates="purchase_order",
+    cascade="all, delete"
     )

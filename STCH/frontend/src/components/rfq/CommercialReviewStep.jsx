@@ -1,13 +1,4 @@
-function CommercialReviewStep({
-
-  rfq,
-
-  quotation,
-
-  onBack,
-
-  onNext
-}) {
+function CommercialReviewStep({rfq,quotation,onBack,onNext}) {
 
   const supplierPrice =
     quotation.quoted_price;
@@ -71,7 +62,7 @@ function CommercialReviewStep({
 
         <Card
           title="Margin"
-          value={`${rfq.currency} ${margin}`}
+          value={`${rfq.currency} ${Number(margin).toFixed(2)}`}
         />
 
         <Card
@@ -105,7 +96,13 @@ function CommercialReviewStep({
         ">
 
           {rfq.currency}
-          {totalAmount.toLocaleString()}
+          {Number(totalAmount).toLocaleString(
+  undefined,
+  {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }
+)}
 
         </h1>
 

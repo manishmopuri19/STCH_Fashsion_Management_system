@@ -2,7 +2,7 @@ from sqlalchemy import JSON,Column,Date,DateTime,Float, ForeignKey,Integer,Strin
 from sqlalchemy.sql import func
 from app.db.database import Base
 from app.enums.qc_enums import QCDefectSeverity
-
+from sqlalchemy.orm import relationship
 
 class QCDefect(Base):
 
@@ -30,3 +30,8 @@ class QCDefect(Base):
     )
 
     remarks = Column(Text)
+
+    inspection = relationship(
+    "QualityInspection",
+    back_populates="defects"
+    )

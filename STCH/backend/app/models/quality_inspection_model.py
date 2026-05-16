@@ -7,6 +7,7 @@ from app.enums.qc_enums import (
     QCInspectionType,
     QCResult,
 )
+from sqlalchemy.orm import relationship
 
 
 class QualityInspection(Base):
@@ -19,10 +20,12 @@ class QualityInspection(Base):
     )
 
     po_id = Column(
-        Integer,
-        ForeignKey(
-            "purchase_orders.id"
-        )
+    Integer,
+    ForeignKey(
+        "purchase_orders.id",
+        ondelete="CASCADE"
+
+    )
     )
 
     inspection_type = Column(
@@ -59,4 +62,21 @@ class QualityInspection(Base):
     created_at = Column(
         DateTime(timezone=True),
         server_default=func.now()
+    )
+
+    purchase_order = relationship(
+    "PurchaseOrder",
+    back_populates="quality_inspections"
+    )
+
+    defects = relationship(
+    "QCDefect",
+    back_populates="inspection",
+    cascade="all, delete"
+    )
+
+    attachments = relationship(
+    "QCAttachment",
+    back_populates="inspection",
+    cascade="all, delete"
     )

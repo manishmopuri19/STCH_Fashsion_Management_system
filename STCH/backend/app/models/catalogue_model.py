@@ -2,7 +2,7 @@ from sqlalchemy import ( Column, Integer, String, Float, Text, DateTime, Foreign
 
 from sqlalchemy.sql import func
 from app.db.database import Base
-
+from sqlalchemy.orm import relationship
 
 class Catalogue(Base):
 
@@ -38,4 +38,9 @@ class Catalogue(Base):
     created_at = Column(
         DateTime(timezone=True),
         server_default=func.now()
+    )
+    
+    supplier = relationship(
+    "Supplier",
+    back_populates="catalogues"
     )

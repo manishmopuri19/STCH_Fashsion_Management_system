@@ -1,11 +1,11 @@
-from app.models.user_model import User
-
-from app.models.rfq_model import RFQ
-
-from app.models.supplier_model import Supplier
-
-from app.models.rfq_supplier_model import RFQSupplier
-
-from app.models.purchaseOrder_model import PurchaseOrder
-
-from app.models.Tna_model import TNA
+from .user_model import User
+from .supplier_model import Supplier
+from .catalogue_model import Catalogue
+from .purchaseOrder_model import PurchaseOrder
+from .quality_inspection_model import QualityInspection
+from .qc_defect_model import QCDefect
+from .QCAttachment_model import QCAttachment
+from .rfq_model import RFQ
+from .rfq_supplier_model import RFQSupplier
+from .rfqCollaborator_model import RFQCollaborator
+from .Tna_model import TNA

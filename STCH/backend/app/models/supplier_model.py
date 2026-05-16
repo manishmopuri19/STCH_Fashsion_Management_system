@@ -6,6 +6,7 @@ from sqlalchemy import (
     Text,
     DateTime,
 )
+from sqlalchemy.orm import relationship
 
 from sqlalchemy.sql import func
 
@@ -66,4 +67,25 @@ class Supplier(Base):
     created_at = Column(
         DateTime(timezone=True),
         server_default=func.now()
+    )
+    user = relationship(
+    "User",
+    back_populates="supplier"
+    )
+
+    catalogues = relationship(
+    "Catalogue",
+    back_populates="supplier",
+    cascade="all, delete"
+    )
+
+    rfq_quotations = relationship(
+    "RFQSupplier",
+    back_populates="supplier",
+    cascade="all, delete"
+    )
+
+    purchase_orders = relationship(
+    "PurchaseOrder",
+    back_populates="supplier"
     )

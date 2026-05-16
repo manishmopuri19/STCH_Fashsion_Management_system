@@ -68,8 +68,11 @@ def assign_supplier_service(
         payload.supplier_target_price,
 
         moq=payload.moq,
+        
 
         lead_time=payload.lead_time,
+         quoted_price=
+        payload.quoted_price,
 
         payment_terms=
         payload.payment_terms,
@@ -83,8 +86,4 @@ def assign_supplier_service(
 
     db.refresh(rfq_supplier)
 
-    return {
-
-        "message":
-        "Supplier assigned successfully"
-    }
+    return rfq_supplier

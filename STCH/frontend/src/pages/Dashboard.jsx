@@ -1,51 +1,29 @@
-import DashboardLayout from "../layouts/DashboardLayout";
+import { useAuth } from "../context/AuthContext";
 
-import StatsGrid from "../components/dashboard/StatsGrid";
+import AdminDashboard from "../components/dashboard/AdminDashboard";
+import MerchDashboard from "../components/dashboard/MerchDashboard";
+import SupplierDashboard from "../components/dashboard/SupplierDashboard";
 
-import PipelineSection from "../components/dashboard/PipelineSection";
+function DashboardPage() {
 
-import ActivityFeed from "../components/dashboard/ActivityFeed";
+  const { user } = useAuth();
 
-import { useDashboardData } from "../hooks/useDashboardData";
+  if(user?.role === "ADMIN"){
 
-function Dashboard() {
-
-  const {
-    dashboardData,
-    loading,
-  } = useDashboardData();
-
-  if (loading) {
-    return (
-      <div className="h-screen bg-black flex items-center justify-center text-white">
-        Loading Dashboard...
-      </div>
-    );
+    return <AdminDashboard />;
   }
 
-  return (
-    <DashboardLayout>
+  if(user?.role === "MERCHANDISER"){
 
-      <StatsGrid
-        stats={dashboardData.statsData}
-      />
+    return <MerchDashboard />;
+  }
 
-      <PipelineSection
-        title="RFQ Pipeline"
-        data={dashboardData.rfqPipeline}
-      />
+  if(user?.role === "SUPPLIER"){
 
-      <PipelineSection
-        title="Order Pipeline"
-        data={dashboardData.orderPipeline}
-      />
+    return <SupplierDashboard />;
+  }
 
-      <ActivityFeed
-        activities={dashboardData.activities}
-      />
-
-    </DashboardLayout>
-  );
+  return null;
 }
 
-export default Dashboard;
+export default DashboardPage;

@@ -4,7 +4,7 @@ from sqlalchemy import (
     String,
     Enum,
 )
-
+from sqlalchemy.orm import relationship
 from app.db.database import Base
 
 from app.enums.user_enums import (
@@ -37,4 +37,25 @@ class User(Base):
     role = Column(
         Enum(UserRole),
         nullable=False
+    )
+
+    supplier = relationship(
+    "Supplier",
+    back_populates="user",
+    cascade="all, delete"
+    )
+
+    created_rfqs = relationship(
+    "RFQ",
+    foreign_keys="[RFQ.created_by]"
+    )
+
+    assigned_rfqs = relationship(
+    "RFQ",
+    foreign_keys="[RFQ.assigned_to]"
+    )
+
+    tna_tasks = relationship(
+    "TNA",
+    back_populates="assigned_user"
     )

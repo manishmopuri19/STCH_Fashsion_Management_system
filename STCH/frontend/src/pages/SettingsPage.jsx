@@ -157,110 +157,38 @@ function SettingsPage() {
   };
 
 
-  const handleSave = async () => {
+const handleSave = async () => {
+  setLoading(true);
+  try {
+    // 1. Map frontend state to backend-expected snake_case keys
+    const supplierPayload = {
+      company_name: formData.companyName,
+      email: formData.email,
+      phone: formData.phone,
+      country: formData.country,
+      city: formData.city,
+      address: formData.address,
+      specialization: formData.specialization,
+      // Ensure numeric fields are integers
+      lead_time: parseInt(formData.leadTime, 10) || 0,
+      minimum_order_quantity: parseInt(formData.moq, 10) || 0 
+    };
 
-    try {
+    // 2. Call the update endpoint
+    // Ensure you have the correct supplier ID available in your component
+   await API.patch(
 
-      setLoading(true);
+  `/suppliers/${user.supplier_id}`,
 
-      // UPDATE USER TABLE
-      const userPayload = {
-
-        userName:
-          formData.userName,
-
-        email:
-          formData.email,
-      };
-
-      await API.patch(
-
-        `/users/${user.id}`,
-
-        userPayload
-      );
-
-
-      // UPDATE SUPPLIER TABLE
-      if(
-        user.role === "SUPPLIER"
-        &&
-        user.supplier_id
-      ){
-
-        const supplierPayload = {
-
-          company_name:
-            formData.companyName,
-
-          phone:
-            formData.phone,
-
-          country:
-            formData.country,
-
-          city:
-            formData.city,
-
-          address:
-            formData.address,
-
-          specialization:
-            formData.specialization,
-
-          monthly_capacity:
-            formData.monthlyCapacity,
-
-          moq:
-            formData.moq,
-
-          lead_time:
-            formData.leadTime,
-
-          website:
-            formData.website,
-
-          gst_number:
-            formData.gstNumber,
-        };
-
-        await API.patch(
-
-          `/suppliers/${user.supplier_id}`,
-
-          supplierPayload
-        );
-      }
-
-
-      // UPDATE LOCAL STORAGE
-      const updatedUser = {
-
-        ...user,
-
-        userName:
-          formData.userName,
-
-        email:
-          formData.email,
-      };
-
-      login(updatedUser);
-
-      alert(
-        "Settings updated successfully"
-      );
-
-    } catch (error) {
-
-      console.log(error);
-
-    } finally {
-
-      setLoading(false);
-    }
-  };
-
+  supplierPayload
+);
+    alert("Profile updated successfully!");
+  } catch (error) {
+    console.error("Update failed:", error.response?.data || error.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   if(pageLoading){
 

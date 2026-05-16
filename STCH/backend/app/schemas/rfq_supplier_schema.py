@@ -10,6 +10,8 @@ class AssignSupplierSchema(BaseModel):
     lead_time: int
     payment_terms: str
     remarks: Optional[str] = None
+    quoted_price: float
+
 
 
 class UpdateQuotationSchema(BaseModel):

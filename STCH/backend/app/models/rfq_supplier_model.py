@@ -2,7 +2,7 @@ from sqlalchemy import JSON,Column,Date,DateTime,Float, ForeignKey,Integer,Strin
 from sqlalchemy.sql import func
 from app.db.database import Base
 
-
+from sqlalchemy.orm import relationship
 from app.db.database import Base
 from app.enums.rfq_supplier_enums import RFQSupplierStatus
 
@@ -42,4 +42,13 @@ class RFQSupplier(Base):
     created_at = Column(
         DateTime(timezone=True),
         server_default=func.now()
+    )
+    rfq = relationship(
+    "RFQ",
+    back_populates="suppliers"
+    )
+
+    supplier = relationship(
+    "Supplier",
+    back_populates="rfq_quotations"
     )

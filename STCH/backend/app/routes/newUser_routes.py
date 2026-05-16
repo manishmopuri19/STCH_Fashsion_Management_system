@@ -32,6 +32,7 @@ from app.services.user_services.get_all_users import (
 )
 from app.core.security import get_current_user
 from app.models.supplier_model import Supplier
+from app.services.user_services import addNewUser
 
 router = APIRouter(
     prefix="/users",
@@ -71,7 +72,7 @@ def get_all_users(
 
 # CREATE USER
 @router.post("/")
-def create_user(
+def newUser(
 
     data_in: NewUser,
 
@@ -84,55 +85,11 @@ def create_user(
     )
 ):
 
-    user_exists = db.query(User).filter(
-        User.email == data_in.email
-    ).first()
-
-    if user_exists:
-
-        raise HTTPException(
-            status_code=400,
-            detail="User with this email already exists"
-        )
-
-    new_user_obj = User(
-
-        userName=data_in.userName,
-
-        email=data_in.email,
-
-        password=hash_password(
-            data_in.password
-        ),
-
-        role=data_in.role
-    )
-
-    db.add(new_user_obj)
-
-    db.commit()
-
-    db.refresh(new_user_obj)
-
-    return {
-
-        "message": "New user created successfully",
-
-        "user": {
-
-            "id": new_user_obj.id,
-
-            "userName": new_user_obj.userName,
-
-            "email": new_user_obj.email,
-
-            "role": new_user_obj.role.value
-        }
-    }
-
-
+    return (addNewUser.create_user_service(data_in,
+        db))
 # UPDATE USER
 @router.patch("/{user_id}")
+
 def update_user(
 
     user_id: int,
@@ -143,7 +100,10 @@ def update_user(
 
     current_user=Depends(
         require_roles([
-            UserRole.ADMIN
+            UserRole.ADMIN,
+            UserRole.MEMBER,
+            UserRole.SUPPLIER,
+            UserRole.MERCHANDISER
         ])
     )
 ):
@@ -159,39 +119,64 @@ def update_user(
             detail="User not found"
         )
 
-    user.userName = data_in.userName
 
-    user.email = data_in.email
+    # UPDATE ONLY PROVIDED FIELDS
+    if data_in.userName is not None:
 
-    user.role = data_in.role
+        user.userName = data_in.userName
 
-    if data_in.password:
+
+    if data_in.email is not None:
+
+        user.email = data_in.email
+
+
+    # ONLY ADMIN CAN CHANGE ROLE
+    if (
+        data_in.role is not None
+        and
+        current_user.role == UserRole.ADMIN
+    ):
+
+        user.role = data_in.role
+
+
+    # PASSWORD UPDATE
+    if (
+        data_in.password
+        and
+        data_in.password.strip() != ""
+    ):
 
         user.password = hash_password(
             data_in.password
         )
 
+
     db.commit()
 
     db.refresh(user)
 
+
     return {
 
-        "message": "User updated successfully",
+        "message":
+        "User updated successfully",
 
         "user": {
 
             "id": user.id,
 
-            "userName": user.userName,
+            "userName":
+            user.userName,
 
-            "email": user.email,
+            "email":
+            user.email,
 
-            "role": user.role.value
+            "role":
+            user.role.value
         }
     }
-
-
 # DELETE USER
 @router.delete("/{user_id}")
 def delete_user(user_id: int,
@@ -221,9 +206,48 @@ def delete_user(user_id: int,
         "message": "User deleted successfully"
     }
 
-@router.get("user/me")
+@router.get("/me")
 def get_my_profile(
     current_user=Depends(get_current_user)
 ):
     print(current_user)
     return current_user
+
+
+
+@router.get("/{user_id}")
+def get_single_user(
+
+    user_id: int,
+
+    db: Session = Depends(get_db),
+
+    current_user=Depends(
+        get_current_user
+    )
+):
+
+    user = db.query(User).filter(
+        User.id == user_id
+    ).first()
+
+    if not user:
+
+        raise HTTPException(
+            status_code=404,
+            detail="User not found"
+        )
+
+    return {
+
+        "id": user.id,
+
+        "userName":
+        user.userName,
+
+        "email":
+        user.email,
+
+        "role":
+        user.role.value
+    }

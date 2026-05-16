@@ -1,21 +1,31 @@
 from fastapi import HTTPException
+
 from sqlalchemy.orm import Session
 
 from app.models.user_model import User
+from app.models.supplier_model import Supplier
 
 from app.schemas.NewUser_schema import NewUser
 
-from app.utils.passwordEncryption import hash_password
-from app.models.supplier_model import Supplier
+from app.utils.passwordEncryption import (
+    hash_password
+)
 
-from app.enums.user_enums import UserRole
+from app.enums.user_enums import (
+    UserRole
+)
+
 
 def create_user_service(
+
     payload: NewUser,
+
     db: Session
 ):
 
-    existing_user = db.query(User).filter(
+    existing_user = db.query(
+        User
+    ).filter(
         User.email == payload.email
     ).first()
 
@@ -26,6 +36,8 @@ def create_user_service(
             detail="Email already exists"
         )
 
+
+    # CREATE USER
     new_user = User(
 
         userName=payload.userName,
@@ -44,34 +56,51 @@ def create_user_service(
     db.commit()
 
     db.refresh(new_user)
+
+    print(payload.role)
+    print(type(payload.role))
+
+
+    # AUTO CREATE SUPPLIER PROFILE
     if new_user.role == UserRole.SUPPLIER:
 
         supplier = Supplier(
 
-        user_id = new_user.id,
+            user_id=new_user.id,
 
-        company_name =
-        payload.userName,
+            company_name=
+            payload.userName,
 
-        contact_person =
-        payload.userName,
+            contact_person=
+            payload.userName,
 
-        email =
-        payload.email
+            email=
+            payload.email
         )
 
-    db.add(supplier)
+        db.add(supplier)
 
-    db.commit()
+        db.commit()
+
+        db.refresh(supplier)
+
 
     return {
 
-        "message": "User created successfully",
+        "message":
+        "User created successfully",
 
-        "user": {
+        "user_details": {
+
             "id": new_user.id,
-            "userName": new_user.userName,
-            "email": new_user.email,
-            "role": new_user.role.value
+
+            "userName":
+            new_user.userName,
+
+            "email":
+            new_user.email,
+
+            "role":
+            new_user.role.value
         }
     }

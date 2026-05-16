@@ -4,9 +4,7 @@ import API from "../../api/axios";
 
 
 function SupplierQuotationStep({
-
   rfq,
-
   onNext
 }) {
 

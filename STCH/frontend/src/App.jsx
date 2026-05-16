@@ -11,6 +11,8 @@ import RFQDetails from "./pages/RFQ/RFQDetails";
 import UserManagement from "./pages/userManagement";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import SettingsPage from "./pages/SettingsPage";
+import SuppliersPage from "./pages/SuppliersPage";
+import SupplierDetailPage from "./pages/SupplierDetailPage";
 
 function App() {
   return (
@@ -80,6 +82,25 @@ element={
 </ProtectedRoute>
 }
 />
+<Route
+path="/suppliers"
+element={
+
+<ProtectedRoute>
+<SuppliersPage />
+</ProtectedRoute>
+}
+/>
+<Route
+path="/suppliers/:id"
+element={
+
+<ProtectedRoute>
+<SupplierDetailPage />
+</ProtectedRoute>
+}
+/>
+
       </Routes>
 
     </BrowserRouter>

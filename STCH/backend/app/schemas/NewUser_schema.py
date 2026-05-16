@@ -9,7 +9,7 @@ class NewUser(BaseModel):
 
 
 class UpdateUser(BaseModel):
-    userName: str
-    email: str
+    userName: Optional[str] = None
+    email: Optional[str] = None
     password: Optional[str] = None
-    role: UserRole
+    role: Optional[UserRole] = None

@@ -1,8 +1,8 @@
-from sqlalchemy import JSON, Column, Date, DateTime, Float, Integer, String, Text, Enum, Boolean
+from sqlalchemy import JSON, Column, Date, DateTime, Float, ForeignKey, Integer, String, Text, Enum, Boolean
 from sqlalchemy.sql import func
 from app.db.database import Base
 from app.enums.rfq_enums import RFQPriority, RFQStatus
-
+from sqlalchemy.orm import relationship
 class RFQ(Base):
     __tablename__ = "rfqs"
 
@@ -60,7 +60,34 @@ class RFQ(Base):
     is_new = Column(Boolean, default=True) # New flag to track unread RFQs
 
     # META
-    created_by = Column(Integer, nullable=True)
-    assigned_to = Column(Integer, nullable=True)
+    created_by = Column(
+
+    Integer,
+
+    ForeignKey("users.id"),
+
+    nullable=True
+    )
+
+    assigned_to = Column(
+
+    Integer,
+
+    ForeignKey("users.id"),
+
+    nullable=True
+)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+    suppliers = relationship(
+    "RFQSupplier",
+    back_populates="rfq",
+    cascade="all, delete"
+    )
+
+    collaborators = relationship(
+    "RFQCollaborator",
+    back_populates="rfq",
+    cascade="all, delete"
+    )

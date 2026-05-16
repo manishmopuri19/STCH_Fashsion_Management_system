@@ -52,6 +52,8 @@ from app.routes.catalogue_routes import (
     router as catalogue_routes
 )
 
+from app.routes.dashboard_routes import (router as dashboard_router)
+
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
@@ -93,6 +95,8 @@ app.include_router(qc_router)
 app.include_router(catalogue_routes)
 
 app.include_router(collaboration_router)
+
+app.include_router(dashboard_router)
 
 @app.get("/")
 def root():
