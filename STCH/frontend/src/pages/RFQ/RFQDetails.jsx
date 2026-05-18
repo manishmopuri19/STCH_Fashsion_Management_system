@@ -8,7 +8,6 @@ import {
   DollarSign,
   FileText,
   CheckCircle2,
-  Users,
   Plus,
   Clock3,
   CircleDashed,
@@ -81,15 +80,32 @@ function RFQDetailPage() {
   const [status, setStatus] =
     useState("");
 
-const [workflowOpen,
-setWorkflowOpen] =
-useState(false);
+  const [workflowOpen,
+  setWorkflowOpen] =
+    useState(false);
+
+  const [collaborators,
+  setCollaborators] =
+    useState([]);
+
+  const [allUsers,
+  setAllUsers] =
+    useState([]);
+
+  const [selectedUser,
+  setSelectedUser] =
+    useState("");
+
 
   useEffect(() => {
 
     if(id){
 
       fetchRFQ();
+
+      fetchCollaborators();
+
+      fetchUsers();
     }
 
   }, [id]);
@@ -117,6 +133,91 @@ useState(false);
     } finally {
 
       setLoading(false);
+    }
+  };
+
+
+  const fetchCollaborators =
+    async () => {
+
+    try {
+
+      const response =
+        await API.get(
+          `/collaborations/${id}`
+        );
+
+      setCollaborators(
+        response.data
+      );
+
+    } catch (error) {
+
+      console.log(error);
+    }
+  };
+
+
+  const fetchUsers =
+    async () => {
+
+    try {
+
+      const response =
+        await API.get("/users");
+
+      setAllUsers(
+        response.data
+      );
+
+    } catch (error) {
+
+      console.log(error);
+    }
+  };
+
+
+  const addCollaborator =
+    async () => {
+
+    if(!selectedUser) return;
+
+    try {
+
+      await API.post(
+        `/collaborations/${id}/${selectedUser}`
+      );
+
+      fetchCollaborators();
+
+      setSelectedUser("");
+
+    } catch (error) {
+
+      console.log(error);
+
+      alert(
+        error?.response?.data?.detail ||
+        "Failed to add collaborator"
+      );
+    }
+  };
+
+
+  const removeCollaborator =
+    async (userId) => {
+
+    try {
+
+      await API.delete(
+        `/collaborations/${id}/${userId}`
+      );
+
+      fetchCollaborators();
+
+    } catch (error) {
+
+      console.log(error);
     }
   };
 
@@ -167,6 +268,35 @@ useState(false);
     );
   }
 
+  const referenceImages =
+  Array.isArray(rfq?.reference_images)
+
+    ? rfq.reference_images
+
+    : typeof rfq?.reference_images ===
+      "string"
+
+    ? (() => {
+
+        try {
+
+          const parsed =
+            JSON.parse(
+              rfq.reference_images
+            );
+
+          return Array.isArray(parsed)
+            ? parsed
+            : [rfq.reference_images];
+
+        } catch {
+
+          return [rfq.reference_images];
+        }
+
+      })()
+
+    : [];
 
   return (
 
@@ -177,20 +307,19 @@ useState(false);
       p-6
     ">
 
-      {/* DRAWER */}
-     <RFQWorkflowDrawer
+      <RFQWorkflowDrawer
 
-  open={workflowOpen}
+        open={workflowOpen}
 
-  onClose={() =>
-    setWorkflowOpen(false)
-  }
+        onClose={() =>
+          setWorkflowOpen(false)
+        }
 
-  rfq={rfq}
+        rfq={rfq}
 
-  onSuccess={fetchRFQ}
-/>
-       
+        onSuccess={fetchRFQ}
+      />
+
 
       <div className="
         max-w-[1700px]
@@ -517,26 +646,154 @@ useState(false);
 
 
           {/* FILES */}
-          <Section
-            title="Files & References"
-            icon={<FileText size={18} />}
-          >
+          {/* FILES */}
+<Section
+  title="Files & References"
+  icon={<FileText size={18} />}
+>
 
-            <Grid>
+  <div className="
+    space-y-6
+  ">
 
-              <Field
-                label="Tech Pack"
-                value={rfq.tech_pack_url}
+    {/* TECH PACK */}
+    <div>
+
+      <p className="
+        text-sm
+        text-zinc-500
+        mb-3
+      ">
+        Tech Pack
+      </p>
+
+      {rfq.tech_pack_url ? (
+
+        <a
+
+          href={rfq.tech_pack_url}
+
+          target="_blank"
+
+          rel="noreferrer"
+
+          className="
+            block
+            bg-[#0F141D]
+            border
+            border-[#2A3142]
+            rounded-2xl
+            p-4
+            hover:border-orange-500
+            transition-all
+            text-orange-400
+            break-all
+          "
+        >
+
+          Open Tech Pack
+
+        </a>
+
+      ) : (
+
+        <div className="
+          bg-[#0F141D]
+          border
+          border-[#2A3142]
+          rounded-2xl
+          p-4
+          text-zinc-500
+        ">
+
+          No tech pack uploaded
+
+        </div>
+
+      )}
+
+    </div>
+
+
+    {/* REFERENCE IMAGES */}
+    <div>
+
+      <p className="
+        text-sm
+        text-zinc-500
+        mb-3
+      ">
+        Reference Images
+      </p>
+
+      {referenceImages.length ? (
+
+        <div className="
+          grid
+          grid-cols-2
+          gap-4
+        ">
+
+          {referenceImages.map(
+            (image, index) => (
+
+            <div
+
+              key={index}
+
+              className="
+                overflow-hidden
+                rounded-2xl
+                border
+                border-[#2A3142]
+                bg-[#0F141D]
+              "
+            >
+
+              <img
+
+                src={image}
+
+                alt={`reference-${index}`}
+
+                className="
+                  w-full
+                  h-52
+                  object-cover
+                  hover:scale-105
+                  transition-all
+                  duration-300
+                "
               />
 
-              <Field
-                label="Reference Images"
-                value={rfq.reference_images}
-              />
+            </div>
 
-            </Grid>
+          ))}
 
-          </Section>
+        </div>
+
+      ) : (
+
+        <div className="
+          bg-[#0F141D]
+          border
+          border-[#2A3142]
+          rounded-2xl
+          p-4
+          text-zinc-500
+        ">
+
+          No reference images uploaded
+
+        </div>
+
+      )}
+
+    </div>
+
+  </div>
+
+</Section>
 
 
           {/* NOTES */}
@@ -592,7 +849,6 @@ useState(false);
             </h2>
 
 
-            {/* STATUS */}
             {(user?.role === "ADMIN" ||
               user?.role === "MERCHANDISER") && (
 
@@ -666,7 +922,6 @@ useState(false);
             )}
 
 
-            {/* CONVERT PO */}
             {(user?.role === "ADMIN" ||
               user?.role === "MERCHANDISER") && (
 
@@ -679,8 +934,8 @@ useState(false);
                 <button
 
                   onClick={() =>
-  setWorkflowOpen(true)
-}
+                    setWorkflowOpen(true)
+                  }
 
                   className="
                     w-full
@@ -716,6 +971,7 @@ useState(false);
               flex
               items-center
               justify-between
+              gap-2
               mb-5
             ">
 
@@ -726,19 +982,77 @@ useState(false);
                 Collaborators
               </h2>
 
-              <button className="
-                w-10
-                h-10
-                rounded-xl
-                bg-[#1E2533]
+
+              <div className="
                 flex
                 items-center
-                justify-center
+                gap-2
               ">
 
-                <Plus size={18} />
+                <select
 
-              </button>
+                  value={selectedUser}
+
+                  onChange={(e) =>
+                    setSelectedUser(
+                      e.target.value
+                    )
+                  }
+
+                  className="
+                    bg-[#0F141D]
+                    border
+                    border-[#2A3142]
+                    rounded-xl
+                    px-3
+                    py-2
+                    text-sm
+                    text-white
+                    outline-none
+                  "
+                >
+
+                  <option value="">
+                    Select User
+                  </option>
+
+                  {allUsers.map((user) => (
+
+                    <option
+                      key={user.id}
+                      value={user.id}
+                    >
+
+                      {user.userName}
+
+                    </option>
+
+                  ))}
+
+                </select>
+
+
+                <button
+
+                  onClick={addCollaborator}
+
+                  className="
+                    w-10
+                    h-10
+                    rounded-xl
+                    bg-orange-500
+                    hover:bg-orange-400
+                    flex
+                    items-center
+                    justify-center
+                  "
+                >
+
+                  <Plus size={18} />
+
+                </button>
+
+              </div>
 
             </div>
 
@@ -747,15 +1061,23 @@ useState(false);
               space-y-4
             ">
 
-              <Collaborator
-                name="John Doe"
-                role="MERCHANDISER"
-              />
+              {collaborators.map((item) => (
 
-              <Collaborator
-                name="Alex"
-                role="QC"
-              />
+                <Collaborator
+
+                  key={item.id}
+
+                  name={item.userName}
+
+                  role={item.role}
+
+                  onRemove={() =>
+                    removeCollaborator(item.id)
+                  }
+
+                />
+
+              ))}
 
             </div>
 
@@ -920,7 +1242,8 @@ function Field({
 
 function Collaborator({
   name,
-  role
+  role,
+  onRemove
 }) {
 
   return (
@@ -953,7 +1276,7 @@ function Collaborator({
           font-semibold
         ">
 
-          {name.charAt(0)}
+          {name?.charAt(0)}
 
         </div>
 
@@ -975,6 +1298,22 @@ function Collaborator({
         </div>
 
       </div>
+
+
+      <button
+
+        onClick={onRemove}
+
+        className="
+          text-xs
+          text-red-400
+          hover:text-red-300
+        "
+      >
+
+        Remove
+
+      </button>
 
     </div>
   );

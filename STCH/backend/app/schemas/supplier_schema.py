@@ -37,4 +37,6 @@ class UpdateSupplierSchema(BaseModel):
 
     lead_time:Optional[int]=None
 
+    minimum_order_quantity:Optional[int]=None
+
  

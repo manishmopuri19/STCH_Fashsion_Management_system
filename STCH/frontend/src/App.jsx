@@ -13,6 +13,8 @@ import ProtectedRoute from "./utils/ProtectedRoute";
 import SettingsPage from "./pages/SettingsPage";
 import SuppliersPage from "./pages/SuppliersPage";
 import SupplierDetailPage from "./pages/SupplierDetailPage";
+import OrdersList from "./pages/Orders/OrdersList";
+import OrderDetailPage from "./pages/Orders/OrderDetailsPage";
 
 function App() {
   return (
@@ -100,7 +102,25 @@ element={
 </ProtectedRoute>
 }
 />
+<Route
+path="/orders"
+element={
 
+<ProtectedRoute>
+<OrdersList />
+</ProtectedRoute>
+}
+/>
+
+<Route
+path="/orders/:id"
+element={
+
+<ProtectedRoute>
+<OrderDetailPage />
+</ProtectedRoute>
+}
+/>
       </Routes>
 
     </BrowserRouter>
