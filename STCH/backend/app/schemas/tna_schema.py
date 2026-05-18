@@ -6,11 +6,10 @@ from app.enums.TNAStatus_enums import (TNAStatus,TNAActivityType,TNAPriority)
 
 
 class CreateTNASchema(BaseModel):
-
     activity_type: TNAActivityType
     assigned_to: Optional[int] = None
-    priority: TNAPriority
-    planned_date: date
+    priority: Optional[TNAPriority]=None
+    planned_date:   date
     remarks: Optional[str] = None
 
 

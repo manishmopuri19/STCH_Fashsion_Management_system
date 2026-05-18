@@ -15,7 +15,6 @@ from app.models.supplier_model import Supplier
 
 router = APIRouter()
 
-
 # DATABASE DEPENDENCY
 def get_db():
     db = SessionLocal()
@@ -78,8 +77,6 @@ def login(
         supplier = db.query(Supplier).filter(
         Supplier.user_id == user.id
         ).first()
-        
-        
    
     return {
 
