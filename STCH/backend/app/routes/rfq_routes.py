@@ -67,8 +67,9 @@ def get_single_rfq(
 ):
 
     return get_single_rfq_service(
-        rfq_id,
-        db
+    rfq_id,
+    db,
+    current_user
     )
 
 
@@ -107,14 +108,16 @@ def update_rfq_status(
         require_roles([
             UserRole.ADMIN,
             UserRole.MERCHANDISER
-        ])
+        ]),
+        
     )
 ):
 
     return update_rfq_status_service(
-        rfq_id,
-        payload.status,
-        db
+    rfq_id,
+    payload.status,
+    db,
+    current_user
     )
 
 
@@ -134,5 +137,6 @@ def delete_rfq(
 
     return delete_rfq_service(
         rfq_id,
-        db
+        db,
+          current_user
     )
