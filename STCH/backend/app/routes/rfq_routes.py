@@ -47,7 +47,7 @@ def get_all_rfqs(
     )
 ):
 
-    return get_all_rfqs_service(db)
+    return get_all_rfqs_service(db,current_user)
 
 
 @router.get("/{rfq_id}")

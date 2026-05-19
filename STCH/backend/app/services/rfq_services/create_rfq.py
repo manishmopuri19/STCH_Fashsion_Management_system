@@ -4,7 +4,9 @@ from datetime import datetime
 from app.models.rfq_model import RFQ
 from app.schemas.rfq_schema import RFQCreate
 from app.enums.rfq_enums import RFQStatus
-
+from app.models.rfqCollaborator_model import (
+    RFQCollaborator
+)
 
 def generate_rfq_number():
 
@@ -104,6 +106,15 @@ def create_rfq_service(
         db.commit()
 
         db.refresh(rfq)
+
+        default_collaborator =RFQCollaborator(
+            rfq_id=rfq.id,
+
+        user_id=current_user.id)
+
+        db.add(default_collaborator)
+
+        db.commit()
 
         return {
 

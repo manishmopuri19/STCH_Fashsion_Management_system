@@ -54,23 +54,26 @@ function RFQList() {
 
     return rfqs.filter((rfq) => {
 
-      const matchesSearch =
+    const query =
+  search.toLowerCase();
 
-        rfq.rfq_number
-          ?.toLowerCase()
-          .includes(search.toLowerCase())
+const matchesSearch =
 
-        ||
+  (rfq.rfq_number || "")
+    .toLowerCase()
+    .includes(query)
 
-        rfq.brand
-          ?.toLowerCase()
-          .includes(search.toLowerCase())
+  ||
 
-        ||
+  (rfq.brand || "")
+    .toLowerCase()
+    .includes(query)
 
-        rfq.garment_type
-          ?.toLowerCase()
-          .includes(search.toLowerCase());
+  ||
+
+  (rfq.garment_type || "")
+    .toLowerCase()
+    .includes(query);
 
       const matchesStatus =
 
