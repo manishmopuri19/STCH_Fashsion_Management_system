@@ -5,7 +5,9 @@ from sqlalchemy.orm import Session
 from app.models.purchaseOrder_model import (
     PurchaseOrder
 )
-
+from app.utils.po_permissions import (
+    can_access_po
+)
 from app.models.rfq_model import RFQ
 
 from app.models.supplier_model import (
@@ -17,8 +19,10 @@ def get_single_po_service(
 
     po_id: int,
 
-    db: Session
+    db: Session,
+    current_user
 ):
+    can_access_po(po_id,current_user,db)
 
     po = db.query(
         PurchaseOrder

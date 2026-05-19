@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState }
 from "react";
 
-import API from "../../api/axios";
+import API from "../../api/axios"
 
 import DashboardLayout
 from "../../layouts/DashboardLayout";
@@ -17,6 +17,9 @@ from "../../components/orders/OrdersStats";
 
 import OrdersTable
 from "../../components/orders/OrdersTable";
+
+import EmptyState
+from "../../components/common/EmptyState";
 
 
 function OrdersList() {
@@ -34,6 +37,13 @@ function OrdersList() {
     setStatusFilter] =
     useState("ALL");
 
+  const [error, setError] =
+    useState("");
+
+  const [unauthorized,
+    setUnauthorized] =
+    useState(false);
+
 
   useEffect(() => {
 
@@ -46,16 +56,49 @@ function OrdersList() {
 
     try {
 
+      setLoading(true);
+
+      setError("");
+
+      setUnauthorized(false);
+
       const response =
         await API.get(
           "/purchase-orders"
         );
 
-      setOrders(response.data);
+      setOrders(
+        response.data || []
+      );
 
     } catch (error) {
 
       console.log(error);
+
+      if (
+        error?.response?.status === 403
+      ) {
+
+        setUnauthorized(true);
+
+        setError(
+          "You are not authorized to access these orders."
+        );
+
+      } else if (
+        error?.response?.status === 404
+      ) {
+
+        setError(
+          "No orders found."
+        );
+
+      } else {
+
+        setError(
+          "Failed to load orders."
+        );
+      }
 
     } finally {
 
@@ -69,17 +112,32 @@ function OrdersList() {
 
     return orders.filter((po) => {
 
+      const query =
+        search.toLowerCase();
+
       const matchesSearch =
 
-        po.po_number
-          ?.toLowerCase()
-          .includes(search.toLowerCase())
+        (po.po_number || "")
+          .toLowerCase()
+          .includes(query)
 
         ||
 
-        po.currency
-          ?.toLowerCase()
-          .includes(search.toLowerCase());
+        (po.currency || "")
+          .toLowerCase()
+          .includes(query)
+
+        ||
+
+        (po.brand || "")
+          .toLowerCase()
+          .includes(query)
+
+        ||
+
+        (po.garment_type || "")
+          .toLowerCase()
+          .includes(query);
 
       const matchesStatus =
 
@@ -103,6 +161,67 @@ function OrdersList() {
   ]);
 
 
+  // LOADING STATE
+  if (loading) {
+
+    return (
+
+      <DashboardLayout>
+
+        <div className="
+          min-h-[500px]
+          flex
+          items-center
+          justify-center
+        ">
+
+          <div className="
+            text-zinc-500
+            text-sm
+            animate-pulse
+          ">
+
+            Loading Orders...
+
+          </div>
+
+        </div>
+
+      </DashboardLayout>
+    );
+  }
+
+
+  // ERROR / UNAUTHORIZED
+  if (error) {
+
+    return (
+
+      <DashboardLayout>
+
+        <EmptyState
+
+          unauthorized={
+            unauthorized
+          }
+
+          title={
+            unauthorized
+
+            ? "Unauthorized Access"
+
+            : "No Orders Found"
+          }
+
+          description={error}
+
+        />
+
+      </DashboardLayout>
+    );
+  }
+
+
   return (
 
     <DashboardLayout>
@@ -114,6 +233,7 @@ function OrdersList() {
         <OrdersHeader
           total={orders.length}
         />
+
 
         <div className="
           bg-[#11151D]
@@ -140,18 +260,40 @@ function OrdersList() {
 
           />
 
+
           <OrdersStats
             orders={orders}
           />
 
-          <OrdersTable
 
-            orders={
-              filteredOrders
-            }
+          {!filteredOrders.length ? (
 
-            loading={loading}
-          />
+            <EmptyState
+
+              title="
+                No Orders Found
+              "
+
+              description="
+                No purchase orders
+                available for your account.
+              "
+
+            />
+
+          ) : (
+
+            <OrdersTable
+
+              orders={
+                filteredOrders
+              }
+
+              loading={loading}
+
+            />
+
+          )}
 
         </div>
 

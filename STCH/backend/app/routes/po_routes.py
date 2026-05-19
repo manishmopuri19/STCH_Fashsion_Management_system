@@ -92,7 +92,7 @@ def get_all_pos(
     )
 ):
 
-    return get_all_pos_service(db)
+    return get_all_pos_service(db, current_user)
 
 
 @router.get("/{po_id}")
@@ -113,7 +113,8 @@ def get_single_po(
 
     return get_single_po_service(
         po_id,
-        db
+        db,
+        current_user
     )
 
 

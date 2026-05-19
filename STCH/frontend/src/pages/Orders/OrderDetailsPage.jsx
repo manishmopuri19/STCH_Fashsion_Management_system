@@ -17,7 +17,8 @@ import {
   Clock,
   Calendar
 } from "lucide-react";
-
+import EmptyState
+from "../../components/common/EmptyState";
 const formatMoney = (value) =>
   Number(value || 0).toFixed(2);
 
@@ -32,6 +33,7 @@ const calculateDaysRemaining = (plannedDateStr, currentStatus) => {
   if (!plannedDateStr) {
     return { text: "No Date Set", value: 0, isOverdue: false };
   }
+  
 
   const deadline = new Date(plannedDateStr);
   const today = new Date();
@@ -60,7 +62,12 @@ function OrderDetailPage() {
   const [order, setOrder] = useState(null);
   const [tnaTasks, setTnaTasks] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+  const [error, setError] =
+  useState("");
+
+const [unauthorized,
+  setUnauthorized] =
+  useState(false);
   // Add New TNA Modal context states
   const [showTnaModal, setShowTnaModal] = useState(false);
   const [targetColumn, setTargetColumn] = useState("");
@@ -93,8 +100,37 @@ function OrderDetailPage() {
       const tnaRes = await API.get(`/tnas/po/${id}`);
       setTnaTasks(tnaRes.data || []);
     } catch (error) {
-      console.error("Error pulling order workspace contexts:", error);
-    } finally {
+
+  console.error(
+    "Error pulling order workspace contexts:",
+    error
+  );
+
+  if (
+    error?.response?.status === 403
+  ) {
+
+    setUnauthorized(true);
+
+    setError(
+      "You are not authorized to access this purchase order."
+    );
+
+  } else if (
+    error?.response?.status === 404
+  ) {
+
+    setError(
+      "Purchase order not found."
+    );
+
+  } else {
+
+    setError(
+      "Failed to load purchase order."
+    );
+  }
+}finally {
       setLoading(false);
     }
   };
@@ -230,15 +266,33 @@ function OrderDetailPage() {
     }
   ];
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#0B0F19] flex items-center justify-center text-white">
-        <div className="text-sm font-semibold tracking-wide animate-pulse">
-          Loading Workspace Architecture Details...
-        </div>
-      </div>
-    );
-  }
+  if (!loading && error) {
+
+  return (
+
+    <DashboardLayout>
+
+      <EmptyState
+
+        unauthorized={
+          unauthorized
+        }
+
+        title={
+          unauthorized
+
+          ? "Unauthorized Access"
+
+          : "Order Not Found"
+        }
+
+        description={error}
+
+      />
+
+    </DashboardLayout>
+  );
+}
 
   return (
     <DashboardLayout>

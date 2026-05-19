@@ -1,6 +1,8 @@
 from sqlalchemy.orm import Session
 
-from app.models.purchaseOrder_model import PurchaseOrder
+from app.models.purchaseOrder_model import (
+    PurchaseOrder
+)
 
 from app.models.supplier_model import (
     Supplier
@@ -8,16 +10,118 @@ from app.models.supplier_model import (
 
 from app.models.rfq_model import RFQ
 
+from app.models.rfqCollaborator_model import (
+    RFQCollaborator
+)
+
+from app.models.rfq_supplier_model import (
+    RFQSupplier
+)
+
+from app.enums.user_enums import (
+    UserRole
+)
+
 
 def get_all_pos_service(
-    db: Session
+
+    db: Session,
+
+    current_user
 ):
 
-    pos = db.query(
+    query = db.query(
         PurchaseOrder
-    ).order_by(
-        PurchaseOrder.created_at.desc()
-    ).all()
+    )
+
+    # ADMIN
+    if current_user.role == (
+        UserRole.ADMIN
+    ):
+
+        pos = query.order_by(
+            PurchaseOrder.created_at.desc()
+        ).all()
+
+    # MERCHANDISER
+    elif current_user.role == (
+        UserRole.MERCHANDISER
+    ):
+
+        collaborated_rfq_ids = db.query(
+            RFQCollaborator.rfq_id
+        ).filter(
+            RFQCollaborator.user_id
+            == current_user.id
+        )
+
+        pos = query.join(
+            RFQ,
+            RFQ.id == PurchaseOrder.rfq_id
+        ).filter(
+
+            (RFQ.created_by ==
+             current_user.id)
+
+            |
+
+            (PurchaseOrder.rfq_id.in_(
+                collaborated_rfq_ids
+            ))
+
+        ).order_by(
+            PurchaseOrder.created_at.desc()
+        ).all()
+
+    # SUPPLIER
+    elif current_user.role == (
+        UserRole.SUPPLIER
+    ):
+
+        collaborated_rfq_ids = db.query(
+            RFQCollaborator.rfq_id
+        ).filter(
+            RFQCollaborator.user_id
+            == current_user.id
+        )
+
+        pos = query.join(
+            RFQ,
+            RFQ.id == PurchaseOrder.rfq_id
+        ).filter(
+
+            (RFQ.created_by ==
+             current_user.id)
+
+            |
+
+            (PurchaseOrder.rfq_id.in_(
+                collaborated_rfq_ids
+            ))
+
+        ).order_by(
+            PurchaseOrder.created_at.desc()
+        ).all()
+
+
+    else:
+
+        collaborated_rfq_ids = db.query(
+            RFQCollaborator.rfq_id
+        ).filter(
+            RFQCollaborator.user_id
+            == current_user.id
+        )
+
+        pos = query.filter(
+
+            PurchaseOrder.rfq_id.in_(
+                collaborated_rfq_ids
+            )
+
+        ).order_by(
+            PurchaseOrder.created_at.desc()
+        ).all()
 
     response = []
 
