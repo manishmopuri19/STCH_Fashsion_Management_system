@@ -23,10 +23,18 @@ def create_user_service(
     db: Session
 ):
 
+    normalized_email = payload.email.lower().strip()
+
+    if len(payload.password) < 8:
+        raise HTTPException(
+            status_code=400,
+            detail="Password must be at least 8 characters"
+        )
+
     existing_user = db.query(
         User
     ).filter(
-        User.email == payload.email
+        User.email == normalized_email
     ).first()
 
     if existing_user:
@@ -42,7 +50,7 @@ def create_user_service(
 
         userName=payload.userName,
 
-        email=payload.email,
+        email=normalized_email,
 
         password=hash_password(
             payload.password
@@ -56,10 +64,6 @@ def create_user_service(
     db.commit()
 
     db.refresh(new_user)
-
-    print(payload.role)
-    print(type(payload.role))
-
 
     # AUTO CREATE SUPPLIER PROFILE
     if new_user.role == UserRole.SUPPLIER:

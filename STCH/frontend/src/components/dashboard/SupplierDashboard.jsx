@@ -39,11 +39,6 @@ function SupplierDashboard() {
       const response =
         await API.get("/dashboard");
 
-      console.log(
-        "SUPPLIER DASHBOARD:",
-        response.data
-      );
-
       setDashboard(response.data);
 
     } catch (error) {

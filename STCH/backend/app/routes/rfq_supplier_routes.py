@@ -91,7 +91,8 @@ def get_rfq_suppliers(
 
     return get_rfq_suppliers_service(
         rfq_id,
-        db
+        db,
+        current_user
     )
 
 
@@ -117,5 +118,6 @@ def update_supplier_quotation(
     return update_supplier_quotation_service(
         rfq_supplier_id,
         payload,
-        db
+        db,
+        current_user
     )

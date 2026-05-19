@@ -32,29 +32,21 @@ def login(
     db: Session = Depends(get_db)
 ):
 
-    print("LOGIN HIT")
-
-    print(payload.email)
-
     user = db.query(User).filter(
-        User.email == payload.email.lower()
+        User.email == payload.email.lower().strip()
     ).first()
-
-    print(user)
 
     if not user:
 
         raise HTTPException(
             status_code=401,
-            detail="Invalid----email"
+            detail="Invalid email or password"
         )
 
     valid_password = verify_password(
         payload.password,
         user.password
     )
-
-    print(valid_password)
 
     if not valid_password:
 

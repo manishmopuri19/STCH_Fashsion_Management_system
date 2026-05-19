@@ -108,6 +108,13 @@ def update_user(
     )
 ):
 
+    # Non-admins can only update their own profile
+    if current_user.role != UserRole.ADMIN and current_user.id != user_id:
+        raise HTTPException(
+            status_code=403,
+            detail="Access denied"
+        )
+
     user = db.query(User).filter(
         User.id == user_id
     ).first()
@@ -147,6 +154,12 @@ def update_user(
         and
         data_in.password.strip() != ""
     ):
+
+        if len(data_in.password) < 8:
+            raise HTTPException(
+                status_code=400,
+                detail="Password must be at least 8 characters"
+            )
 
         user.password = hash_password(
             data_in.password
@@ -210,7 +223,6 @@ def delete_user(user_id: int,
 def get_my_profile(
     current_user=Depends(get_current_user)
 ):
-    print(current_user)
     return current_user
 
 

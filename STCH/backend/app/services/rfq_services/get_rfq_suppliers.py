@@ -8,29 +8,59 @@ from app.models.supplier_model import (
     Supplier
 )
 
+from app.enums.user_enums import UserRole
+
 
 def get_rfq_suppliers_service(
 
     rfq_id: int,
 
-    db: Session
+    db: Session,
+
+    current_user
 ):
 
-    suppliers = db.query(
-        RFQSupplier
-    ).filter(
+    query = db.query(RFQSupplier).filter(
         RFQSupplier.rfq_id == rfq_id
-    ).all()
+    )
+
+    # SUPPLIER — only show their own record
+    if current_user.role == UserRole.SUPPLIER:
+
+        supplier_profile = db.query(Supplier).filter(
+            Supplier.user_id == current_user.id
+        ).first()
+
+        if not supplier_profile:
+            return []
+
+        query = query.filter(
+            RFQSupplier.supplier_id == supplier_profile.id
+        )
+
+    items = query.all()
+
+    if not items:
+        return []
+
+    # Batch-fetch all related suppliers to avoid N+1 queries
+    supplier_ids = [item.supplier_id for item in items]
+
+    suppliers = {
+        s.id: s
+        for s in db.query(Supplier).filter(
+            Supplier.id.in_(supplier_ids)
+        ).all()
+    }
 
     response = []
 
-    for item in suppliers:
+    for item in items:
 
-        supplier = db.query(
-            Supplier
-        ).filter(
-            Supplier.id == item.supplier_id
-        ).first()
+        supplier = suppliers.get(item.supplier_id)
+
+        if not supplier:
+            continue
 
         response.append({
 

@@ -10,9 +10,12 @@ from app.models.rfq_supplier_model import (
     RFQSupplier
 )
 
+from app.models.supplier_model import Supplier
+
 from app.enums.user_enums import (
     UserRole
 )
+from sqlalchemy.orm import Session
 
 
 def can_access_rfq(
@@ -21,7 +24,7 @@ def can_access_rfq(
 
     current_user,
 
-    db
+    db:Session
 ):
 
     # ADMIN
@@ -67,22 +70,21 @@ def can_access_rfq(
 
         return True
 
-    # SUPPLIER ACCESS
-    supplier_access = db.query(
-        RFQSupplier
-    ).filter(
-
-        RFQSupplier.rfq_id
-        == rfq_id,
-
-        RFQSupplier.supplier_id
-        == current_user.id
-
+    # SUPPLIER ACCESS — look up supplier profile first, then match by supplier_id
+    supplier_profile = db.query(Supplier).filter(
+        Supplier.user_id == current_user.id
     ).first()
 
-    if supplier_access:
+    if supplier_profile:
+        supplier_access = db.query(
+            RFQSupplier
+        ).filter(
+            RFQSupplier.rfq_id == rfq_id,
+            RFQSupplier.supplier_id == supplier_profile.id
+        ).first()
 
-        return True
+        if supplier_access:
+            return True
 
     raise HTTPException(
         status_code=403,

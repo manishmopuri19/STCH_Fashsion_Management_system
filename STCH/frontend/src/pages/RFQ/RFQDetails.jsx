@@ -30,17 +30,38 @@ const statusColors = {
   NEW:
     "bg-blue-500/20 text-blue-400 border-blue-500/30",
 
-  QUOTED:
+  CLIENT_REVIEW:
     "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
+
+  INTERNAL_COSTING:
+    "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
+
+  SUPPLIER_MATCHING:
+    "bg-orange-500/20 text-orange-400 border-orange-500/30",
+
+  SAMPLING:
+    "bg-purple-500/20 text-purple-400 border-purple-500/30",
 
   NEGOTIATION:
     "bg-orange-500/20 text-orange-400 border-orange-500/30",
 
-  APPROVED:
+  ORDER_CONFIRMED:
     "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
 
-  PO_CREATED:
+  CREATED:
     "bg-violet-500/20 text-violet-400 border-violet-500/30",
+
+  PRODUCTION:
+    "bg-blue-500/20 text-blue-400 border-blue-500/30",
+
+  QC:
+    "bg-purple-500/20 text-purple-400 border-purple-500/30",
+
+  SHIPPED:
+    "bg-cyan-500/20 text-cyan-400 border-cyan-500/30",
+
+  COMPLETED:
+    "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
 
   CANCELLED:
     "bg-red-500/20 text-red-400 border-red-500/30",
@@ -51,13 +72,27 @@ const statusOptions = [
 
   "NEW",
 
-  "QUOTED",
+  "CLIENT_REVIEW",
+
+  "INTERNAL_COSTING",
+
+  "SUPPLIER_MATCHING",
+
+  "SAMPLING",
 
   "NEGOTIATION",
 
-  "APPROVED",
+  "ORDER_CONFIRMED",
 
-  "PO_CREATED",
+  "CREATED",
+
+  "PRODUCTION",
+
+  "QC",
+
+  "SHIPPED",
+
+  "COMPLETED",
 
   "CANCELLED",
 ];

@@ -18,6 +18,9 @@ from app.services.collaboration_services.get_collaborators import (
 from app.services.collaboration_services.remove_collaborator import (
     remove_collaborator_service
 )
+from app.core.security import get_current_user
+from app.core.permissions import require_roles
+from app.enums.user_enums import UserRole
 
 router = APIRouter(
     prefix="/collaborations",
@@ -40,10 +43,11 @@ def get_db():
 def add_collaborator(
 
     rfq_id: int,
-
     user_id: int,
-
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user=Depends(
+        require_roles([UserRole.ADMIN, UserRole.MERCHANDISER])
+    )
 ):
 
     return add_collaborator_service(
@@ -55,10 +59,11 @@ def add_collaborator(
 
 @router.get("/{rfq_id}")
 def get_collaborators(
-
     rfq_id: int,
-
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user=Depends(
+        get_current_user
+    )
 ):
 
     return get_collaborators_service(
@@ -69,12 +74,12 @@ def get_collaborators(
 
 @router.delete("/{rfq_id}/{user_id}")
 def remove_collaborator(
-
     rfq_id: int,
-
     user_id: int,
-
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user=Depends(
+        require_roles([UserRole.ADMIN, UserRole.MERCHANDISER])
+    )
 ):
 
     return remove_collaborator_service(

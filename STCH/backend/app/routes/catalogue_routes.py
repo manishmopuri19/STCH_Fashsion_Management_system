@@ -31,6 +31,9 @@ from app.services.catalogue_services.update_catalogue import (
 from app.services.catalogue_services.delete_catalogue import (
     delete_catalogue_service
 )
+from app.core.security import get_current_user
+from app.core.permissions import require_roles
+from app.enums.user_enums import UserRole
 
 router = APIRouter(
     prefix="/catalogues",
@@ -51,10 +54,11 @@ def get_db():
 
 @router.post("/")
 def create_catalogue(
-
     payload: CreateCatalogueSchema,
-
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user=Depends(
+        require_roles([UserRole.ADMIN, UserRole.SUPPLIER])
+    )
 ):
 
     return create_catalogue_service(
@@ -66,7 +70,10 @@ def create_catalogue(
 @router.get("/")
 def get_all_catalogues(
 
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user=Depends(
+        get_current_user
+    )
 ):
 
     return get_all_catalogues_service(db)
@@ -77,7 +84,10 @@ def get_single_catalogue(
 
     catalogue_id: int,
 
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user=Depends(
+        get_current_user
+    )
 ):
 
     return get_single_catalogue_service(
@@ -93,7 +103,10 @@ def update_catalogue(
 
     payload: UpdateCatalogueSchema,
 
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user=Depends(
+        require_roles([UserRole.ADMIN, UserRole.SUPPLIER])
+    )
 ):
 
     return update_catalogue_service(
@@ -108,7 +121,10 @@ def delete_catalogue(
 
     catalogue_id: int,
 
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user=Depends(
+        require_roles([UserRole.ADMIN, UserRole.SUPPLIER])
+    )
 ):
 
     return delete_catalogue_service(

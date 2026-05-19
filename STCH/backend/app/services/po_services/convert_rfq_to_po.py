@@ -52,6 +52,12 @@ def convert_rfq_to_po_service(rfq_id: int,payload, db: Session,current_user):
 
     target_price = rfq.target_price
 
+    if not target_price or target_price == 0:
+        raise HTTPException(
+            status_code=400,
+            detail="RFQ target price cannot be zero"
+        )
+
     margin = (
         target_price -
         supplier_price

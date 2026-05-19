@@ -41,11 +41,23 @@ def get_single_po_service(
         RFQ.id == po.rfq_id
     ).first()
 
+    if not rfq:
+        raise HTTPException(
+            status_code=404,
+            detail="Associated RFQ not found"
+        )
+
     supplier = db.query(
         Supplier
     ).filter(
         Supplier.id == po.supplier_id
     ).first()
+
+    if not supplier:
+        raise HTTPException(
+            status_code=404,
+            detail="Associated supplier not found"
+        )
 
     return {
 

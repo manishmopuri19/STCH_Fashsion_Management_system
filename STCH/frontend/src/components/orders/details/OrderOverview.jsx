@@ -148,7 +148,7 @@ function OrderOverview({ order }) {
 
           <Metric
             title="Target"
-            value={`$${formatMoney(
+            value={`${order?.currency} ${formatMoney(
               order?.commercials
                 ?.target_price
             )}`}
@@ -156,7 +156,7 @@ function OrderOverview({ order }) {
 
           <Metric
             title="Supplier"
-            value={`$${formatMoney(
+            value={`${order?.currency} ${formatMoney(
               order?.commercials
                 ?.supplier_price
             )}`}
@@ -205,7 +205,7 @@ function OrderOverview({ order }) {
             mt-2
           ">
 
-            ${formatMoney(
+            {order?.currency} {formatMoney(
               order?.commercials
                 ?.total_amount
             )}

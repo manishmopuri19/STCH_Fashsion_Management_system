@@ -75,7 +75,7 @@ function OrderHero({ order }) {
             mt-2
           ">
 
-            ${formatMoney(
+            {order.currency} {formatMoney(
               order.total_amount
             )}
 
