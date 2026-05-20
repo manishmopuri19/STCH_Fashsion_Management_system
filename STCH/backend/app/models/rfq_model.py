@@ -91,3 +91,30 @@ class RFQ(Base):
     back_populates="rfq",
     cascade="all, delete"
     )
+
+    mini_marker = relationship(
+    "MiniMarker",
+    back_populates="rfq",
+    cascade="all, delete",
+    uselist=False
+    )
+
+    bom = relationship(
+    "BOM",
+    back_populates="rfq",
+    cascade="all, delete",
+    uselist=False
+    )
+
+    style_sheet = relationship(
+    "StyleSheet",
+    back_populates="rfq",
+    cascade="all, delete",
+    uselist=False
+    )
+
+    sampling_records = relationship(
+    "SamplingRecord",
+    back_populates="rfq",
+    cascade="all, delete"
+    )

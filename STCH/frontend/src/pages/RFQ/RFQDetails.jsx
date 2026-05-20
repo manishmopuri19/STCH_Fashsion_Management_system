@@ -11,7 +11,16 @@ import {
   Plus,
   Clock3,
   CircleDashed,
+  Ruler,
+  List,
+  BookOpen,
+  TestTube2,
+  Layers,
+  Cpu,
 } from "lucide-react";
+
+import WorkflowCard from "../../components/rfq/workflow/WorkflowCard";
+import ReadinessTracker from "../../components/rfq/workflow/ReadinessTracker";
 
 import {
   useNavigate,
@@ -131,6 +140,10 @@ function RFQDetailPage() {
   setSelectedUser] =
     useState("");
 
+  const [readiness,
+  setReadiness] =
+    useState(null);
+
 
   useEffect(() => {
 
@@ -141,10 +154,21 @@ function RFQDetailPage() {
       fetchCollaborators();
 
       fetchUsers();
+
+      fetchReadiness();
     }
 
   }, [id]);
 
+
+  const fetchReadiness = async () => {
+    try {
+      const response = await API.get(`/rfqs/${id}/readiness/`);
+      setReadiness(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const fetchRFQ = async () => {
 
@@ -854,6 +878,103 @@ function RFQDetailPage() {
 
           </Section>
 
+
+          {/* PRODUCT DEVELOPMENT */}
+          <div className="
+            bg-[#151821]
+            border
+            border-[#2A3142]
+            rounded-3xl
+            p-6
+          ">
+
+            <div className="
+              flex
+              items-center
+              gap-3
+              mb-6
+            ">
+
+              <div className="
+                w-10
+                h-10
+                rounded-xl
+                bg-gradient-to-br
+                from-orange-500
+                to-orange-600
+                flex
+                items-center
+                justify-center
+              ">
+                <Cpu size={18} className="text-white" />
+              </div>
+
+              <div>
+                <h2 className="
+                  text-xl
+                  font-semibold
+                ">
+                  Product Development
+                </h2>
+                <p className="
+                  text-sm
+                  text-zinc-500
+                  mt-0.5
+                ">
+                  Complete all gates before converting to PO
+                </p>
+              </div>
+
+            </div>
+
+
+            <div className="
+              grid
+              grid-cols-1
+              sm:grid-cols-2
+              gap-4
+            ">
+
+              <WorkflowCard
+                icon={Ruler}
+                title="Mini Marker"
+                description="Fabric consumption & marker efficiency"
+                status={readiness?.mini_marker?.status || "NOT_STARTED"}
+                route="mini-marker"
+                actionLabel="Open Marker Studio"
+              />
+
+              <WorkflowCard
+                icon={List}
+                title="Bill of Materials"
+                description="Full materials & costing breakdown"
+                status={readiness?.bom?.status || "NOT_STARTED"}
+                route="bom"
+                actionLabel="Edit BOM"
+              />
+
+              <WorkflowCard
+                icon={BookOpen}
+                title="Style Sheet"
+                description="Technical garment specification"
+                status={readiness?.style_sheet?.status || "NOT_STARTED"}
+                route="style-sheet"
+                actionLabel="Open Style Sheet"
+              />
+
+              <WorkflowCard
+                icon={TestTube2}
+                title="Sampling"
+                description="Proto → Fit → PP → Size Set → Shipment"
+                status={readiness?.sampling?.status || "NOT_STARTED"}
+                route="sampling"
+                actionLabel="Track Samples"
+              />
+
+            </div>
+
+          </div>
+
         </div>
 
 
@@ -964,28 +1085,16 @@ function RFQDetailPage() {
                 border-t
                 border-[#2A3142]
                 pt-6
+                space-y-3
               ">
 
-                <button
-
-                  onClick={() =>
+                <ReadinessTracker
+                  readiness={readiness}
+                  canConvert={true}
+                  onConvertToPO={() =>
                     setWorkflowOpen(true)
                   }
-
-                  className="
-                    w-full
-                    py-4
-                    rounded-2xl
-                    bg-violet-500
-                    hover:bg-violet-400
-                    transition-all
-                    font-semibold
-                  "
-                >
-
-                  Convert to Purchase Order
-
-                </button>
+                />
 
               </div>
             )}

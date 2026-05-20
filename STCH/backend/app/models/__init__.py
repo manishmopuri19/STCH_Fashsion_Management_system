@@ -9,3 +9,7 @@ from .rfq_model import RFQ
 from .rfq_supplier_model import RFQSupplier
 from .rfqCollaborator_model import RFQCollaborator
 from .Tna_model import TNA
+from .mini_marker_model import MiniMarker
+from .bom_model import BOM, BOMItem
+from .style_sheet_model import StyleSheet
+from .sampling_model import SamplingRecord

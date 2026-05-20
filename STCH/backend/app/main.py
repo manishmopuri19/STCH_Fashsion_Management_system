@@ -56,6 +56,12 @@ from app.routes.catalogue_routes import (
 
 from app.routes.dashboard_routes import (router as dashboard_router)
 
+from app.routes.mini_marker_routes import (router as mini_marker_router)
+from app.routes.bom_routes import (router as bom_router)
+from app.routes.style_sheet_routes import (router as style_sheet_router)
+from app.routes.sampling_routes import (router as sampling_router)
+from app.routes.product_dev_routes import (router as product_dev_router)
+
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
@@ -103,6 +109,11 @@ app.include_router(catalogue_routes)
 app.include_router(collaboration_router)
 
 app.include_router(dashboard_router)
+app.include_router(mini_marker_router)
+app.include_router(bom_router)
+app.include_router(style_sheet_router)
+app.include_router(sampling_router)
+app.include_router(product_dev_router)
 
 @app.get("/")
 def root():

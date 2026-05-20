@@ -7,7 +7,8 @@ import {
   Users,
   X,
   Settings,LogOut,
-  ChevronUp
+  ChevronUp,
+  Layers3
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
@@ -17,7 +18,11 @@ const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
   { icon: FileText, label: "RFQ", path: "/rfqs" },
   { icon: Package, label: "Orders", path: "/orders" },
-  { icon: ClipboardList, label: "TNA", path: "/tna" },
+{
+  icon: Layers3,
+  label: "Catalogs",
+  path: "/catalogs"
+},
   { icon: ShieldCheck, label: "QC", path: "/qc" },
   { icon: Users, label: "Suppliers", path: "/suppliers" },
   { icon: Settings, label: "User Management", path: "/users" },
@@ -36,7 +41,7 @@ useState(false);
     "Dashboard",
     "RFQ",
     "Orders",
-    "TNA",
+    "Catalogs",
     "QC",
     "Suppliers",
     "User Management",
@@ -46,20 +51,22 @@ useState(false);
     "Dashboard",
     "RFQ",
     "Orders",
-    "TNA",
+    "Catalogs",
     "QC",
     "Suppliers",
   ],
   MEMBER:[
     "Dashboard",
     "RFQ",
-    "Suppliers",   
+    "Suppliers",
+    "Catalogs"   
   ]
 ,
   SUPPLIER: [
+    "Dashboard",
     "RFQ",
     "Orders",
-    "TNA",
+    "Catalogs"
   ],
 };
 

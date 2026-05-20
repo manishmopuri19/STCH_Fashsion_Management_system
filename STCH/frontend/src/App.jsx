@@ -8,6 +8,10 @@ import Dashboard from "./pages/Dashboard";
 import RFQList from "./pages/RFQ/RFQList";
 import CreateRFQ from "./pages/RFQ/CreateRFQ";
 import RFQDetails from "./pages/RFQ/RFQDetails";
+import MiniMarkerPage from "./pages/RFQ/MiniMarkerPage";
+import BOMPage from "./pages/RFQ/BOMPage";
+import StyleSheetPage from "./pages/RFQ/StyleSheetPage";
+import SamplingPage from "./pages/RFQ/SamplingPage";
 import UserManagement from "./pages/userManagement";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import SettingsPage from "./pages/SettingsPage";
@@ -77,7 +81,43 @@ function App() {
   <RFQDetails />
   </ProtectedRoute>
 }
-/> 
+/>
+
+<Route
+  path="/rfqs/:id/mini-marker"
+  element={
+  <ProtectedRoute allowedRoles={["ADMIN", "MERCHANDISER", "SUPPLIER"]}>
+  <MiniMarkerPage />
+  </ProtectedRoute>
+}
+/>
+
+<Route
+  path="/rfqs/:id/bom"
+  element={
+  <ProtectedRoute allowedRoles={["ADMIN", "MERCHANDISER", "SUPPLIER"]}>
+  <BOMPage />
+  </ProtectedRoute>
+}
+/>
+
+<Route
+  path="/rfqs/:id/style-sheet"
+  element={
+  <ProtectedRoute allowedRoles={["ADMIN", "MERCHANDISER", "SUPPLIER"]}>
+  <StyleSheetPage />
+  </ProtectedRoute>
+}
+/>
+
+<Route
+  path="/rfqs/:id/sampling"
+  element={
+  <ProtectedRoute allowedRoles={["ADMIN", "MERCHANDISER", "SUPPLIER"]}>
+  <SamplingPage />
+  </ProtectedRoute>
+}
+/>
 
 <Route
 path="/users"
