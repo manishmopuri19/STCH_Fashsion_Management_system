@@ -29,6 +29,16 @@ def convert_rfq_to_po_service(rfq_id: int,payload, db: Session,current_user):
             detail="RFQ not found"
         )
 
+    existing_po = db.query(PurchaseOrder).filter(
+        PurchaseOrder.rfq_id == rfq_id
+    ).first()
+
+    if existing_po:
+        raise HTTPException(
+            status_code=400,
+            detail=f"A Purchase Order already exists for this RFQ: {existing_po.po_number}"
+        )
+
     rfq_supplier = db.query(
         RFQSupplier
     ).filter(

@@ -17,6 +17,7 @@ import {
   TestTube2,
   Layers,
   Cpu,
+  ExternalLink,
 } from "lucide-react";
 
 import WorkflowCard from "../../components/rfq/workflow/WorkflowCard";
@@ -144,6 +145,10 @@ function RFQDetailPage() {
   setReadiness] =
     useState(null);
 
+  const [existingPO,
+  setExistingPO] =
+    useState(null);
+
 
   useEffect(() => {
 
@@ -185,6 +190,10 @@ function RFQDetailPage() {
         response.data.status
       );
 
+      if (response.data.status === "CREATED") {
+        fetchExistingPO();
+      }
+
     } catch (error) {
 
       console.log(error);
@@ -192,6 +201,17 @@ function RFQDetailPage() {
     } finally {
 
       setLoading(false);
+    }
+  };
+
+  const fetchExistingPO = async () => {
+    try {
+      const response = await API.get(`/purchase-orders/by-rfq/${id}`);
+      if (response.data) {
+        setExistingPO(response.data);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -376,7 +396,10 @@ function RFQDetailPage() {
 
         rfq={rfq}
 
-        onSuccess={fetchRFQ}
+        onSuccess={() => {
+          fetchRFQ();
+          fetchExistingPO();
+        }}
       />
 
 
@@ -1088,13 +1111,79 @@ function RFQDetailPage() {
                 space-y-3
               ">
 
-                <ReadinessTracker
-                  readiness={readiness}
-                  canConvert={true}
-                  onConvertToPO={() =>
-                    setWorkflowOpen(true)
-                  }
-                />
+                {rfq.status === "CREATED" ? (
+
+                  <div className="space-y-3">
+
+                    <div className="
+                      flex
+                      items-center
+                      gap-2
+                      px-4
+                      py-3
+                      rounded-2xl
+                      bg-emerald-500/10
+                      border
+                      border-emerald-500/20
+                    ">
+                      <CheckCircle2
+                        size={16}
+                        className="text-emerald-400 shrink-0"
+                      />
+                      <div>
+                        <p className="text-sm font-medium text-emerald-400">
+                          Purchase Order Created
+                        </p>
+                        {existingPO && (
+                          <p className="text-xs text-zinc-500 mt-0.5">
+                            {existingPO.po_number}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    {existingPO && (
+                      <button
+                        onClick={() =>
+                          navigate(`/orders/${existingPO.id}`)
+                        }
+                        className="
+                          w-full
+                          py-3
+                          rounded-2xl
+                          bg-[#1D2230]
+                          border
+                          border-[#2A3142]
+                          hover:border-orange-500/40
+                          hover:bg-[#283041]
+                          text-zinc-300
+                          hover:text-white
+                          font-medium
+                          flex
+                          items-center
+                          justify-center
+                          gap-2
+                          transition-all
+                        "
+                      >
+                        <ExternalLink size={15} />
+                        View Purchase Order
+                      </button>
+                    )}
+
+                  </div>
+
+                ) : (
+
+                  <ReadinessTracker
+                    readiness={readiness}
+                    canConvert={true}
+                    onConvertToPO={() =>
+                      setWorkflowOpen(true)
+                    }
+                  />
+
+                )}
 
               </div>
             )}

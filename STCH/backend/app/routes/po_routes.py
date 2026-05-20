@@ -21,6 +21,7 @@ from app.services.po_services.get_all_pos import get_all_pos_service
 
 
 from app.services.po_services.get_single_po import get_single_po_service
+from app.services.po_services.get_po_by_rfq import get_po_by_rfq_service
 
 
 from app.services.po_services.update_po_status import update_po_status_service
@@ -77,6 +78,21 @@ def convert_rfq_to_po(
         db,
         current_user
     )
+
+@router.get("/by-rfq/{rfq_id}")
+def get_po_by_rfq(
+    rfq_id: int,
+    db: Session = Depends(get_db),
+    current_user=Depends(
+        require_roles([
+            UserRole.ADMIN,
+            UserRole.MERCHANDISER,
+            UserRole.SUPPLIER
+        ])
+    )
+):
+    return get_po_by_rfq_service(rfq_id, db, current_user)
+
 
 @router.get("/")
 def get_all_pos(
