@@ -40,20 +40,9 @@ function OrderDetailsStep({ formData, setFormData, errors }) {
               className={`pr-16 ${errors.targetPrice ? "border-red-500" : ""}`}
             />
             <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-zinc-500 pointer-events-none">
-              {formData.currency || "USD"}
+              INR
             </span>
           </div>
-        </FormField>
-
-        {/* Currency */}
-        <FormField label="Currency *" error={errors.currency}>
-          <RFQSelect
-            options={RFQ_OPTIONS.currencies}
-            value={formData.currency}
-            onChange={(v) => update("currency", v)}
-            placeholder="Select currency"
-            className={errors.currency ? "border-red-500" : ""}
-          />
         </FormField>
 
         {/* Delivery Date */}

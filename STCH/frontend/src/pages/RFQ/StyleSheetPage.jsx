@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
-  ArrowLeft, Shirt, Image, Tag, Scissors, Package, Palette, Save, Zap, BookOpen
+  ArrowLeft, Shirt, Image, Tag, Scissors, Package, Palette, Save, Zap, BookOpen, Eye
 } from "lucide-react";
 import API from "../../api/axios";
 import DashboardLayout from "../../layouts/DashboardLayout";
@@ -122,7 +122,7 @@ export default function StyleSheetPage() {
               </div>
               <div className="flex items-center gap-3">
                 <StatusPill status={status} />
-                {canEdit && (
+                {canEdit ? (
                   <>
                     <select value={status} onChange={e => { setStatus(e.target.value); handleSave(e.target.value); }}
                       className="px-3 py-2 rounded-xl bg-[#1D2230] border border-[#2A3142] text-sm text-zinc-300 outline-none">
@@ -136,6 +136,10 @@ export default function StyleSheetPage() {
                       <Save size={14} /> {saving ? "Saving..." : saved ? "Saved!" : "Save"}
                     </button>
                   </>
+                ) : (
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[#1D2230] border border-[#2A3142] text-xs text-zinc-500">
+                    <Eye size={13} /> View Only
+                  </div>
                 )}
               </div>
             </div>
@@ -147,8 +151,8 @@ export default function StyleSheetPage() {
             {/* GARMENT IMAGES */}
             <MODULE title="Garment Images" icon={Image} iconColor="text-blue-400">
               <div className="grid grid-cols-2 gap-4">
-                <UploadZone label="Front View" value={form.front_image_url} onChange={v => setForm(p=>({...p, front_image_url: v}))} hint="JPEG, PNG" />
-                <UploadZone label="Back View"  value={form.back_image_url}  onChange={v => setForm(p=>({...p, back_image_url: v}))}  hint="JPEG, PNG" />
+                <UploadZone label="Front View" value={form.front_image_url} onChange={v => setForm(p=>({...p, front_image_url: v}))} hint="JPEG, PNG" readOnly={!canEdit} />
+                <UploadZone label="Back View"  value={form.back_image_url}  onChange={v => setForm(p=>({...p, back_image_url: v}))}  hint="JPEG, PNG" readOnly={!canEdit} />
               </div>
             </MODULE>
 

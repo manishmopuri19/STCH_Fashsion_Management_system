@@ -154,7 +154,7 @@ function RFQTable({
               {/* TARGET PRICE */}
               <td className="text-zinc-300">
 
-                {rfq.currency} {rfq.target_price || 0}
+                ₹{rfq.target_price || 0}
 
               </td>
 

@@ -28,7 +28,7 @@ export const RFQ_OPTIONS = {
     "Satin", "Chiffon", "Organza",
   ],
 
-  currencies: ["USD", "EUR", "GBP", "INR", "CNY", "JPY", "AUD", "CAD"],
+  currencies: ["INR"],
 
   incoterms: ["FOB", "CIF", "CFR", "EXW", "DDP", "DAP"],
 
@@ -79,7 +79,7 @@ export const INITIAL_FORM_DATA = {
   // Step 3 – Order Details
   quantity: "",
   targetPrice: "",
-  currency: "USD",
+  currency: "INR",
   deliveryDate: "",
   incoterms: "FOB",
 

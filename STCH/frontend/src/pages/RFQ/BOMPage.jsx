@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
-  ArrowLeft, List, Plus, Trash2, Edit2, Check, X, Save, Zap, Package2
+  ArrowLeft, List, Plus, Trash2, Edit2, Check, X, Save, Zap, Package2, Eye
 } from "lucide-react";
 import API from "../../api/axios";
 import DashboardLayout from "../../layouts/DashboardLayout";
@@ -57,7 +57,7 @@ function BOMRow({ item, onUpdate, onDelete, canEdit }) {
       <td className={cellClass}><span className="text-xs px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">{item.material_type || "—"}</span></td>
       <td className={cellClass}>{item.consumption ?? "—"}</td>
       <td className={cellClass}><span className="text-zinc-400">{item.unit || "—"}</span></td>
-      <td className={cellClass}><span className="font-medium">${Number(item.cost || 0).toFixed(2)}</span></td>
+      <td className={cellClass}><span className="font-medium">₹{Number(item.cost || 0).toFixed(2)}</span></td>
       <td className={cellClass}>{item.supplier || "—"}</td>
       <td className={`${cellClass} max-w-[140px]`}><span className="truncate block text-zinc-500">{item.remarks || "—"}</span></td>
       <td className="px-3 py-3">
@@ -186,25 +186,29 @@ export default function BOMPage() {
                 </div>
                 <div>
                   <h1 className="text-2xl font-bold">Bill of Materials</h1>
-                  <p className="text-zinc-500 text-sm">{rfqNumber} · {items.length} materials · Total ${totalCost.toFixed(2)}</p>
+                  <p className="text-zinc-500 text-sm">{rfqNumber} · {items.length} materials · Total ₹{totalCost.toFixed(2)}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
                 <StatusPill status={status} />
-                {canEdit && (
-                  <select value={status} onChange={e => { setStatus(e.target.value); handleSave(e.target.value); }}
-                    className="px-3 py-2 rounded-xl bg-[#1D2230] border border-[#2A3142] text-sm text-zinc-300 outline-none">
-                    <option value="NOT_STARTED">Not Started</option>
-                    <option value="IN_PROGRESS">In Progress</option>
-                    <option value="COMPLETED">Completed</option>
-                    <option value="APPROVED">Approved</option>
-                  </select>
-                )}
-                {canEdit && (
-                  <button onClick={() => handleSave()}
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-400 text-white text-sm font-medium transition-all">
-                    <Save size={14} /> {saving ? "Saving..." : saved ? "Saved!" : "Save BOM"}
-                  </button>
+                {canEdit ? (
+                  <>
+                    <select value={status} onChange={e => { setStatus(e.target.value); handleSave(e.target.value); }}
+                      className="px-3 py-2 rounded-xl bg-[#1D2230] border border-[#2A3142] text-sm text-zinc-300 outline-none">
+                      <option value="NOT_STARTED">Not Started</option>
+                      <option value="IN_PROGRESS">In Progress</option>
+                      <option value="COMPLETED">Completed</option>
+                      <option value="APPROVED">Approved</option>
+                    </select>
+                    <button onClick={() => handleSave()}
+                      className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-400 text-white text-sm font-medium transition-all">
+                      <Save size={14} /> {saving ? "Saving..." : saved ? "Saved!" : "Save BOM"}
+                    </button>
+                  </>
+                ) : (
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[#1D2230] border border-[#2A3142] text-xs text-zinc-500">
+                    <Eye size={13} /> View Only
+                  </div>
                 )}
               </div>
             </div>
@@ -263,7 +267,7 @@ export default function BOMPage() {
                   <tfoot>
                     <tr className="bg-[#0F141D] border-t border-[#2A3142]">
                       <td colSpan={4} className="px-3 py-3 text-xs text-zinc-500 font-medium uppercase">Total</td>
-                      <td className="px-3 py-3 text-sm font-bold text-white">${totalCost.toFixed(2)}</td>
+                      <td className="px-3 py-3 text-sm font-bold text-white">₹{totalCost.toFixed(2)}</td>
                       <td colSpan={3} />
                     </tr>
                   </tfoot>

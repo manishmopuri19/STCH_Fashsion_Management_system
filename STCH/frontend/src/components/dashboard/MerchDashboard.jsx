@@ -237,25 +237,13 @@ function MerchDashboard() {
 
                   </div>
 
-                  <div className="
-                    w-full
-                    h-3
-                    rounded-full
-                    bg-[#0F141D]
-                    overflow-hidden
-                  ">
+                  <div className="w-full h-3 rounded-full bg-[#0F141D] overflow-hidden ">
 
                     <div
                       style={{
                         width: `${value * 10}%`
                       }}
-                      className="
-                        h-full
-                        bg-gradient-to-r
-                        from-violet-500
-                        to-blue-500
-                      "
-                    />
+                      className=" h-full bg-gradient-to-r from-violet-500 to-blue-500 "/>
 
                   </div>
 
@@ -357,18 +345,9 @@ function MerchDashboard() {
 
 
         {/* RECENT ACTIVITY */}
-        <div className="
-          bg-[#151821]
-          border
-          border-[#2A3142]
-          rounded-3xl
-          p-6
-        ">
+        <div className="bg-[#151821] border border-[#2A3142] rounded-3xl p-6">
 
-          <h2 className="
-            text-2xl
-            font-semibold
-            mb-6
+          <h2 className="text-2xl font-semibold mb-6
           ">
             Recent Workflow Activity
           </h2>

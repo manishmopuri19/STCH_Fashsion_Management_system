@@ -18,7 +18,8 @@ class Catalogue(Base):
         ForeignKey(
             "suppliers.id",
             ondelete="CASCADE"
-        )
+        ),
+        nullable=True
     )
 
     product_name = Column(String)

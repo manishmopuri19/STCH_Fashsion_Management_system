@@ -38,7 +38,7 @@ function OrderOverview({ order }) {
 
         <Info
           label="Currency"
-          value={order?.currency}
+          value="INR"
         />
 
         <Info
@@ -148,7 +148,7 @@ function OrderOverview({ order }) {
 
           <Metric
             title="Target"
-            value={`${order?.currency} ${formatMoney(
+            value={`₹${formatMoney(
               order?.commercials
                 ?.target_price
             )}`}
@@ -156,7 +156,7 @@ function OrderOverview({ order }) {
 
           <Metric
             title="Supplier"
-            value={`${order?.currency} ${formatMoney(
+            value={`₹${formatMoney(
               order?.commercials
                 ?.supplier_price
             )}`}
@@ -205,7 +205,7 @@ function OrderOverview({ order }) {
             mt-2
           ">
 
-            {order?.currency} {formatMoney(
+            ₹{formatMoney(
               order?.commercials
                 ?.total_amount
             )}

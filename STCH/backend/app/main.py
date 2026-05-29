@@ -55,7 +55,6 @@ from app.routes.catalogue_routes import (
 )
 
 from app.routes.dashboard_routes import (router as dashboard_router)
-
 from app.routes.mini_marker_routes import (router as mini_marker_router)
 from app.routes.bom_routes import (router as bom_router)
 from app.routes.style_sheet_routes import (router as style_sheet_router)
@@ -68,46 +67,28 @@ app = FastAPI()
 
 
 # CORS
-_raw_origins = os.getenv(
-    "ALLOWED_ORIGINS",
-    "http://localhost:5173"
-)
-allowed_origins = [o.strip() for o in _raw_origins.split(",") if o.strip()]
 
 app.add_middleware(
     CORSMiddleware,
 
-    allow_origins=allowed_origins,
-
+    allow_origins="*",
     allow_credentials=True,
-
     allow_methods=["*"],
-
     allow_headers=["*"],
 )
 
 
 # ROUTES
 app.include_router(auth_router)
-
 app.include_router(rfq_router)
-
 app.include_router(rfq_supplier_router)
-
 app.include_router(newUser_routes)
-
 app.include_router(tna_router)
-
 app.include_router(supplier_router)
-
 app.include_router(po_router)
-
 app.include_router(qc_router)
-
 app.include_router(catalogue_routes)
-
 app.include_router(collaboration_router)
-
 app.include_router(dashboard_router)
 app.include_router(mini_marker_router)
 app.include_router(bom_router)
@@ -119,7 +100,6 @@ app.include_router(product_dev_router)
 def root():
 
     return {
-
         "message":
         "STCH Backend Running"
     }

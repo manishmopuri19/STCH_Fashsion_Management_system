@@ -351,17 +351,17 @@ const [unauthorized,
               <div>
                 <p className="text-zinc-500 text-xs uppercase tracking-wider font-semibold">Accumulated Invoicing Frame</p>
                 <h2 className="text-4xl font-black text-white mt-2">
-                  {order?.currency} {formatMoney(order?.commercials?.total_amount)}
+                  ₹{formatMoney(order?.commercials?.total_amount)}
                 </h2>
               </div>
               <div className="grid grid-cols-3 gap-3 pt-2">
                 <div className="bg-[#151821] border border-[#2A3142] p-3 rounded-xl text-center">
                   <span className="text-zinc-500 text-[10px] uppercase block">Target</span>
-                  <span className="text-zinc-200 font-bold text-xs">{order?.currency} {formatMoney(order?.commercials?.target_price)}</span>
+                  <span className="text-zinc-200 font-bold text-xs">₹{formatMoney(order?.commercials?.target_price)}</span>
                 </div>
                 <div className="bg-[#151821] border border-[#2A3142] p-3 rounded-xl text-center">
                   <span className="text-zinc-500 text-[10px] uppercase block">Supplier</span>
-                  <span className="text-zinc-200 font-bold text-xs">{order?.currency} {formatMoney(order?.commercials?.supplier_price)}</span>
+                  <span className="text-zinc-200 font-bold text-xs">₹{formatMoney(order?.commercials?.supplier_price)}</span>
                 </div>
                 <div className="bg-[#151821] border border-[#2A3142] p-3 rounded-xl text-center">
                   <span className="text-zinc-500 text-[10px] uppercase block">Margin</span>

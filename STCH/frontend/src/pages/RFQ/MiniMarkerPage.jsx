@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft, Ruler, Layers, TrendingUp, Calculator,
-  Save, CheckCircle2, BarChart2, Zap
+  Save, CheckCircle2, BarChart2, Zap, Eye
 } from "lucide-react";
 import API from "../../api/axios";
 import DashboardLayout from "../../layouts/DashboardLayout";
@@ -11,16 +11,17 @@ import UploadZone from "../../components/rfq/workflow/UploadZone";
 import StatusPill from "../../components/rfq/workflow/StatusPill";
 import { useAuth } from "../../context/AuthContext";
 
-const INPUT_FIELD = ({ label, value, onChange, unit, type = "number", placeholder }) => (
+const INPUT_FIELD = ({ label, value, onChange, unit, type = "number", placeholder, disabled }) => (
   <div>
     <label className="block text-sm text-zinc-400 mb-2">{label}</label>
-    <div className="flex items-center bg-[#0F141D] border border-[#2A3142] rounded-xl overflow-hidden focus-within:border-orange-500/50 transition-all">
+    <div className={`flex items-center bg-[#0F141D] border rounded-xl overflow-hidden transition-all ${disabled ? "border-[#1E2533] opacity-60" : "border-[#2A3142] focus-within:border-orange-500/50"}`}>
       <input
         type={type}
         value={value}
         onChange={onChange}
-        placeholder={placeholder || label}
-        className="flex-1 px-4 py-3 bg-transparent text-white outline-none text-sm placeholder:text-zinc-600"
+        placeholder={disabled ? "—" : (placeholder || label)}
+        disabled={disabled}
+        className="flex-1 px-4 py-3 bg-transparent text-white outline-none text-sm placeholder:text-zinc-600 disabled:cursor-not-allowed"
       />
       {unit && (
         <span className="px-3 text-xs text-zinc-500 border-l border-[#2A3142] h-full flex items-center py-3 bg-[#0B0F19]">
@@ -92,7 +93,7 @@ export default function MiniMarkerPage() {
     }
   };
 
-  const field = (key) => ({ value: form[key], onChange: (e) => setForm(p => ({ ...p, [key]: e.target.value })) });
+  const field = (key) => ({ value: form[key], onChange: (e) => setForm(p => ({ ...p, [key]: e.target.value })), disabled: !canEdit });
   const metrics = calc(form);
 
   const handleSave = async (newStatus) => {
@@ -139,7 +140,7 @@ export default function MiniMarkerPage() {
               </div>
               <div className="flex items-center gap-3">
                 <StatusPill status={status} />
-                {canEdit && (
+                {canEdit ? (
                   <select
                     value={status}
                     onChange={(e) => handleSave(e.target.value)}
@@ -150,6 +151,10 @@ export default function MiniMarkerPage() {
                     <option value="COMPLETED">Completed</option>
                     <option value="APPROVED">Approved</option>
                   </select>
+                ) : (
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[#1D2230] border border-[#2A3142] text-xs text-zinc-500">
+                    <Eye size={13} /> View Only
+                  </div>
                 )}
               </div>
             </div>
@@ -173,7 +178,7 @@ export default function MiniMarkerPage() {
                   <INPUT_FIELD label="Wastage" unit="%" placeholder="e.g. 8" {...field("wastage_pct")} />
                   <INPUT_FIELD label="Consumption" unit="m/pc" placeholder="e.g. 1.85" {...field("consumption")} />
                   <INPUT_FIELD label="CAD Ratio" placeholder="e.g. 1.05" {...field("cad_ratio")} />
-                  <INPUT_FIELD label="Fabric Cost" unit="$/m" placeholder="e.g. 4.50" {...field("fabric_cost")} />
+                  <INPUT_FIELD label="Fabric Cost" unit="₹/m" placeholder="e.g. 4.50" {...field("fabric_cost")} />
                 </div>
               </div>
 
@@ -189,12 +194,14 @@ export default function MiniMarkerPage() {
                     value={form.cad_file_url}
                     onChange={(v) => setForm(p => ({ ...p, cad_file_url: v }))}
                     hint=".plt, .dxf, .pdf"
+                    readOnly={!canEdit}
                   />
                   <UploadZone
                     label="Marker Image"
                     value={form.marker_image_url}
                     onChange={(v) => setForm(p => ({ ...p, marker_image_url: v }))}
                     hint=".jpg, .png, .pdf"
+                    readOnly={!canEdit}
                   />
                 </div>
               </div>
@@ -213,7 +220,7 @@ export default function MiniMarkerPage() {
                   <MetricCard label="Total Fabric Required" value={metrics.totalFabric} unit="m/pc" />
                   <MetricCard label="Yield" value={metrics.yieldVal} />
                   <MetricCard label="Fabric Utilization" value={metrics.fabUtil} unit="%" />
-                  <MetricCard label="Cost Per Piece" value={metrics.cpp} unit="$" accent />
+                  <MetricCard label="Cost Per Piece" value={metrics.cpp} unit="₹" accent />
                   <MetricCard label="Marker Efficiency" value={form.marker_efficiency || "—"} unit="%" />
                   <MetricCard label="Est. Margin Impact" value={metrics.marginImpact} unit="%" sublabel="vs raw fabric cost" />
                 </div>

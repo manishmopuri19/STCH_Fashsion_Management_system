@@ -34,7 +34,7 @@ function OrderSupplierCard({ order }) {
 
         <Info
           label="Currency"
-          value={order.currency}
+          value="INR"
         />
 
         <Info

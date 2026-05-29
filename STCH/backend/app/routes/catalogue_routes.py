@@ -31,7 +31,6 @@ from app.services.catalogue_services.update_catalogue import (
 from app.services.catalogue_services.delete_catalogue import (
     delete_catalogue_service
 )
-from app.core.security import get_current_user
 from app.core.permissions import require_roles
 from app.enums.user_enums import UserRole
 
@@ -57,7 +56,7 @@ def create_catalogue(
     payload: CreateCatalogueSchema,
     db: Session = Depends(get_db),
     current_user=Depends(
-        require_roles([UserRole.ADMIN, UserRole.SUPPLIER])
+        require_roles([UserRole.ADMIN, UserRole.MERCHANDISER])
     )
 ):
 
@@ -69,27 +68,16 @@ def create_catalogue(
 
 @router.get("/")
 def get_all_catalogues(
-
-    db: Session = Depends(get_db),
-    current_user=Depends(
-        get_current_user
-    )
+    db: Session = Depends(get_db)
 ):
-
     return get_all_catalogues_service(db)
 
 
 @router.get("/{catalogue_id}")
 def get_single_catalogue(
-
     catalogue_id: int,
-
-    db: Session = Depends(get_db),
-    current_user=Depends(
-        get_current_user
-    )
+    db: Session = Depends(get_db)
 ):
-
     return get_single_catalogue_service(
         catalogue_id,
         db
@@ -105,7 +93,7 @@ def update_catalogue(
 
     db: Session = Depends(get_db),
     current_user=Depends(
-        require_roles([UserRole.ADMIN, UserRole.SUPPLIER])
+        require_roles([UserRole.ADMIN, UserRole.MERCHANDISER])
     )
 ):
 
@@ -123,7 +111,7 @@ def delete_catalogue(
 
     db: Session = Depends(get_db),
     current_user=Depends(
-        require_roles([UserRole.ADMIN, UserRole.SUPPLIER])
+        require_roles([UserRole.ADMIN, UserRole.MERCHANDISER])
     )
 ):
 

@@ -4,7 +4,7 @@ from typing import Optional
 
 class CreateCatalogueSchema(BaseModel):
 
-    supplier_id: int
+    supplier_id: Optional[int] = None
     product_name: str
     category: str
     garment_type: str
@@ -27,7 +27,7 @@ class UpdateCatalogueSchema(BaseModel):
     category: str
     garment_type: str
     fabric_type: str
-    fabric_omposition: str
+    fabric_composition: str
     gsm: str
     wash_type: str
     print_type: Optional[str] = None

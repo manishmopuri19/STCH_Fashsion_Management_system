@@ -81,7 +81,7 @@ function OrdersTable({
               <Td>{po.status}</Td>
 
               <Td>
-                {po.currency} {formatMoney(
+                ₹{formatMoney(
                   po.total_amount
                 )}
               </Td>

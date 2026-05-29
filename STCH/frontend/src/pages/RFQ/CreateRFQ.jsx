@@ -37,7 +37,6 @@ function validateStep(step, formData) {
   if (step === 3) {
     if (!formData.quantity)           e.quantity     = "Quantity is required";
     if (!formData.targetPrice)        e.targetPrice  = "Target price is required";
-    if (!formData.currency)           e.currency     = "Currency is required";
     if (!formData.deliveryDate)       e.deliveryDate = "Delivery date is required";
     if (!formData.incoterms)          e.incoterms    = "Incoterms is required";
   }
@@ -141,7 +140,7 @@ const handleSubmit = async () => {
       yarn_count: formData.yarnCount,
       quantity: parseInt(formData.quantity, 10),
       target_price: parseFloat(formData.targetPrice), 
-      currency: formData.currency,
+      currency: "INR",
       delivery_date: formData.deliveryDate,
       incoterms: formData.incoterms,
       trims_details: formData.trimsDetails, 

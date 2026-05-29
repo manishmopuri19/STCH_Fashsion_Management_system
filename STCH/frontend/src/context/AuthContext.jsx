@@ -7,9 +7,7 @@ const normalizeUser = (userData) => {
 
   const cleanedUser = { ...userData };
 
-  // Convert:
-  // "UserRole.ADMIN" -> "ADMIN"
-  // "UserRole.MEMBER" -> "MEMBER"
+
 
   if (cleanedUser.role?.includes(".")) {
     cleanedUser.role = cleanedUser.role.split(".")[1];

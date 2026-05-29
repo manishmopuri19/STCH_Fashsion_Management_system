@@ -29,7 +29,7 @@ class RFQCreate(BaseModel):
     # STEP 3
     quantity: int
     target_price: float
-    currency: str
+    currency: str = "INR"
     delivery_date: date
     incoterms: str
 

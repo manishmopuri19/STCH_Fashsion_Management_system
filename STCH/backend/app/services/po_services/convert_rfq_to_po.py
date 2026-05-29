@@ -97,7 +97,7 @@ def convert_rfq_to_po_service(rfq_id: int,payload, db: Session,current_user):
         profitability=profitability,
 
         total_amount=total_amount,
-        currency=rfq.currency,
+        currency="INR",
 
         delivery_date=
         rfq.delivery_date,

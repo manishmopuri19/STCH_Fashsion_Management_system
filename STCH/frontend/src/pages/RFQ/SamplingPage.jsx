@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft, TestTube2, CheckCircle2, Clock, XCircle,
-  AlertCircle, Upload, MessageSquare, Calendar, ChevronDown, ChevronUp
+  AlertCircle, Upload, MessageSquare, Calendar, ChevronDown, ChevronUp, Eye
 } from "lucide-react";
 import API from "../../api/axios";
 import DashboardLayout from "../../layouts/DashboardLayout";
@@ -137,7 +137,7 @@ function SampleCard({ sample, onSave, onStatusChange, canEdit }) {
 
           {/* FILE & COMMENTS */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <UploadZone label="Sample File / Image" value={draft.file_url} onChange={v => setDraft(p => ({ ...p, file_url: v }))} hint="jpg, png, pdf" />
+            <UploadZone label="Sample File / Image" value={draft.file_url} onChange={v => setDraft(p => ({ ...p, file_url: v }))} hint="jpg, png, pdf" readOnly={!canEdit} />
             <div>
               <label className="text-xs text-zinc-500 mb-1.5 block">Comments & Feedback</label>
               <textarea
@@ -234,13 +234,20 @@ export default function SamplingPage() {
                   <p className="text-zinc-500 text-sm">{rfqNumber} · {approvedCount} of {samples.length} samples approved</p>
                 </div>
               </div>
-              {/* PROGRESS PILL */}
-              <div className="flex items-center gap-3 bg-[#0F141D] border border-[#2A3142] rounded-2xl px-5 py-3">
-                <div className="w-28 h-1.5 bg-[#1D2230] rounded-full overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-orange-500 to-emerald-500 rounded-full transition-all duration-500"
-                    style={{ width: `${samples.length ? (approvedCount / samples.length) * 100 : 0}%` }} />
+              <div className="flex items-center gap-3">
+                {/* PROGRESS PILL */}
+                <div className="flex items-center gap-3 bg-[#0F141D] border border-[#2A3142] rounded-2xl px-5 py-3">
+                  <div className="w-28 h-1.5 bg-[#1D2230] rounded-full overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-orange-500 to-emerald-500 rounded-full transition-all duration-500"
+                      style={{ width: `${samples.length ? (approvedCount / samples.length) * 100 : 0}%` }} />
+                  </div>
+                  <span className="text-sm font-medium text-zinc-300">{approvedCount}/{samples.length}</span>
                 </div>
-                <span className="text-sm font-medium text-zinc-300">{approvedCount}/{samples.length}</span>
+                {!canEdit && (
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[#1D2230] border border-[#2A3142] text-xs text-zinc-500">
+                    <Eye size={13} /> View Only
+                  </div>
+                )}
               </div>
             </div>
           </div>

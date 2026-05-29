@@ -1,6 +1,6 @@
-import { Upload, FileCheck, X } from "lucide-react";
+import { Upload, FileCheck, X, EyeOff } from "lucide-react";
 
-export default function UploadZone({ label, value, onChange, accept = "*", hint }) {
+export default function UploadZone({ label, value, onChange, accept = "*", hint, readOnly = false }) {
   const hasFile = Boolean(value);
 
   return (
@@ -11,9 +11,16 @@ export default function UploadZone({ label, value, onChange, accept = "*", hint 
         <div className="flex items-center gap-3 px-4 py-3 bg-[#0F141D] border border-emerald-500/30 rounded-xl">
           <FileCheck size={16} className="text-emerald-400 shrink-0" />
           <span className="text-sm text-emerald-400 flex-1 truncate">{value}</span>
-          <button onClick={() => onChange("")} className="text-zinc-500 hover:text-zinc-300">
-            <X size={14} />
-          </button>
+          {!readOnly && (
+            <button onClick={() => onChange("")} className="text-zinc-500 hover:text-zinc-300">
+              <X size={14} />
+            </button>
+          )}
+        </div>
+      ) : readOnly ? (
+        <div className="flex items-center gap-2 px-4 py-4 bg-[#0F141D] border border-[#2A3142] rounded-xl">
+          <EyeOff size={14} className="text-zinc-600 shrink-0" />
+          <span className="text-sm text-zinc-600">No file uploaded</span>
         </div>
       ) : (
         <label className="flex flex-col items-center gap-2 px-4 py-6 bg-[#0F141D] border-2 border-dashed border-[#2A3142] rounded-xl cursor-pointer hover:border-orange-500/40 hover:bg-[#111620] transition-all">

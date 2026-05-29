@@ -131,7 +131,7 @@ function OrderCommercials({
 
         <Card
           title="Total"
-          value={`$${formatMoney(
+          value={`₹${formatMoney(
             order.total_amount
           )}`}
         />

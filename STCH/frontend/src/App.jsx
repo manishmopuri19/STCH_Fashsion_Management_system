@@ -19,6 +19,7 @@ import SuppliersPage from "./pages/SuppliersPage";
 import SupplierDetailPage from "./pages/SupplierDetailPage";
 import OrdersList from "./pages/Orders/OrdersList";
 import OrderDetailPage from "./pages/Orders/OrderDetailsPage";
+import CataloguePage from "./pages/CataloguePage";
 
 function App() {
   return (
@@ -164,6 +165,12 @@ element={
 <OrderDetailPage />
 </ProtectedRoute>
 }
+/>
+
+{/* Public route — no ProtectedRoute wrapper; auth is checked inside the page */}
+<Route
+  path="/catalogs"
+  element={<CataloguePage />}
 />
       </Routes>
 

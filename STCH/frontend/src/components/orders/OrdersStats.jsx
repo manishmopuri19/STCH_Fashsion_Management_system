@@ -38,7 +38,7 @@ function OrdersStats({ orders }) {
 
       <Card
         title="Total Value"
-        value={`$${formatMoney(
+        value={`₹${formatMoney(
           totalValue
         )}`}
       />

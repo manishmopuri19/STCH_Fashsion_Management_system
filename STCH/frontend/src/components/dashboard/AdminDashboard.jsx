@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import {
   FileText,
   Package,
-  DollarSign,
+  IndianRupee,
   TrendingUp,
   Clock3,
 } from "lucide-react";
@@ -20,18 +20,12 @@ const formatNumber = (value) =>
 
 function AdminDashboard() {
 
-  const [dashboard,
-    setDashboard] =
-    useState(null);
-
-  const [loading, setLoading] =
-    useState(true);
+  const [dashboard,setDashboard] =useState(null);
+  const [loading, setLoading] =useState(true);
 
 
   useEffect(() => {
-
     fetchDashboard();
-
   }, []);
 
 
@@ -144,10 +138,10 @@ function AdminDashboard() {
 
             <KPICard
               title="PO Value"
-              value={`$${formatNumber(
+              value={`₹${formatNumber(
   dashboard?.purchase_orders?.total_po_value
 )}`}
-              icon={<DollarSign />}
+              icon={<IndianRupee />}
               color="
                 from-emerald-500
                 to-green-500
@@ -266,7 +260,7 @@ function AdminDashboard() {
 
                 <AnalyticsRow
                   label="Total Value"
-                  value={`$${dashboard
+                  value={`₹${dashboard
                     ?.purchase_orders
                     ?.total_po_value}`}
                 />

@@ -75,7 +75,7 @@ function OrderHero({ order }) {
             mt-2
           ">
 
-            {order.currency} {formatMoney(
+            ₹{formatMoney(
               order.total_amount
             )}
 

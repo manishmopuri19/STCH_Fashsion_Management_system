@@ -5,7 +5,7 @@ import {
   Package,
   Factory,
   ClipboardCheck,
-  DollarSign,
+  IndianRupee,
   FileText,
   CheckCircle2,
   Plus,
@@ -590,7 +590,7 @@ function RFQDetailPage() {
           {/* ORDER */}
           <Section
             title="Order Details"
-            icon={<DollarSign size={18} />}
+            icon={<IndianRupee size={18} />}
           >
 
             <Grid>
@@ -602,7 +602,7 @@ function RFQDetailPage() {
 
               <Field
                 label="Target Price"
-                value={`${rfq.currency} ${rfq.target_price}`}
+                value={`₹${rfq.target_price}`}
               />
 
               <Field

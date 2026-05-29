@@ -1,28 +1,19 @@
 import { useNavigate } from "react-router-dom";
-
 import { useState } from "react";
-
 import { useForm } from "react-hook-form";
-
 import { z } from "zod";
-
 import { zodResolver } from "@hookform/resolvers/zod";
-
 import { useAuth } from "../../context/AuthContext";
 
 
 const loginSchema = z.object({
 
   email: z
-
     .string()
     .email("Invalid email"),
 
-
   password: z
-
     .string()
-
     .min(1, "Password is required")
 });
 
@@ -37,20 +28,7 @@ function LoginForm() {
     useState("");
 
 
-  const {
-
-    register,
-
-    handleSubmit,
-
-    formState: { errors },
-
-  } = useForm({
-
-    resolver: zodResolver(
-      loginSchema
-    ),
-  });
+  const {register, handleSubmit, formState: { errors }} = useForm({resolver: zodResolver(loginSchema)});
 
 
   const onSubmit = async (data) => {
@@ -170,12 +148,7 @@ function LoginForm() {
 
 
       {/* FORM */}
-      <form
-
-        onSubmit={handleSubmit(
-          onSubmit
-        )}
-
+      <form onSubmit={handleSubmit(onSubmit)}
         className="
           space-y-6
         "
@@ -200,9 +173,7 @@ function LoginForm() {
 
             type="email"
 
-            placeholder="
-              Enter your email
-            "
+            placeholder="Enter your email"
 
             {...register("email")}
 
@@ -259,9 +230,7 @@ function LoginForm() {
 
             type="password"
 
-            placeholder="
-              Enter your password
-            "
+            placeholder="Enter your password"
 
             {...register("password")}
 

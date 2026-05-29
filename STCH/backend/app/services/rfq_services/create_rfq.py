@@ -60,7 +60,7 @@ def create_rfq_service(
 
             target_price=payload.target_price,
 
-            currency=payload.currency,
+            currency="INR",
 
             delivery_date=payload.delivery_date,
 

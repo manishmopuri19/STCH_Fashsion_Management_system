@@ -52,17 +52,17 @@ function CommercialReviewStep({rfq,quotation,onBack,onNext}) {
 
         <Card
           title="Target Price"
-          value={`${rfq.currency} ${targetPrice}`}
+          value={`₹${targetPrice}`}
         />
 
         <Card
           title="Supplier Price"
-          value={`${rfq.currency} ${supplierPrice}`}
+          value={`₹${supplierPrice}`}
         />
 
         <Card
           title="Margin"
-          value={`${rfq.currency} ${Number(margin).toFixed(2)}`}
+          value={`₹${Number(margin).toFixed(2)}`}
         />
 
         <Card
@@ -95,8 +95,7 @@ function CommercialReviewStep({rfq,quotation,onBack,onNext}) {
           mt-2
         ">
 
-          {rfq.currency}
-          {Number(totalAmount).toLocaleString(
+          ₹{Number(totalAmount).toLocaleString(
   undefined,
   {
     minimumFractionDigits: 2,
