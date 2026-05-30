@@ -85,3 +85,9 @@ class PurchaseOrder(Base):
     back_populates="purchase_order",
     cascade="all, delete"
     )
+
+    styles = relationship(
+    "POStyle",
+    back_populates="purchase_order",
+    cascade="all, delete"
+    )

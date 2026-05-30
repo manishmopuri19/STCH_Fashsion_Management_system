@@ -6,6 +6,7 @@ from app.models.rfq_supplier_model import (RFQSupplier)
 from app.models.purchaseOrder_model import (PurchaseOrder)
 from app.enums.rfq_enums import (RFQStatus)
 from app.enums.POstatus_enums import (POStatus)
+from app.enums.user_enums import UserRole
 from app.services.tna_services.generate_default_tna import (generate_default_tna_service)
 
 
@@ -27,6 +28,13 @@ def convert_rfq_to_po_service(rfq_id: int,payload, db: Session,current_user):
         raise HTTPException(
             status_code=404,
             detail="RFQ not found"
+        )
+
+    # Only the RFQ creator or an admin can convert to PO
+    if current_user.role != UserRole.ADMIN and rfq.created_by != current_user.id:
+        raise HTTPException(
+            status_code=403,
+            detail="Only the RFQ creator or an admin can convert this RFQ to a PO"
         )
 
     existing_po = db.query(PurchaseOrder).filter(

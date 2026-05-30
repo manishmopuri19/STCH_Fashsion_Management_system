@@ -1,6 +1,8 @@
 import os
 
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from sqlalchemy import text
 
 from fastapi.middleware.cors import (
     CORSMiddleware
@@ -12,6 +14,21 @@ from app.db.database import (
 )
 
 import app.models
+
+
+def run_db_migrations(engine):
+    """Add new columns to existing tables without data loss (SQLite safe)."""
+    migrations = [
+        "ALTER TABLE tnas ADD COLUMN style_id INTEGER",
+        "ALTER TABLE tnas ADD COLUMN delayed_reason TEXT",
+    ]
+    with engine.connect() as conn:
+        for sql in migrations:
+            try:
+                conn.execute(text(sql))
+                conn.commit()
+            except Exception:
+                pass
 
 
 # ROUTES
@@ -60,10 +77,15 @@ from app.routes.bom_routes import (router as bom_router)
 from app.routes.style_sheet_routes import (router as style_sheet_router)
 from app.routes.sampling_routes import (router as sampling_router)
 from app.routes.product_dev_routes import (router as product_dev_router)
+from app.routes.style_routes import (router as style_router)
 
+run_db_migrations(engine)
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+
+os.makedirs("uploads/fabric_swatches", exist_ok=True)
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 
 # CORS
@@ -95,6 +117,7 @@ app.include_router(bom_router)
 app.include_router(style_sheet_router)
 app.include_router(sampling_router)
 app.include_router(product_dev_router)
+app.include_router(style_router)
 
 @app.get("/")
 def root():

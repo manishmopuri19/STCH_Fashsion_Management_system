@@ -42,7 +42,8 @@ def get_all_rfqs(
         require_roles([
             UserRole.ADMIN,
             UserRole.MERCHANDISER,
-            UserRole.SUPPLIER
+            UserRole.SUPPLIER,
+            UserRole.MEMBER,
         ])
     )
 ):
@@ -61,7 +62,8 @@ def get_single_rfq(
         require_roles([
             UserRole.ADMIN,
             UserRole.MERCHANDISER,
-            UserRole.SUPPLIER
+            UserRole.SUPPLIER,
+            UserRole.MEMBER,
         ])
     )
 ):

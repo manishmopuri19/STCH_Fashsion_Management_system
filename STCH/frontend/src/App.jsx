@@ -19,6 +19,8 @@ import SuppliersPage from "./pages/SuppliersPage";
 import SupplierDetailPage from "./pages/SupplierDetailPage";
 import OrdersList from "./pages/Orders/OrdersList";
 import OrderDetailPage from "./pages/Orders/OrderDetailsPage";
+import StyleSpecificationPage from "./pages/Orders/StyleSpecificationPage";
+import StyleDetailPage from "./pages/Orders/StyleDetailPage";
 import CataloguePage from "./pages/CataloguePage";
 
 function App() {
@@ -163,6 +165,24 @@ element={
 
 <ProtectedRoute>
 <OrderDetailPage />
+</ProtectedRoute>
+}
+/>
+
+<Route
+path="/orders/:id/styles"
+element={
+<ProtectedRoute allowedRoles={["ADMIN", "MERCHANDISER"]}>
+<StyleSpecificationPage />
+</ProtectedRoute>
+}
+/>
+
+<Route
+path="/orders/:id/styles/:styleId"
+element={
+<ProtectedRoute allowedRoles={["ADMIN", "MERCHANDISER", "MEMBER"]}>
+<StyleDetailPage />
 </ProtectedRoute>
 }
 />

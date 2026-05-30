@@ -55,11 +55,11 @@ useState(false);
     "QC",
     "Suppliers",
   ],
-  MEMBER:[
+  MEMBER: [
     "Dashboard",
     "RFQ",
-    "Suppliers",
-    "Catalogs"   
+    "Orders",
+    "Catalogs",
   ]
 ,
   SUPPLIER: [

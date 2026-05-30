@@ -49,7 +49,8 @@ def get_po_tnas(
         require_roles([
             UserRole.ADMIN,
             UserRole.MERCHANDISER,
-            UserRole.SUPPLIER
+            UserRole.SUPPLIER,
+            UserRole.MEMBER,
         ])
     )
 ):
@@ -96,7 +97,8 @@ def update_tna(
     current_user=Depends(
         require_roles([
             UserRole.ADMIN,
-            UserRole.MERCHANDISER
+            UserRole.MERCHANDISER,
+            UserRole.MEMBER
         ])
     )
 ):
@@ -104,6 +106,7 @@ def update_tna(
     return update_tna_service(
         tna_id,
         payload,
+        current_user,
         db
     )
 
@@ -121,6 +124,7 @@ def update_tna_status(
         require_roles([
             UserRole.ADMIN,
             UserRole.MERCHANDISER,
+            UserRole.MEMBER,
             UserRole.SUPPLIER
         ])
     )
@@ -129,6 +133,8 @@ def update_tna_status(
     return update_tna_status_service(
         tna_id,
         payload.status,
+        payload.delayed_reason,
+        current_user,
         db
     )
 

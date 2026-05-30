@@ -27,6 +27,10 @@ from app.services.dashboard_services.supplier_dashboard import (
     get_supplier_dashboard_service
 )
 
+from app.services.dashboard_services.member_dashboard import (
+    get_member_dashboard_service
+)
+
 router = APIRouter(
     prefix="/dashboard",
     tags=["Dashboard"]
@@ -78,6 +82,5 @@ def get_dashboard(
             current_user
         )
 
-    return {
-        "message": "No dashboard"
-    }
+    # MEMBER and any other internal role
+    return get_member_dashboard_service(db, current_user)

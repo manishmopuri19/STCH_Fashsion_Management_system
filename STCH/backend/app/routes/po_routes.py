@@ -87,7 +87,8 @@ def get_po_by_rfq(
         require_roles([
             UserRole.ADMIN,
             UserRole.MERCHANDISER,
-            UserRole.SUPPLIER
+            UserRole.SUPPLIER,
+            UserRole.MEMBER,
         ])
     )
 ):
@@ -103,7 +104,8 @@ def get_all_pos(
         require_roles([
             UserRole.ADMIN,
             UserRole.MERCHANDISER,
-            UserRole.SUPPLIER
+            UserRole.SUPPLIER,
+            UserRole.MEMBER,
         ])
     )
 ):
@@ -122,7 +124,8 @@ def get_single_po(
         require_roles([
             UserRole.ADMIN,
             UserRole.MERCHANDISER,
-            UserRole.SUPPLIER
+            UserRole.SUPPLIER,
+            UserRole.MEMBER,
         ])
     )
 ):

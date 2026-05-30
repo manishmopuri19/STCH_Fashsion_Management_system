@@ -27,6 +27,15 @@ class TNA(Base):
         )
     )
 
+    style_id = Column(
+        Integer,
+        ForeignKey(
+            "po_styles.id",
+            ondelete="CASCADE"
+        ),
+        nullable=True
+    )
+
     activity_type = Column(
         Enum(TNAActivityType),
         nullable=False
@@ -45,7 +54,7 @@ class TNA(Base):
 
     planned_date = Column(
         Date,
-        nullable=False
+        nullable=True
     )
 
     actual_date = Column(
@@ -60,6 +69,8 @@ class TNA(Base):
 
     remarks = Column(Text)
 
+    delayed_reason = Column(Text, nullable=True)
+
     created_at = Column(
         DateTime(timezone=True),
         server_default=func.now()
@@ -67,6 +78,11 @@ class TNA(Base):
 
     purchase_order = relationship(
     "PurchaseOrder",
+    back_populates="tnas"
+    )
+
+    style = relationship(
+    "POStyle",
     back_populates="tnas"
     )
 
