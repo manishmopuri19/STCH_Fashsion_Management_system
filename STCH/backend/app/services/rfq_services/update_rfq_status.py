@@ -6,7 +6,8 @@ from app.models.rfq_model import RFQ
 def update_rfq_status_service(
     rfq_id: int,
     status,
-    db: Session
+    db: Session,
+    current_user=None
 ):
 
     rfq = db.query(RFQ).filter(

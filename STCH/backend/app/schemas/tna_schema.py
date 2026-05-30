@@ -9,7 +9,7 @@ class CreateTNASchema(BaseModel):
     activity_type: TNAActivityType
     assigned_to: Optional[int] = None
     priority: Optional[TNAPriority]=None
-    planned_date:   date
+    planned_date:date
     remarks: Optional[str] = None
 
 

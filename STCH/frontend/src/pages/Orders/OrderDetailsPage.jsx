@@ -62,21 +62,13 @@ function OrderDetailPage() {
   const [order, setOrder] = useState(null);
   const [tnaTasks, setTnaTasks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] =
-  useState("");
+  const [error, setError] = useState("");
 
-const [unauthorized,
-  setUnauthorized] =
-  useState(false);
+const [unauthorized,setUnauthorized] =useState(false);
   // Add New TNA Modal context states
   const [showTnaModal, setShowTnaModal] = useState(false);
   const [targetColumn, setTargetColumn] = useState("");
-  const [newActivity, setNewActivity] = useState({
-    activity_type: "FABRIC_BOOKING",
-    priority: "MEDIUM",
-    planned_date: "",
-    remarks: ""
-  });
+  const [newActivity, setNewActivity] = useState({activity_type: "FABRIC_BOOKING",priority: "MEDIUM", planned_date: "", remarks: "" });
 
   // Inline TNA Edit state engines
   const [editingTaskId, setEditingTaskId] = useState(null);
@@ -145,7 +137,7 @@ const [unauthorized,
     }
   };
 
-  // Handler: Inline TNA Status Dropdown modifier
+  
   const handleUpdateTnaStatus = async (tnaId, updatedStatus) => {
     try {
       const coreTask = tnaTasks.find(t => t.id === tnaId);
@@ -173,6 +165,7 @@ const [unauthorized,
   };
 
   // Handler: Open task field modification layer
+
   const startEditing = (task) => {
     setEditingTaskId(task.id);
     setEditFormData({
@@ -278,18 +271,10 @@ const [unauthorized,
           unauthorized
         }
 
-        title={
-          unauthorized
-
-          ? "Unauthorized Access"
-
-          : "Order Not Found"
-        }
+        title={unauthorized ? "Unauthorized Access" : "Order Not Found" }
 
         description={error}
-
       />
-
     </DashboardLayout>
   );
 }

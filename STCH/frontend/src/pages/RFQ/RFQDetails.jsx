@@ -156,6 +156,8 @@ function RFQDetailPage() {
 
       fetchRFQ();
 
+      fetchExistingPO();
+
       fetchCollaborators();
 
       fetchUsers();
@@ -189,10 +191,6 @@ function RFQDetailPage() {
       setStatus(
         response.data.status
       );
-
-      if (response.data.status === "CREATED") {
-        fetchExistingPO();
-      }
 
     } catch (error) {
 
@@ -1111,7 +1109,7 @@ function RFQDetailPage() {
                 space-y-3
               ">
 
-                {rfq.status === "CREATED" ? (
+                {(rfq.status === "CREATED" || existingPO) ? (
 
                   <div className="space-y-3">
 

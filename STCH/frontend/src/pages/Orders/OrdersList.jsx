@@ -24,25 +24,17 @@ from "../../components/common/EmptyState";
 
 function OrdersList() {
 
-  const [orders, setOrders] =
-    useState([]);
+  const [orders, setOrders] =useState([]);
 
-  const [loading, setLoading] =
-    useState(true);
+  const [loading, setLoading] =useState(true);
 
-  const [search, setSearch] =
-    useState("");
+  const [search, setSearch] =useState("");
 
-  const [statusFilter,
-    setStatusFilter] =
-    useState("ALL");
+  const [statusFilter,setStatusFilter] =useState("ALL");
 
-  const [error, setError] =
-    useState("");
+  const [error, setError] =useState("");
 
-  const [unauthorized,
-    setUnauthorized] =
-    useState(false);
+  const [unauthorized,setUnauthorized] =useState(false);
 
 
   useEffect(() => {
@@ -89,47 +81,27 @@ function OrdersList() {
         error?.response?.status === 404
       ) {
 
-        setError(
-          "No orders found."
-        );
+        setError("No orders found.");
 
       } else {
-
-        setError(
-          "Failed to load orders."
-        );
+        setError("Failed to load orders.");
       }
-
-    } finally {
-
+    } 
+    finally {
       setLoading(false);
     }
   };
 
 
   const filteredOrders =
+
     useMemo(() => {
+      
+      return orders.filter((po) => {
 
-    return orders.filter((po) => {
+      const query =search.toLowerCase();
 
-      const query =
-        search.toLowerCase();
-
-      const matchesSearch =
-
-        (po.po_number || "")
-          .toLowerCase()
-          .includes(query)
-
-        ||
-
-        (po.currency || "")
-          .toLowerCase()
-          .includes(query)
-
-        ||
-
-        (po.brand || "")
+      const matchesSearch =(po.po_number || "").toLowerCase().includes(query)|| (po.currency || "").toLowerCase().includes(query) || (po.brand || "")
           .toLowerCase()
           .includes(query)
 
@@ -139,17 +111,10 @@ function OrdersList() {
           .toLowerCase()
           .includes(query);
 
-      const matchesStatus =
-
-        statusFilter === "ALL"
-
-        ||
-
-        po.status === statusFilter;
+      const matchesStatus = statusFilter === "ALL"|| po.status === statusFilter;
 
       return (
-        matchesSearch &&
-        matchesStatus
+        matchesSearch && matchesStatus
       );
 
     });

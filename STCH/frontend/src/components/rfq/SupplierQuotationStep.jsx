@@ -14,6 +14,9 @@ function SupplierQuotationStep({
   const [loading, setLoading] =
     useState(false);
 
+  const [error, setError] =
+    useState("");
+
   const [formData, setFormData] =
     useState({
 
@@ -71,6 +74,21 @@ function SupplierQuotationStep({
   const createQuotation =
     async () => {
 
+    const supplierId =        parseInt(formData.supplier_id);
+    const targetPrice =       parseFloat(formData.supplier_target_price);
+    const quotedPrice =       parseFloat(formData.quoted_price);
+    const moq =               parseInt(formData.moq);
+    const leadTime =          parseInt(formData.lead_time);
+
+    if (!supplierId)                    return setError("Please select a supplier.");
+    if (isNaN(targetPrice))             return setError("Supplier target price is required.");
+    if (isNaN(quotedPrice))             return setError("Quoted price is required.");
+    if (isNaN(moq))                     return setError("MOQ is required.");
+    if (isNaN(leadTime))                return setError("Lead time is required.");
+    if (!formData.payment_terms.trim()) return setError("Payment terms are required.");
+
+    setError("");
+
     try {
 
       setLoading(true);
@@ -80,14 +98,27 @@ function SupplierQuotationStep({
 
           `/rfqs/${rfq.id}/suppliers`,
 
-          formData
+          {
+            supplier_id:            supplierId,
+            supplier_target_price:  targetPrice,
+            quoted_price:           quotedPrice,
+            moq:                    moq,
+            lead_time:              leadTime,
+            payment_terms:          formData.payment_terms,
+            remarks:                formData.remarks || null,
+          }
         );
 
       onNext(response.data);
 
-    } catch (error) {
+    } catch (err) {
 
-      console.log(error);
+      const detail = err.response?.data?.detail;
+      setError(
+        typeof detail === "string"
+          ? detail
+          : "Failed to assign supplier. Please try again."
+      );
 
     } finally {
 
@@ -313,6 +344,17 @@ function SupplierQuotationStep({
 
       </div>
 
+
+      {/* ERROR */}
+      {error && (
+        <p className="
+          text-red-400
+          text-sm
+          -mt-2
+        ">
+          {error}
+        </p>
+      )}
 
       {/* CTA */}
       <button
