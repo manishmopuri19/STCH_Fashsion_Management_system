@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
-  ArrowLeft, List, Plus, Trash2, Edit2, Check, X, Save, Zap, Package2, Eye
+  ArrowLeft, List, Plus, Trash2, Edit2, Check, X, Save, Zap, Package2, Eye, Info
 } from "lucide-react";
 import API from "../../api/axios";
 import DashboardLayout from "../../layouts/DashboardLayout";
@@ -116,6 +116,7 @@ export default function BOMPage() {
   const [addingRow, setAddingRow] = useState(false);
   const [saving, setSaving]   = useState(false);
   const [saved, setSaved]     = useState(false);
+  const [rfqPrefilled, setRfqPrefilled] = useState(false);
 
   useEffect(() => { fetchData(); }, [id]);
 
@@ -125,9 +126,59 @@ export default function BOMPage() {
         API.get(`/rfqs/${id}/bom/`),
         API.get(`/rfqs/${id}`),
       ]);
-      setRfqNumber(rfqRes.data.rfq_number);
+      const rfq = rfqRes.data;
+      setRfqNumber(rfq.rfq_number);
       setStatus(bomRes.data.status || "NOT_STARTED");
-      setItems(bomRes.data.items || []);
+
+      const existingItems = bomRes.data.items || [];
+      if (existingItems.length > 0) {
+        setItems(existingItems);
+      } else {
+        // Auto-populate from RFQ when BOM has no items yet
+        const suggested = [];
+
+        if (rfq.fabric_type || rfq.fabric_composition) {
+          suggested.push({
+            id: "rfq-0",
+            material: [rfq.fabric_type, rfq.fabric_composition].filter(Boolean).join(" – "),
+            material_type: "Fabric",
+            consumption: "", unit: "meters", cost: "", supplier: "",
+            remarks: rfq.fabric_weight || "",
+          });
+        }
+
+        if (rfq.trims_details) {
+          rfq.trims_details.split(/[,\n]+/).map(t => t.trim()).filter(Boolean).forEach((trim, i) => {
+            suggested.push({
+              id: `rfq-trim-${i}`,
+              material: trim,
+              material_type: "Trim",
+              consumption: "", unit: "pcs", cost: "", supplier: "", remarks: "",
+            });
+          });
+        }
+
+        if (rfq.packaging_type) {
+          suggested.push({
+            id: "rfq-pkg",
+            material: rfq.packaging_type,
+            material_type: "Packaging",
+            consumption: "", unit: "pcs", cost: "", supplier: "", remarks: "",
+          });
+        }
+
+        if (rfq.label_type) {
+          suggested.push({
+            id: "rfq-label",
+            material: rfq.label_type,
+            material_type: "Label",
+            consumption: "", unit: "pcs", cost: "", supplier: "", remarks: "",
+          });
+        }
+
+        setItems(suggested);
+        setRfqPrefilled(suggested.length > 0);
+      }
     } catch (e) { console.error(e); }
   };
 
@@ -149,6 +200,7 @@ export default function BOMPage() {
         })),
       });
       if (newStatus) setStatus(newStatus);
+      setRfqPrefilled(false);
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
       await fetchData();
@@ -213,6 +265,18 @@ export default function BOMPage() {
               </div>
             </div>
           </div>
+
+          {/* RFQ PRE-FILL BANNER */}
+          {rfqPrefilled && (
+            <div className="flex items-start gap-3 bg-blue-500/5 border border-blue-500/20 rounded-2xl px-5 py-4">
+              <Info size={15} className="text-blue-400 shrink-0 mt-0.5" />
+              <p className="text-sm text-zinc-400">
+                Materials pre-populated from RFQ details (fabric, trims, packaging, labels).
+                Review each row, fill in consumption and cost, then save.
+              </p>
+              <button onClick={() => setRfqPrefilled(false)} className="ml-auto text-zinc-600 hover:text-zinc-400 text-xs shrink-0">Dismiss</button>
+            </div>
+          )}
 
           {/* TABLE */}
           <div className="bg-[#151821] border border-[#2A3142] rounded-3xl overflow-hidden">

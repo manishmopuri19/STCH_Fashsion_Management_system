@@ -65,19 +65,47 @@ export default function StyleSheetPage() {
         API.get(`/rfqs/${id}/style-sheet/`),
         API.get(`/rfqs/${id}`),
       ]);
-      setRfqNumber(rfqRes.data.rfq_number);
+      const rfq = rfqRes.data;
+      setRfqNumber(rfq.rfq_number);
       const d = ssRes.data;
       setStatus(d.status || "NOT_STARTED");
+
+      // Build pre-fill strings from RFQ data (only used when the field is empty in DB)
+      const buildFabricDetails = () => {
+        const parts = [];
+        if (rfq.fabric_type)        parts.push(`Type: ${rfq.fabric_type}`);
+        if (rfq.fabric_composition) parts.push(`Composition: ${rfq.fabric_composition}`);
+        if (rfq.fabric_weight)      parts.push(`Weight: ${rfq.fabric_weight}`);
+        if (rfq.construction)       parts.push(`Construction: ${rfq.construction}`);
+        if (rfq.yarn_count)         parts.push(`Yarn Count: ${rfq.yarn_count}`);
+        return parts.join("\n");
+      };
+
+      const buildWashDetails = () => {
+        const parts = [];
+        if (rfq.garment_wash?.length) parts.push(`Wash: ${rfq.garment_wash.join(", ")}`);
+        if (rfq.dye_type)             parts.push(`Dye: ${rfq.dye_type}`);
+        return parts.join("\n");
+      };
+
+      const buildArtworkNotes = () => {
+        const parts = [];
+        if (rfq.print_type)       parts.push(`Print: ${rfq.print_type}`);
+        if (rfq.embroidery_type)  parts.push(`Embroidery: ${rfq.embroidery_type}`);
+        if (rfq.special_finish)   parts.push(`Special Finish: ${rfq.special_finish}`);
+        return parts.join("\n");
+      };
+
       setForm({
         front_image_url:  d.front_image_url  ?? "",
         back_image_url:   d.back_image_url   ?? "",
-        fabric_details:   d.fabric_details   ?? "",
-        wash_details:     d.wash_details     ?? "",
+        fabric_details:   d.fabric_details   ?? buildFabricDetails(),
+        wash_details:     d.wash_details     ?? buildWashDetails(),
         stitch_details:   d.stitch_details   ?? "",
         fit_type:         d.fit_type         ?? "Regular",
-        label_placement:  d.label_placement  ?? "",
-        artwork_notes:    d.artwork_notes    ?? "",
-        packaging_notes:  d.packaging_notes  ?? "",
+        label_placement:  d.label_placement  ?? (rfq.label_type || ""),
+        artwork_notes:    d.artwork_notes    ?? buildArtworkNotes(),
+        packaging_notes:  d.packaging_notes  ?? (rfq.packaging_type || ""),
       });
     } catch (e) { console.error(e); }
   };

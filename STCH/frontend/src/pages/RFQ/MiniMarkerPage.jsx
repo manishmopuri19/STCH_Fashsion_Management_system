@@ -62,6 +62,7 @@ export default function MiniMarkerPage() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [rfqNumber, setRfqNumber] = useState("");
+  const [rfqRef, setRfqRef] = useState(null);
 
   useEffect(() => {
     fetchData();
@@ -74,11 +75,21 @@ export default function MiniMarkerPage() {
         API.get(`/rfqs/${id}`),
       ]);
       const d = mmRes.data;
-      setRfqNumber(rfqRes.data.rfq_number);
+      const rfq = rfqRes.data;
+      setRfqNumber(rfq.rfq_number);
+      setRfqRef(rfq);
       setStatus(d.status || "NOT_STARTED");
+
+      // Pre-fill gsm from RFQ fabric_weight if not yet set
+      let gsmValue = d.gsm ?? "";
+      if (!gsmValue && rfq.fabric_weight) {
+        const match = rfq.fabric_weight.match(/\d+(\.\d+)?/);
+        gsmValue = match ? match[0] : "";
+      }
+
       setForm({
         fabric_width:       d.fabric_width      ?? "",
-        gsm:                d.gsm               ?? "",
+        gsm:                gsmValue,
         size_ratio:         d.size_ratio        ?? "",
         marker_efficiency:  d.marker_efficiency ?? "",
         wastage_pct:        d.wastage_pct       ?? "",
@@ -209,6 +220,31 @@ export default function MiniMarkerPage() {
 
             {/* RIGHT COLUMN */}
             <div className="space-y-6">
+
+              {/* RFQ REFERENCE PANEL */}
+              {rfqRef && (
+                <div className="bg-[#151821] border border-[#2A3142] rounded-3xl p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-8 h-8 rounded-xl bg-[#1E2533] flex items-center justify-center"><Eye size={15} className="text-zinc-400" /></div>
+                    <h2 className="text-base font-semibold text-zinc-300">RFQ Reference</h2>
+                  </div>
+                  <div className="space-y-2.5 text-sm">
+                    {[
+                      { label: "Garment", value: rfqRef.garment_type },
+                      { label: "Fabric", value: rfqRef.fabric_type },
+                      { label: "Composition", value: rfqRef.fabric_composition },
+                      { label: "Weight", value: rfqRef.fabric_weight },
+                      { label: "Quantity", value: rfqRef.quantity ? `${rfqRef.quantity} pcs` : null },
+                      { label: "Target Price", value: rfqRef.target_price ? `₹${rfqRef.target_price}` : null },
+                    ].filter(r => r.value).map(r => (
+                      <div key={r.label} className="flex justify-between gap-3">
+                        <span className="text-zinc-500 shrink-0">{r.label}</span>
+                        <span className="text-zinc-300 text-right truncate">{r.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* SECTION 2: CALCULATED METRICS */}
               <div className="bg-[#151821] border border-[#2A3142] rounded-3xl p-7">
