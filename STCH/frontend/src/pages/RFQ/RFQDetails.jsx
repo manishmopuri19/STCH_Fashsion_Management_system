@@ -18,6 +18,7 @@ import {
   Layers,
   Cpu,
   ExternalLink,
+  Download,
 } from "lucide-react";
 
 import WorkflowCard from "../../components/rfq/workflow/WorkflowCard";
@@ -478,17 +479,28 @@ function RFQDetailPage() {
               </div>
 
 
-              <div className={`
-                px-5
-                py-2
-                rounded-2xl
-                border
-                text-sm
-                font-medium
-                ${statusColors[rfq.status]}
-              `}>
+              <div className="flex items-center gap-3">
 
-                {rfq.status}
+                <button
+                  onClick={() => navigate(`/rfqs/${id}/product-sheet`)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-[#1D2230] border border-[#2A3142] text-zinc-300 hover:text-white hover:border-orange-500/40 text-sm font-medium transition-all"
+                >
+                  <Download size={14} /> Product Sheet
+                </button>
+
+                <div className={`
+                  px-5
+                  py-2
+                  rounded-2xl
+                  border
+                  text-sm
+                  font-medium
+                  ${statusColors[rfq.status]}
+                `}>
+
+                  {rfq.status}
+
+                </div>
 
               </div>
 

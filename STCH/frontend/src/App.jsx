@@ -12,6 +12,7 @@ import MiniMarkerPage from "./pages/RFQ/MiniMarkerPage";
 import BOMPage from "./pages/RFQ/BOMPage";
 import StyleSheetPage from "./pages/RFQ/StyleSheetPage";
 import SamplingPage from "./pages/RFQ/SamplingPage";
+import ProductSheetPage from "./pages/RFQ/ProductSheetPage";
 import UserManagement from "./pages/userManagement";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import SettingsPage from "./pages/SettingsPage";
@@ -118,6 +119,15 @@ function App() {
   element={
   <ProtectedRoute allowedRoles={["ADMIN", "MERCHANDISER", "SUPPLIER"]}>
   <SamplingPage />
+  </ProtectedRoute>
+}
+/>
+
+<Route
+  path="/rfqs/:id/product-sheet"
+  element={
+  <ProtectedRoute>
+  <ProductSheetPage />
   </ProtectedRoute>
 }
 />
