@@ -30,6 +30,8 @@ def get_style_tnas_service(style_id: int, current_user, db: Session):
         result.append({
             "id": tna.id,
             "activity_type": tna.activity_type.value,
+            "custom_name": tna.custom_name,
+            "is_custom": tna.activity_type.value == "CUSTOM",
             "priority": tna.priority.value if tna.priority else "MEDIUM",
             "planned_date": tna.planned_date,
             "actual_date": tna.actual_date,
@@ -66,6 +68,7 @@ def get_my_tnas_service(current_user, db: Session):
             "po_id": tna.po_id,
             "style": style_info,
             "activity_type": tna.activity_type.value,
+            "custom_name": tna.custom_name,
             "priority": tna.priority.value if tna.priority else "MEDIUM",
             "planned_date": tna.planned_date,
             "actual_date": tna.actual_date,

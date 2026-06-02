@@ -82,5 +82,8 @@ def get_dashboard(
             current_user
         )
 
+    elif current_user.role == UserRole.QC:
+        return get_member_dashboard_service(db, current_user)
+
     # MEMBER and any other internal role
     return get_member_dashboard_service(db, current_user)

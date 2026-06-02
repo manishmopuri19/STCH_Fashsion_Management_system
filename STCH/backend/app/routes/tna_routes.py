@@ -98,7 +98,8 @@ def update_tna(
         require_roles([
             UserRole.ADMIN,
             UserRole.MERCHANDISER,
-            UserRole.MEMBER
+            UserRole.MEMBER,
+            UserRole.QC,
         ])
     )
 ):
@@ -125,7 +126,8 @@ def update_tna_status(
             UserRole.ADMIN,
             UserRole.MERCHANDISER,
             UserRole.MEMBER,
-            UserRole.SUPPLIER
+            UserRole.SUPPLIER,
+            UserRole.QC,
         ])
     )
 ):

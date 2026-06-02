@@ -51,8 +51,11 @@ def update_tna_service(tna_id: int, payload: UpdateTNASchema, current_user, db: 
         if payload.delayed_reason is not None:
             tna.delayed_reason = payload.delayed_reason
     else:
+        # assigned users can update their own remarks and delayed reason
         if payload.delayed_reason is not None:
             tna.delayed_reason = payload.delayed_reason
+        if payload.remarks is not None:
+            tna.remarks = payload.remarks
 
     db.commit()
     db.refresh(tna)

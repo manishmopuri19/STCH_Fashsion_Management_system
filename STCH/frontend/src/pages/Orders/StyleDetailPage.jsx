@@ -5,7 +5,7 @@ import DashboardLayout from "../../layouts/DashboardLayout";
 import { useAuth } from "../../context/AuthContext";
 import {
   Plus, ChevronDown, ChevronRight, Palette, Edit2, Check, X,
-  AlertTriangle, CheckCircle2, Clock, Calendar, User, Trash2
+  AlertTriangle, CheckCircle2, Clock, Calendar, User, Trash2, Tag
 } from "lucide-react";
 
 const STATUS_COLORS = {
@@ -23,6 +23,28 @@ const PRIORITY_COLORS = {
   HIGH: "text-orange-400",
   CRITICAL: "text-red-400",
 };
+
+// ── days-left helpers ──────────────────────────────────────────────────────────
+function daysLeft(planned_date) {
+  if (!planned_date) return null;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const d = new Date(planned_date);
+  d.setHours(0, 0, 0, 0);
+  return Math.round((d - today) / 86400000);
+}
+
+function DaysLeftBadge({ planned_date }) {
+  const days = daysLeft(planned_date);
+  if (days === null) return null;
+  if (days < 0)
+    return <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-500/15 text-red-400 border border-red-500/20">{Math.abs(days)}d overdue</span>;
+  if (days === 0)
+    return <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-500/15 text-orange-400 border border-orange-500/20">Due today</span>;
+  if (days <= 7)
+    return <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-yellow-500/15 text-yellow-400 border border-yellow-500/20">{days}d left</span>;
+  return <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">{days}d left</span>;
+}
 
 function StyleDetailPage() {
   const { id: poId, styleId } = useParams();
@@ -52,6 +74,11 @@ function StyleDetailPage() {
   // TNA editing
   const [editingTnaId, setEditingTnaId] = useState(null);
   const [tnaEdit, setTnaEdit] = useState({});
+
+  // Custom TNA creation
+  const [showCustomTnaModal, setShowCustomTnaModal] = useState(false);
+  const [customTnaForm, setCustomTnaForm] = useState({ custom_name: "", planned_date: "", priority: "MEDIUM", assigned_to: "" });
+  const [savingCustomTna, setSavingCustomTna] = useState(false);
 
   useEffect(() => {
     fetchAll();
@@ -169,6 +196,37 @@ function StyleDetailPage() {
       await fetchAll();
     } catch (err) {
       console.error("Failed to update TNA status:", err);
+    }
+  };
+
+  const handleCreateCustomTna = async (e) => {
+    e.preventDefault();
+    if (!customTnaForm.custom_name.trim()) return;
+    setSavingCustomTna(true);
+    try {
+      await API.post(`/styles/${styleId}/tna`, {
+        custom_name: customTnaForm.custom_name.trim(),
+        planned_date: customTnaForm.planned_date || null,
+        priority: customTnaForm.priority,
+        assigned_to: customTnaForm.assigned_to ? Number(customTnaForm.assigned_to) : null,
+      });
+      setShowCustomTnaModal(false);
+      setCustomTnaForm({ custom_name: "", planned_date: "", priority: "MEDIUM", assigned_to: "" });
+      await fetchAll();
+    } catch (err) {
+      console.error("Failed to create custom TNA:", err);
+    } finally {
+      setSavingCustomTna(false);
+    }
+  };
+
+  const handleDeleteCustomTna = async (tnaId) => {
+    if (!window.confirm("Delete this custom milestone?")) return;
+    try {
+      await API.delete(`/styles/tna/${tnaId}`);
+      await fetchAll();
+    } catch (err) {
+      console.error("Failed to delete TNA:", err);
     }
   };
 
@@ -342,13 +400,23 @@ function StyleDetailPage() {
 
         {/* ── TNA Timeline Section ──────────────────────────────────────── */}
         <div className="space-y-4">
-          <div>
-            <h2 className="text-xl font-black text-white">TNA Timeline</h2>
-            <p className="text-zinc-500 text-xs mt-0.5">
-              {isPrivileged
-                ? "Set planned dates, assign team members, and track milestone progress."
-                : "Your assigned milestones for this style."}
-            </p>
+          <div className="flex items-start justify-between">
+            <div>
+              <h2 className="text-xl font-black text-white">TNA Timeline</h2>
+              <p className="text-zinc-500 text-xs mt-0.5">
+                {isPrivileged
+                  ? "Set planned dates, assign team members, and track milestone progress."
+                  : "Your assigned milestones for this style."}
+              </p>
+            </div>
+            {isPrivileged && (
+              <button
+                onClick={() => setShowCustomTnaModal(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 text-xs font-bold rounded-xl border border-orange-500/20 transition-all"
+              >
+                <Plus size={13} /> Add Custom Milestone
+              </button>
+            )}
           </div>
 
           {tnas.length === 0 ? (
@@ -365,8 +433,9 @@ function StyleDetailPage() {
                     <th className="text-left p-4">Assigned To</th>
                     <th className="text-left p-4">Priority</th>
                     <th className="text-left p-4">Status</th>
+                    <th className="text-left p-4">Remarks</th>
                     <th className="text-left p-4">Delayed Reason</th>
-                    {isPrivileged && <th className="text-right p-4">Edit</th>}
+                    <th className="text-right p-4">Edit</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -381,12 +450,21 @@ function StyleDetailPage() {
                       >
                         {/* Milestone */}
                         <td className="p-4">
-                          <span className="font-bold text-white text-sm">
-                            {tna.activity_type.replaceAll("_", " ")}
-                          </span>
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-white text-sm">
+                              {tna.is_custom
+                                ? (tna.custom_name || "Custom Milestone")
+                                : tna.activity_type.replaceAll("_", " ")}
+                            </span>
+                            {tna.is_custom && (
+                              <span className="flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-purple-500/15 text-purple-400 border border-purple-500/20">
+                                <Tag size={8} /> Custom
+                              </span>
+                            )}
+                          </div>
                         </td>
 
-                        {/* Planned Date */}
+                        {/* Planned Date + Days Left */}
                         <td className="p-4">
                           {isEditing && isPrivileged ? (
                             <input
@@ -396,9 +474,12 @@ function StyleDetailPage() {
                               className="bg-[#0F141D] border border-[#2A3142] rounded-lg px-2 py-1 text-white font-mono text-xs outline-none focus:border-orange-500 w-36"
                             />
                           ) : (
-                            <span className={`font-mono ${tna.planned_date ? "text-zinc-300" : "text-zinc-600 italic"}`}>
-                              {tna.planned_date || "Not set"}
-                            </span>
+                            <div className="flex flex-col gap-1.5">
+                              <span className={`font-mono text-xs ${tna.planned_date ? "text-zinc-300" : "text-zinc-600 italic"}`}>
+                                {tna.planned_date || "Not set"}
+                              </span>
+                              {tna.planned_date && <DaysLeftBadge planned_date={tna.planned_date} />}
+                            </div>
                           )}
                         </td>
 
@@ -461,9 +542,26 @@ function StyleDetailPage() {
                           </select>
                         </td>
 
-                        {/* Delayed Reason */}
-                        <td className="p-4 max-w-[180px]">
-                          {isEditing ? (
+                        {/* Remarks — editable by assigned user OR privileged */}
+                        <td className="p-4 max-w-[160px]">
+                          {isEditing && canEdit ? (
+                            <input
+                              type="text"
+                              placeholder="Add remark..."
+                              value={tnaEdit.remarks}
+                              onChange={(e) => setTnaEdit((p) => ({ ...p, remarks: e.target.value }))}
+                              className="bg-[#0F141D] border border-[#2A3142] rounded-lg px-2 py-1 text-zinc-200 text-xs outline-none focus:border-orange-500 w-full"
+                            />
+                          ) : (
+                            <span className={`text-xs ${tna.remarks ? "text-zinc-300" : "text-zinc-600 italic"}`}>
+                              {tna.remarks || "—"}
+                            </span>
+                          )}
+                        </td>
+
+                        {/* Delayed Reason — editable by assigned user OR privileged */}
+                        <td className="p-4 max-w-[160px]">
+                          {isEditing && canEdit ? (
                             <input
                               type="text"
                               placeholder="Reason for delay..."
@@ -478,10 +576,10 @@ function StyleDetailPage() {
                           )}
                         </td>
 
-                        {/* Edit Actions */}
-                        {isPrivileged && (
-                          <td className="p-4 text-right">
-                            {isEditing ? (
+                        {/* Edit + Delete Actions */}
+                        <td className="p-4 text-right">
+                          {canEdit && (
+                            isEditing ? (
                               <div className="flex items-center gap-2 justify-end">
                                 <button
                                   onClick={() => setEditingTnaId(null)}
@@ -497,15 +595,25 @@ function StyleDetailPage() {
                                 </button>
                               </div>
                             ) : (
-                              <button
-                                onClick={() => startEditTna(tna)}
-                                className="p-1.5 rounded-lg border border-[#2A3142] text-zinc-500 hover:text-orange-400 hover:border-orange-500/30 transition-all"
-                              >
-                                <Edit2 size={12} />
-                              </button>
-                            )}
-                          </td>
-                        )}
+                              <div className="flex items-center gap-1.5 justify-end">
+                                <button
+                                  onClick={() => startEditTna(tna)}
+                                  className="p-1.5 rounded-lg border border-[#2A3142] text-zinc-500 hover:text-orange-400 hover:border-orange-500/30 transition-all"
+                                >
+                                  <Edit2 size={12} />
+                                </button>
+                                {tna.is_custom && isPrivileged && (
+                                  <button
+                                    onClick={() => handleDeleteCustomTna(tna.id)}
+                                    className="p-1.5 rounded-lg border border-[#2A3142] text-zinc-600 hover:text-red-400 hover:border-red-500/30 transition-all"
+                                  >
+                                    <Trash2 size={12} />
+                                  </button>
+                                )}
+                              </div>
+                            )
+                          )}
+                        </td>
                       </tr>
                     );
                   })}
@@ -603,6 +711,90 @@ function StyleDetailPage() {
                   className="px-5 py-2.5 text-xs font-black bg-orange-500 rounded-xl text-white hover:bg-orange-600 transition-all shadow-md disabled:opacity-50"
                 >
                   {savingColor ? "Adding..." : "Add Color"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Add Custom TNA Modal */}
+      {showCustomTnaModal && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-[#151821] border border-[#2A3142] rounded-[28px] w-full max-w-md p-6 space-y-5 shadow-2xl text-white">
+            <div>
+              <h3 className="text-lg font-black">Add Custom Milestone</h3>
+              <p className="text-xs text-zinc-400 mt-1">Create a named TNA milestone specific to this style.</p>
+            </div>
+
+            <form onSubmit={handleCreateCustomTna} className="space-y-4">
+              <div>
+                <label className="block text-xs text-zinc-500 font-bold uppercase tracking-wider mb-1.5">
+                  Milestone Name <span className="text-orange-400">*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Accessory Approval, Wash Test..."
+                  value={customTnaForm.custom_name}
+                  onChange={(e) => setCustomTnaForm((p) => ({ ...p, custom_name: e.target.value }))}
+                  required
+                  autoFocus
+                  className="w-full bg-[#0F141D] border border-[#2A3142] rounded-xl p-3 text-sm text-zinc-200 outline-none focus:border-orange-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs text-zinc-500 font-bold uppercase tracking-wider mb-1.5">Planned Date</label>
+                <input
+                  type="date"
+                  value={customTnaForm.planned_date}
+                  onChange={(e) => setCustomTnaForm((p) => ({ ...p, planned_date: e.target.value }))}
+                  className="w-full bg-[#0F141D] border border-[#2A3142] rounded-xl p-3 text-sm text-zinc-200 outline-none focus:border-orange-500"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs text-zinc-500 font-bold uppercase tracking-wider mb-1.5">Priority</label>
+                  <select
+                    value={customTnaForm.priority}
+                    onChange={(e) => setCustomTnaForm((p) => ({ ...p, priority: e.target.value }))}
+                    className="w-full bg-[#0F141D] border border-[#2A3142] rounded-xl p-3 text-sm text-zinc-200 outline-none focus:border-orange-500"
+                  >
+                    {["LOW", "MEDIUM", "HIGH", "CRITICAL"].map((p) => (
+                      <option key={p} value={p}>{p}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs text-zinc-500 font-bold uppercase tracking-wider mb-1.5">Assign To</label>
+                  <select
+                    value={customTnaForm.assigned_to}
+                    onChange={(e) => setCustomTnaForm((p) => ({ ...p, assigned_to: e.target.value }))}
+                    className="w-full bg-[#0F141D] border border-[#2A3142] rounded-xl p-3 text-sm text-zinc-200 outline-none focus:border-orange-500"
+                  >
+                    <option value="">Unassigned</option>
+                    {internalUsers.map((u) => (
+                      <option key={u.id} value={u.id}>{u.name}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex gap-3 justify-end pt-2">
+                <button
+                  type="button"
+                  onClick={() => { setShowCustomTnaModal(false); setCustomTnaForm({ custom_name: "", planned_date: "", priority: "MEDIUM", assigned_to: "" }); }}
+                  className="px-4 py-2.5 text-xs font-semibold border border-[#2A3142] rounded-xl text-zinc-400 hover:text-white transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={savingCustomTna}
+                  className="px-5 py-2.5 text-xs font-black bg-orange-500 rounded-xl text-white hover:bg-orange-600 transition-all shadow-md disabled:opacity-50"
+                >
+                  {savingCustomTna ? "Adding..." : "Add Milestone"}
                 </button>
               </div>
             </form>

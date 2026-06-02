@@ -21,6 +21,7 @@ def run_db_migrations(engine):
     migrations = [
         "ALTER TABLE tnas ADD COLUMN style_id INTEGER",
         "ALTER TABLE tnas ADD COLUMN delayed_reason TEXT",
+        "ALTER TABLE tnas ADD COLUMN custom_name TEXT",
     ]
     with engine.connect() as conn:
         for sql in migrations:

@@ -44,6 +44,9 @@ class TNAActivityType(str, Enum):
     DISPATCH = "DISPATCH"
     DELIVERY = "DELIVERY"
 
+    # USER-DEFINED
+    CUSTOM = "CUSTOM"
+
 class TNAPriority(str, Enum):
     LOW = "LOW"
     MEDIUM = "MEDIUM"

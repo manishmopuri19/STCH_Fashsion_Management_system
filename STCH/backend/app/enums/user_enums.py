@@ -6,4 +6,5 @@ class UserRole(str, Enum):
     ADMIN = "ADMIN"
     MEMBER = "MEMBER"
     MERCHANDISER = "MERCHANDISER"
-    SUPPLIER="SUPPLIER"
+    SUPPLIER = "SUPPLIER"
+    QC = "QC"

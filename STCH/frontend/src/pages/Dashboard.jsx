@@ -10,6 +10,7 @@ function DashboardPage() {
   if (user?.role === "ADMIN") return <AdminDashboard />;
   if (user?.role === "MERCHANDISER") return <MerchDashboard />;
   if (user?.role === "SUPPLIER") return <SupplierDashboard />;
+  if (user?.role === "QC") return <MemberDashboard />;
 
   // MEMBER and any other authenticated role
   return <MemberDashboard />;

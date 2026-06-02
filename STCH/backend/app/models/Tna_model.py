@@ -67,6 +67,8 @@ class TNA(Base):
         default=TNAStatus.PENDING
     )
 
+    custom_name = Column(Text, nullable=True)
+
     remarks = Column(Text)
 
     delayed_reason = Column(Text, nullable=True)

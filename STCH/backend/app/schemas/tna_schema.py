@@ -32,3 +32,11 @@ class UpdateTNAAssignedSchema(BaseModel):
     """For assigned (non-merchandiser) users — status + delayed reason only."""
     status: TNAStatus
     delayed_reason: Optional[str] = None
+
+
+class CreateStyleTNASchema(BaseModel):
+    custom_name: str
+    planned_date: Optional[date] = None
+    priority: Optional[TNAPriority] = TNAPriority.MEDIUM
+    assigned_to: Optional[int] = None
+    remarks: Optional[str] = None

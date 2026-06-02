@@ -1,188 +1,117 @@
-from fastapi import (
-    APIRouter,
-    Depends
-)
-
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.db.database import SessionLocal
-
 from app.schemas.qc_schema import (
     CreateInspectionSchema,
     UpdateInspectionStatusSchema,
-    CreateDefectSchema
+    CreateDefectSchema,
 )
-
-from app.services.qc_services.create_inspection import (
-    create_inspection_service
-)
-
+from app.services.qc_services.create_inspection import create_inspection_service
 from app.services.qc_services.get_po_inspections import get_po_inspections_service
+from app.services.qc_services.update_inspection_status import update_inspection_status_service
+from app.services.qc_services.add_defect import add_defect_service
+from app.services.qc_services.get_defects import get_defects_service
+from app.services.qc_services.get_qc_employees import get_qc_employees_service
+from app.services.qc_services.get_qc_employee_detail import get_qc_employee_detail_service
+from app.core.permissions import require_roles
+from app.enums.user_enums import UserRole
 
-from app.services.qc_services.update_inspection_status import (
-    update_inspection_status_service
-)
-
-from app.services.qc_services.add_defect import (
-    add_defect_service
-)
-
-from app.services.qc_services.get_defects import (
-    get_defects_service
-)
-
-from app.core.permissions import (
-    require_roles
-)
-
-from app.enums.user_enums import (
-    UserRole
-)
-
-router = APIRouter(
-    prefix="/qc",
-    tags=["Quality Control"]
-)
+router = APIRouter(prefix="/qc", tags=["Quality Control"])
 
 
 def get_db():
-
     db = SessionLocal()
-
     try:
         yield db
-
     finally:
         db.close()
 
 
+# ─── QC Employee Management (Admin / Merch) ────────────────────────────────
+
+@router.get("/employees")
+def get_qc_employees(
+    db: Session = Depends(get_db),
+    current_user=Depends(
+        require_roles([UserRole.ADMIN, UserRole.MERCHANDISER])
+    ),
+):
+    return get_qc_employees_service(db)
+
+
+@router.get("/employees/{user_id}")
+def get_qc_employee_detail(
+    user_id: int,
+    db: Session = Depends(get_db),
+    current_user=Depends(
+        require_roles([UserRole.ADMIN, UserRole.MERCHANDISER])
+    ),
+):
+    return get_qc_employee_detail_service(user_id, db)
+
+
+# ─── Quality Inspections ───────────────────────────────────────────────────
+
 @router.post("/po/{po_id}")
 def create_inspection(
-
     po_id: int,
-
     payload: CreateInspectionSchema,
-
     db: Session = Depends(get_db),
-
     current_user=Depends(
-        require_roles([
-            UserRole.ADMIN,
-            UserRole.MERCHANDISER
-        ])
-    )
+        require_roles([UserRole.ADMIN, UserRole.MERCHANDISER])
+    ),
 ):
-
-    return create_inspection_service(
-
-        po_id,
-
-        payload,
-
-        db,
-
-        current_user
-    )
+    return create_inspection_service(po_id, payload, db, current_user)
 
 
 @router.get("/po/{po_id}")
 def get_po_inspections(
-
     po_id: int,
-
     db: Session = Depends(get_db),
-
     current_user=Depends(
         require_roles([
-            UserRole.ADMIN,
-            UserRole.MERCHANDISER,
-            UserRole.SUPPLIER
+            UserRole.ADMIN, UserRole.MERCHANDISER,
+            UserRole.SUPPLIER, UserRole.QC,
         ])
-    )
+    ),
 ):
-
-    return get_po_inspections_service(
-        po_id,
-        db
-    )
+    return get_po_inspections_service(po_id, db)
 
 
 @router.patch("/{inspection_id}")
 def update_inspection_status(
-
     inspection_id: int,
-
-    payload:
-    UpdateInspectionStatusSchema,
-
+    payload: UpdateInspectionStatusSchema,
     db: Session = Depends(get_db),
-
     current_user=Depends(
-        require_roles([
-            UserRole.ADMIN,
-            UserRole.MERCHANDISER
-        ])
-    )
+        require_roles([UserRole.ADMIN, UserRole.MERCHANDISER])
+    ),
 ):
-
-    return update_inspection_status_service(
-
-        inspection_id,
-
-        payload,
-
-        db
-    )
+    return update_inspection_status_service(inspection_id, payload, db)
 
 
-@router.post(
-    "/{inspection_id}/defects"
-)
+@router.post("/{inspection_id}/defects")
 def add_defect(
-
     inspection_id: int,
-
     payload: CreateDefectSchema,
-
     db: Session = Depends(get_db),
-
     current_user=Depends(
-        require_roles([
-            UserRole.ADMIN,
-            UserRole.MERCHANDISER
-        ])
-    )
+        require_roles([UserRole.ADMIN, UserRole.MERCHANDISER])
+    ),
 ):
-
-    return add_defect_service(
-
-        inspection_id,
-
-        payload,
-
-        db
-    )
+    return add_defect_service(inspection_id, payload, db)
 
 
-@router.get(
-    "/{inspection_id}/defects"
-)
+@router.get("/{inspection_id}/defects")
 def get_defects(
-
     inspection_id: int,
-
     db: Session = Depends(get_db),
-
     current_user=Depends(
         require_roles([
-            UserRole.ADMIN,
-            UserRole.MERCHANDISER,
-            UserRole.SUPPLIER
+            UserRole.ADMIN, UserRole.MERCHANDISER,
+            UserRole.SUPPLIER, UserRole.QC,
         ])
-    )
+    ),
 ):
-
-    return get_defects_service(
-        inspection_id,
-        db
-    )
+    return get_defects_service(inspection_id, db)

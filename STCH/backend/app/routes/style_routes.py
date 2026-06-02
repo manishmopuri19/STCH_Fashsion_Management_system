@@ -8,11 +8,14 @@ from app.core.permissions import require_roles
 from app.enums.user_enums import UserRole
 
 from app.schemas.style_schema import POStyleCreate, ColorSizeCreate
+from app.schemas.tna_schema import CreateStyleTNASchema
 from app.services.style_services.create_style import create_style_service
 from app.services.style_services.get_styles import get_styles_service, get_style_detail_service
 from app.services.style_services.create_color import create_color_service
 from app.services.style_services.create_size import create_size_service, update_size_service, delete_size_service
 from app.services.style_services.get_style_tnas import get_style_tnas_service, get_my_tnas_service
+from app.services.tna_services.create_style_tna import create_style_tna_service
+from app.services.tna_services.delete_tna import delete_tna_service
 from app.services.user_services.get_internal_users import get_internal_users_service
 
 router = APIRouter(prefix="/styles", tags=["Styles"])
@@ -134,7 +137,7 @@ def get_internal_users(
 def get_my_tnas(
     db: Session = Depends(get_db),
     current_user=Depends(
-        require_roles([UserRole.ADMIN, UserRole.MERCHANDISER, UserRole.MEMBER])
+        require_roles([UserRole.ADMIN, UserRole.MERCHANDISER, UserRole.MEMBER, UserRole.QC])
     ),
 ):
     return get_my_tnas_service(current_user, db)
@@ -157,7 +160,7 @@ def get_styles(
     po_id: int,
     db: Session = Depends(get_db),
     current_user=Depends(
-        require_roles([UserRole.ADMIN, UserRole.MERCHANDISER, UserRole.MEMBER, UserRole.SUPPLIER])
+        require_roles([UserRole.ADMIN, UserRole.MERCHANDISER, UserRole.MEMBER, UserRole.SUPPLIER, UserRole.QC])
     ),
 ):
     return get_styles_service(po_id, db)
@@ -168,7 +171,7 @@ def get_style_detail(
     style_id: int,
     db: Session = Depends(get_db),
     current_user=Depends(
-        require_roles([UserRole.ADMIN, UserRole.MERCHANDISER, UserRole.MEMBER, UserRole.SUPPLIER])
+        require_roles([UserRole.ADMIN, UserRole.MERCHANDISER, UserRole.MEMBER, UserRole.SUPPLIER, UserRole.QC])
     ),
 ):
     return get_style_detail_service(style_id, db)
@@ -181,10 +184,29 @@ def get_style_tnas(
     style_id: int,
     db: Session = Depends(get_db),
     current_user=Depends(
-        require_roles([UserRole.ADMIN, UserRole.MERCHANDISER, UserRole.MEMBER])
+        require_roles([UserRole.ADMIN, UserRole.MERCHANDISER, UserRole.MEMBER, UserRole.QC])
     ),
 ):
     return get_style_tnas_service(style_id, current_user, db)
+
+
+@router.post("/{style_id}/tna")
+def create_custom_tna(
+    style_id: int,
+    payload: CreateStyleTNASchema,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_roles([UserRole.ADMIN, UserRole.MERCHANDISER])),
+):
+    return create_style_tna_service(style_id, payload, db)
+
+
+@router.delete("/tna/{tna_id}")
+def delete_custom_tna(
+    tna_id: int,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_roles([UserRole.ADMIN, UserRole.MERCHANDISER])),
+):
+    return delete_tna_service(tna_id, db)
 
 
 # ─── Colors ────────────────────────────────────────────────────────────────

@@ -103,7 +103,8 @@ def update_user(
             UserRole.ADMIN,
             UserRole.MEMBER,
             UserRole.SUPPLIER,
-            UserRole.MERCHANDISER
+            UserRole.MERCHANDISER,
+            UserRole.QC,
         ])
     )
 ):
