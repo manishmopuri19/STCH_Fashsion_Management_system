@@ -82,6 +82,35 @@ from app.routes.style_routes import (router as style_router)
 run_db_migrations(engine)
 Base.metadata.create_all(bind=engine)
 
+
+def seed_admin():
+    from app.db.database import SessionLocal
+    from app.models.user_model import User
+    from app.enums.user_enums import UserRole
+    from app.utils.passwordEncryption import hash_password
+
+    admin_email = os.getenv("ADMIN_EMAIL", "admin@stch.com")
+    admin_password = os.getenv("ADMIN_PASSWORD", "admin123")
+    admin_name = os.getenv("ADMIN_NAME", "Admin")
+
+    db = SessionLocal()
+    try:
+        exists = db.query(User).filter(User.role == UserRole.ADMIN).first()
+        if not exists:
+            admin = User(
+                userName=admin_name,
+                email=admin_email,
+                password=hash_password(admin_password),
+                role=UserRole.ADMIN,
+            )
+            db.add(admin)
+            db.commit()
+    finally:
+        db.close()
+
+
+seed_admin()
+
 app = FastAPI()
 
 os.makedirs("uploads/fabric_swatches", exist_ok=True)
