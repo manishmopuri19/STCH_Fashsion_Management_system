@@ -37,10 +37,10 @@ function LoginForm() {
 
       setAuthError("");
 
-      const base = import.meta.env.VITE_API_URL || "http://localhost:5000";
+      const base = import.meta.env.VITE_API_URL || "https://stch.onrender.com";
       const response =
         await fetch(
-          `${base}login`,
+          `${base}/login`,
           {
             method: "POST",
 

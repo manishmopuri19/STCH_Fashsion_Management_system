@@ -118,7 +118,7 @@ app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 
 # CORS
-allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173").split(",")
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173,https://stch.netlify.app").split(",")
 
 app.add_middleware(
     CORSMiddleware,
