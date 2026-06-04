@@ -22,6 +22,8 @@ import OrderDetailPage from "./pages/Orders/OrderDetailsPage";
 import StyleSpecificationPage from "./pages/Orders/StyleSpecificationPage";
 import StyleDetailPage from "./pages/Orders/StyleDetailPage";
 import CataloguePage from "./pages/CataloguePage";
+import QCPage from "./pages/QC/QCPage";
+import QCUserDetailPage from "./pages/QC/QCUserDetailPage";
 
 function App() {
   return (
@@ -185,6 +187,24 @@ element={
 <StyleDetailPage />
 </ProtectedRoute>
 }
+/>
+
+<Route
+  path="/qc"
+  element={
+    <ProtectedRoute allowedRoles={["ADMIN", "MERCHANDISER"]}>
+      <QCPage />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/qc/:userId"
+  element={
+    <ProtectedRoute allowedRoles={["ADMIN", "MERCHANDISER"]}>
+      <QCUserDetailPage />
+    </ProtectedRoute>
+  }
 />
 
 {/* Public route — no ProtectedRoute wrapper; auth is checked inside the page */}

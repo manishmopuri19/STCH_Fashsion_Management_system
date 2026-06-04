@@ -18,9 +18,11 @@ from app.services.collaboration_services.get_collaborators import (
 from app.services.collaboration_services.remove_collaborator import (
     remove_collaborator_service
 )
+from fastapi import HTTPException
 from app.core.security import get_current_user
 from app.core.permissions import require_roles
 from app.enums.user_enums import UserRole
+from app.models.rfq_model import RFQ
 
 router = APIRouter(
     prefix="/collaborations",
@@ -49,6 +51,12 @@ def add_collaborator(
         require_roles([UserRole.ADMIN, UserRole.MERCHANDISER])
     )
 ):
+    if current_user.role == UserRole.MERCHANDISER:
+        rfq = db.query(RFQ).filter(RFQ.id == rfq_id).first()
+        if not rfq:
+            raise HTTPException(status_code=404, detail="RFQ not found")
+        if rfq.created_by != current_user.id:
+            raise HTTPException(status_code=403, detail="You can only manage collaborators on your own RFQs")
 
     return add_collaborator_service(
         rfq_id,
@@ -81,6 +89,12 @@ def remove_collaborator(
         require_roles([UserRole.ADMIN, UserRole.MERCHANDISER])
     )
 ):
+    if current_user.role == UserRole.MERCHANDISER:
+        rfq = db.query(RFQ).filter(RFQ.id == rfq_id).first()
+        if not rfq:
+            raise HTTPException(status_code=404, detail="RFQ not found")
+        if rfq.created_by != current_user.id:
+            raise HTTPException(status_code=403, detail="You can only manage collaborators on your own RFQs")
 
     return remove_collaborator_service(
         rfq_id,

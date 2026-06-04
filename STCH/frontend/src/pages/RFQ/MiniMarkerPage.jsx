@@ -62,6 +62,7 @@ export default function MiniMarkerPage() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [rfqNumber, setRfqNumber] = useState("");
+  const [prefilled, setPrefilled] = useState([]);
 
   useEffect(() => {
     fetchData();
@@ -73,12 +74,25 @@ export default function MiniMarkerPage() {
         API.get(`/rfqs/${id}/mini-marker/`),
         API.get(`/rfqs/${id}`),
       ]);
-      const d = mmRes.data;
-      setRfqNumber(rfqRes.data.rfq_number);
+      const d   = mmRes.data;
+      const rfq = rfqRes.data;
+      setRfqNumber(rfq.rfq_number);
       setStatus(d.status || "NOT_STARTED");
+
+      // Parse GSM from fabric_weight string e.g. "180 GSM", "220", "180gsm"
+      const parseGSM = (fw) => {
+        if (!fw) return "";
+        const m = String(fw).match(/(\d+(\.\d+)?)/);
+        return m ? m[1] : "";
+      };
+
+      const auto = [];
+      const gsm  = d.gsm != null ? d.gsm : (() => { const v = parseGSM(rfq.fabric_weight); if (v) auto.push("GSM"); return v; })();
+
+      setPrefilled(auto);
       setForm({
         fabric_width:       d.fabric_width      ?? "",
-        gsm:                d.gsm               ?? "",
+        gsm:                gsm,
         size_ratio:         d.size_ratio        ?? "",
         marker_efficiency:  d.marker_efficiency ?? "",
         wastage_pct:        d.wastage_pct       ?? "",
@@ -159,6 +173,16 @@ export default function MiniMarkerPage() {
               </div>
             </div>
           </div>
+
+          {prefilled.length > 0 && (
+            <div className="flex items-center gap-3 px-5 py-3 rounded-2xl bg-orange-500/8 border border-orange-500/20 text-sm text-orange-300">
+              <span className="text-orange-400">✦</span>
+              <span>
+                <span className="font-semibold">Pre-filled from RFQ:</span>{" "}
+                {prefilled.join(", ")} — review and adjust as needed.
+              </span>
+            </div>
+          )}
 
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
             {/* INPUTS COLUMN */}

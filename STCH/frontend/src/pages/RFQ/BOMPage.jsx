@@ -116,6 +116,7 @@ export default function BOMPage() {
   const [addingRow, setAddingRow] = useState(false);
   const [saving, setSaving]   = useState(false);
   const [saved, setSaved]     = useState(false);
+  const [seededFromRFQ, setSeededFromRFQ] = useState(false);
 
   useEffect(() => { fetchData(); }, [id]);
 
@@ -125,9 +126,56 @@ export default function BOMPage() {
         API.get(`/rfqs/${id}/bom/`),
         API.get(`/rfqs/${id}`),
       ]);
-      setRfqNumber(rfqRes.data.rfq_number);
+      const rfq      = rfqRes.data;
+      const existing = bomRes.data.items || [];
+      setRfqNumber(rfq.rfq_number);
       setStatus(bomRes.data.status || "NOT_STARTED");
-      setItems(bomRes.data.items || []);
+
+      if (existing.length > 0) {
+        setItems(existing);
+        return;
+      }
+
+      // BOM is empty — seed suggested rows from RFQ data
+      const seeded = [];
+
+      if (rfq.fabric_type) {
+        const desc = [rfq.fabric_type, rfq.fabric_composition].filter(Boolean).join(" – ");
+        seeded.push({
+          id: `seed-fabric`, material: desc, material_type: "Fabric",
+          consumption: "", unit: "meters", cost: "",
+          supplier: "", remarks: rfq.fabric_weight || "",
+        });
+      }
+
+      if (rfq.trims_details) {
+        const trims = rfq.trims_details.split(/[,\n]/).map(t => t.trim()).filter(Boolean);
+        trims.slice(0, 6).forEach((trim, i) => {
+          seeded.push({
+            id: `seed-trim-${i}`, material: trim, material_type: "Trim",
+            consumption: "", unit: "pcs", cost: "", supplier: "", remarks: "",
+          });
+        });
+      }
+
+      if (rfq.label_type) {
+        seeded.push({
+          id: `seed-label`, material: `${rfq.label_type} Label`, material_type: "Label",
+          consumption: "1", unit: "pcs", cost: "", supplier: "", remarks: "",
+        });
+      }
+
+      if (rfq.packaging_type) {
+        seeded.push({
+          id: `seed-pkg`, material: rfq.packaging_type, material_type: "Packaging",
+          consumption: "1", unit: "pcs", cost: "", supplier: "", remarks: "",
+        });
+      }
+
+      if (seeded.length > 0) {
+        setItems(seeded);
+        setSeededFromRFQ(true);
+      }
     } catch (e) { console.error(e); }
   };
 
@@ -213,6 +261,15 @@ export default function BOMPage() {
               </div>
             </div>
           </div>
+
+          {seededFromRFQ && (
+            <div className="flex items-start gap-3 px-5 py-3.5 rounded-2xl bg-orange-500/8 border border-orange-500/20 text-sm text-orange-300">
+              <span className="text-orange-400 mt-0.5">✦</span>
+              <span>
+                <span className="font-semibold">Suggested items from your RFQ</span> — fabric, trims, labels and packaging have been pre-filled based on what you entered. Review quantities, costs and suppliers, then save.
+              </span>
+            </div>
+          )}
 
           {/* TABLE */}
           <div className="bg-[#151821] border border-[#2A3142] rounded-3xl overflow-hidden">

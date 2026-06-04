@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from typing import Optional
 from datetime import date
 
@@ -6,6 +6,8 @@ from app.enums.rfq_enums import (
     RFQPriority,
     RFQStatus
 )
+
+_BLOCKED_SCHEMES = ("javascript:", "data:", "vbscript:", "file:")
 
 
 class RFQCreate(BaseModel):
@@ -55,6 +57,23 @@ class RFQCreate(BaseModel):
     tech_pack_url: Optional[str] = None
     reference_images: Optional[str] = None
     notes: Optional[str] = None
+
+    @field_validator("tech_pack_url")
+    @classmethod
+    def validate_tech_pack_url(cls, v):
+        if v and v.lower().strip().startswith(_BLOCKED_SCHEMES):
+            raise ValueError("Invalid URL scheme")
+        return v
+
+    @field_validator("reference_images")
+    @classmethod
+    def validate_reference_images(cls, v):
+        if v:
+            for line in v.splitlines():
+                line = line.strip()
+                if line and line.lower().startswith(_BLOCKED_SCHEMES):
+                    raise ValueError("Invalid URL in reference images")
+        return v
 
 
 class RFQStatusUpdate(BaseModel):

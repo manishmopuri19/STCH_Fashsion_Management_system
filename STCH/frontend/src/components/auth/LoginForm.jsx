@@ -56,11 +56,6 @@ function LoginForm() {
       const result =
         await response.json();
 
-      console.log(
-        "LOGIN RESPONSE:",
-        result
-      );
-
       // LOGIN FAILED
       if (!response.ok) {
 

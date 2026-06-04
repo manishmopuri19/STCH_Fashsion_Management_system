@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 
 from app.db.database import SessionLocal
@@ -12,6 +12,8 @@ from app.utils.passwordEncryption import (
 )
 from app.core.auth import create_access_token
 from app.models.supplier_model import Supplier
+from app.enums.user_enums import UserRole
+from app.core.limiter import limiter
 
 router = APIRouter()
 
@@ -27,7 +29,9 @@ def get_db():
 
 # LOGIN USER
 @router.post("/login")
+@limiter.limit("10/minute")
 def login(
+    request: Request,
     payload: UserLogin,
     db: Session = Depends(get_db)
 ):
@@ -64,10 +68,9 @@ def login(
     )
     supplier = None
 
-    if str(user.role) == "UserRole.SUPPLIER":
-
+    if user.role == UserRole.SUPPLIER:
         supplier = db.query(Supplier).filter(
-        Supplier.user_id == user.id
+            Supplier.user_id == user.id
         ).first()
    
     return {
@@ -85,7 +88,7 @@ def login(
         user.email,
 
         "role":
-        str(user.role),
+        user.role.value,
 
         "supplier_id":
         supplier.id if supplier else None

@@ -10,6 +10,24 @@ from app.schemas.style_schema import StyleColorCreate
 
 
 UPLOAD_DIR = "uploads/fabric_swatches"
+ALLOWED_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp"}
+MAX_IMAGE_SIZE = 5 * 1024 * 1024  # 5 MB
+
+# Magic bytes for common image types
+_IMAGE_SIGNATURES = [
+    b"\xff\xd8\xff",        # JPEG
+    b"\x89PNG\r\n\x1a\n",  # PNG
+    b"GIF87a",              # GIF
+    b"GIF89a",              # GIF
+    b"RIFF",                # WebP (RIFF....WEBP)
+]
+
+
+def _is_image_bytes(header: bytes) -> bool:
+    for sig in _IMAGE_SIGNATURES:
+        if header[:len(sig)] == sig:
+            return True
+    return False
 
 
 def generate_color_code(style_code: str, style_id: int, db: Session) -> str:
@@ -32,13 +50,22 @@ def create_color_service(
 
     image_path = None
     if fabric_image and fabric_image.filename:
+        ext = os.path.splitext(fabric_image.filename)[-1].lower()
+        if ext not in ALLOWED_IMAGE_EXTENSIONS:
+            raise HTTPException(status_code=400, detail="Only JPG, PNG, GIF, or WebP images are allowed")
+
+        content = fabric_image.file.read()
+        if len(content) > MAX_IMAGE_SIZE:
+            raise HTTPException(status_code=400, detail="Image must be under 5 MB")
+        if not _is_image_bytes(content):
+            raise HTTPException(status_code=400, detail="File content does not match a supported image format")
+
         os.makedirs(UPLOAD_DIR, exist_ok=True)
-        ext = os.path.splitext(fabric_image.filename)[-1]
-        filename = f"{color_code}{ext}"
+        filename = f"{uuid.uuid4()}{ext}"
         full_path = os.path.join(UPLOAD_DIR, filename)
         with open(full_path, "wb") as f:
-            shutil.copyfileobj(fabric_image.file, f)
-        image_path = f"/{full_path}"
+            f.write(content)
+        image_path = f"/uploads/fabric_swatches/{filename}"
 
     color = StyleColor(
         style_id=style_id,

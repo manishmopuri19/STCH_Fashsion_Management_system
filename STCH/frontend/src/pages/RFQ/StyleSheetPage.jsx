@@ -56,6 +56,7 @@ export default function StyleSheetPage() {
   const [rfqNumber, setRfqNumber] = useState("");
   const [saving, setSaving]     = useState(false);
   const [saved, setSaved]       = useState(false);
+  const [prefilled, setPrefilled] = useState([]);
 
   useEffect(() => { fetchData(); }, [id]);
 
@@ -65,20 +66,48 @@ export default function StyleSheetPage() {
         API.get(`/rfqs/${id}/style-sheet/`),
         API.get(`/rfqs/${id}`),
       ]);
-      setRfqNumber(rfqRes.data.rfq_number);
-      const d = ssRes.data;
+      const rfq = rfqRes.data;
+      const d   = ssRes.data;
+      setRfqNumber(rfq.rfq_number);
       setStatus(d.status || "NOT_STARTED");
+
+      // Helper: record which fields were auto-filled
+      const auto = [];
+      const fill = (dbVal, label, fromRFQ) => {
+        if (dbVal) return dbVal;
+        if (fromRFQ) { auto.push(label); return fromRFQ; }
+        return "";
+      };
+
+      const joinList = (v) => Array.isArray(v) ? v.join(", ") : (v || "");
+
+      const fabricFromRFQ = [rfq.fabric_type, rfq.fabric_composition, rfq.fabric_weight]
+        .filter(Boolean).join(" | ");
+
+      const washFromRFQ = joinList(rfq.garment_wash);
+
+      const artworkFromRFQ = [
+        rfq.print_type        ? `Print: ${rfq.print_type}`                : null,
+        rfq.embroidery_type   ? `Embroidery: ${rfq.embroidery_type}`      : null,
+        rfq.special_finish    ? `Special Finish: ${rfq.special_finish}`   : null,
+        rfq.dye_type          ? `Dye: ${rfq.dye_type}`                    : null,
+      ].filter(Boolean).join("\n");
+
+      const labelFromRFQ     = rfq.label_type     ? `${rfq.label_type} label` : "";
+      const packagingFromRFQ = rfq.packaging_type || "";
+
       setForm({
-        front_image_url:  d.front_image_url  ?? "",
-        back_image_url:   d.back_image_url   ?? "",
-        fabric_details:   d.fabric_details   ?? "",
-        wash_details:     d.wash_details     ?? "",
+        front_image_url:  d.front_image_url ?? "",
+        back_image_url:   d.back_image_url  ?? "",
+        fabric_details:   fill(d.fabric_details,  "Fabric Details",   fabricFromRFQ),
+        wash_details:     fill(d.wash_details,     "Wash Details",     washFromRFQ),
         stitch_details:   d.stitch_details   ?? "",
         fit_type:         d.fit_type         ?? "Regular",
-        label_placement:  d.label_placement  ?? "",
-        artwork_notes:    d.artwork_notes    ?? "",
-        packaging_notes:  d.packaging_notes  ?? "",
+        label_placement:  fill(d.label_placement,  "Label Placement",  labelFromRFQ),
+        artwork_notes:    fill(d.artwork_notes,     "Artwork Notes",    artworkFromRFQ),
+        packaging_notes:  fill(d.packaging_notes,   "Packaging Notes",  packagingFromRFQ),
       });
+      setPrefilled(auto);
     } catch (e) { console.error(e); }
   };
 
@@ -144,6 +173,16 @@ export default function StyleSheetPage() {
               </div>
             </div>
           </div>
+
+          {prefilled.length > 0 && (
+            <div className="flex items-start gap-3 px-5 py-3.5 rounded-2xl bg-orange-500/8 border border-orange-500/20 text-sm text-orange-300">
+              <span className="text-orange-400 mt-0.5">✦</span>
+              <span>
+                <span className="font-semibold">Pre-filled from RFQ:</span>{" "}
+                {prefilled.join(", ")} — these fields were empty and have been populated from your RFQ data. Edit if needed before saving.
+              </span>
+            </div>
+          )}
 
           {/* CONTENT GRID */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

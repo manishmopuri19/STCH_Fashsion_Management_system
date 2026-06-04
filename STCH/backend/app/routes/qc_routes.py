@@ -68,7 +68,8 @@ def create_inspection(
     current_user=Depends(
         require_roles([
             UserRole.ADMIN,
-            UserRole.MERCHANDISER
+            UserRole.MERCHANDISER,
+            UserRole.QUALITY_CONTROL
         ])
     )
 ):
@@ -96,7 +97,8 @@ def get_po_inspections(
         require_roles([
             UserRole.ADMIN,
             UserRole.MERCHANDISER,
-            UserRole.SUPPLIER
+            UserRole.SUPPLIER,
+            UserRole.QUALITY_CONTROL
         ])
     )
 ):
@@ -120,7 +122,8 @@ def update_inspection_status(
     current_user=Depends(
         require_roles([
             UserRole.ADMIN,
-            UserRole.MERCHANDISER
+            UserRole.MERCHANDISER,
+            UserRole.QUALITY_CONTROL
         ])
     )
 ):
@@ -149,7 +152,8 @@ def add_defect(
     current_user=Depends(
         require_roles([
             UserRole.ADMIN,
-            UserRole.MERCHANDISER
+            UserRole.MERCHANDISER,
+            UserRole.QUALITY_CONTROL
         ])
     )
 ):
@@ -177,7 +181,8 @@ def get_defects(
         require_roles([
             UserRole.ADMIN,
             UserRole.MERCHANDISER,
-            UserRole.SUPPLIER
+            UserRole.SUPPLIER,
+            UserRole.QUALITY_CONTROL
         ])
     )
 ):

@@ -1,9 +1,7 @@
-import { FormField, RFQInput, RFQTextArea } from "../ui/RFQInputs";
+import { FormField } from "../ui/RFQInputs";
+import { FileOrUrlInput } from "../ui/RFQInputs";
+import { RFQTextArea } from "../ui/RFQInputs";
 
-/**
- * Step 7 – Additional Information
- * Fields: Tech Pack URL, Reference Images (one per line), Notes
- */
 function AdditionalInfoStep({ formData, setFormData }) {
   const update = (f, v) => setFormData({ ...formData, [f]: v });
 
@@ -17,22 +15,27 @@ function AdditionalInfoStep({ formData, setFormData }) {
       </div>
 
       <div className="space-y-5">
-        {/* Tech Pack URL */}
-        <FormField label="Tech Pack URL">
-          <RFQInput
+        {/* Tech Pack — URL or file upload */}
+        <FormField label="Tech Pack">
+          <p className="text-xs text-zinc-600 mb-1">Paste a link or upload the file directly (PDF, DOCX, ZIP, images — max 20 MB).</p>
+          <FileOrUrlInput
             value={formData.techPackUrl}
             onChange={(v) => update("techPackUrl", v)}
-            placeholder="https://drive.google.com/..."
+            placeholder="https://drive.google.com/…"
+            accept=".pdf,.doc,.docx,.xlsx,.xls,.zip,.jpg,.jpeg,.png"
+            uploadPath="/rfqs/upload-attachment"
           />
         </FormField>
 
-        {/* Reference Image URLs */}
-        <FormField label="Reference Image URLs (one per line)">
-          <RFQTextArea
+        {/* Reference Images — URL or file upload (single image or URL) */}
+        <FormField label="Reference Image">
+          <p className="text-xs text-zinc-600 mb-1">Upload an image file or paste a URL. For multiple images, separate URLs with a new line in the text field.</p>
+          <FileOrUrlInput
             value={formData.referenceImages}
             onChange={(v) => update("referenceImages", v)}
-            placeholder={"https://example.com/image1.jpg\nhttps://example.com/image2.jpg"}
-            rows={4}
+            placeholder="https://example.com/image1.jpg"
+            accept=".jpg,.jpeg,.png,.gif,.webp"
+            uploadPath="/rfqs/upload-attachment"
           />
         </FormField>
 

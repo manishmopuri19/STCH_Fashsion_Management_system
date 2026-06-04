@@ -18,6 +18,8 @@ import {
   Layers,
   Cpu,
   ExternalLink,
+  Download,
+  Loader2,
 } from "lucide-react";
 
 import WorkflowCard from "../../components/rfq/workflow/WorkflowCard";
@@ -148,6 +150,8 @@ function RFQDetailPage() {
   const [existingPO,
   setExistingPO] =
     useState(null);
+
+  const [downloading, setDownloading] = useState(false);
 
 
   useEffect(() => {
@@ -298,6 +302,25 @@ function RFQDetailPage() {
     }
   };
 
+
+  const downloadPDF = async () => {
+    setDownloading(true);
+    try {
+      const res = await API.get(`/rfqs/${id}/export-pdf`, { responseType: "blob" });
+      const url = window.URL.createObjectURL(new Blob([res.data], { type: "application/pdf" }));
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `product-record-${rfq?.rfq_number || id}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("PDF download failed:", err);
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   const updateStatus =
     async () => {
@@ -478,17 +501,34 @@ function RFQDetailPage() {
               </div>
 
 
-              <div className={`
-                px-5
-                py-2
-                rounded-2xl
-                border
-                text-sm
-                font-medium
-                ${statusColors[rfq.status]}
-              `}>
+              <div className="flex items-center gap-3">
 
-                {rfq.status}
+                <div className={`
+                  px-5
+                  py-2
+                  rounded-2xl
+                  border
+                  text-sm
+                  font-medium
+                  ${statusColors[rfq.status]}
+                `}>
+
+                  {rfq.status}
+
+                </div>
+
+                <button
+                  onClick={downloadPDF}
+                  disabled={downloading}
+                  title="Download Product Record PDF"
+                  className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-[#0F141D] border border-[#2A3142] hover:border-orange-500/40 hover:bg-[#1A1F2E] text-zinc-400 hover:text-orange-400 text-sm font-semibold transition-all disabled:opacity-50"
+                >
+                  {downloading
+                    ? <Loader2 size={15} className="animate-spin" />
+                    : <Download size={15} />
+                  }
+                  {downloading ? "Generating…" : "Download PDF"}
+                </button>
 
               </div>
 

@@ -60,13 +60,17 @@ useState(false);
     "RFQ",
     "Orders",
     "Catalogs",
-  ]
-,
+  ],
   SUPPLIER: [
     "Dashboard",
     "RFQ",
     "Orders",
     "Catalogs"
+  ],
+  QUALITY_CONTROL: [
+    "Dashboard",
+    "Orders",
+    "QC",
   ],
 };
 

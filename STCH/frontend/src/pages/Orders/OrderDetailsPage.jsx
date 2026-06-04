@@ -130,23 +130,34 @@ function OrderDetailPage() {
 
         {/* Status bar — privileged users only */}
         {isPrivileged && (
-          <div className="flex items-center gap-2 p-4 rounded-2xl bg-[#151821] border border-[#2A3142] overflow-x-auto scrollbar-none">
+          <div className="flex items-center gap-4 p-4 rounded-2xl bg-[#151821] border border-[#2A3142]">
             <span className="text-sm text-zinc-400 font-bold uppercase tracking-wider px-3 whitespace-nowrap">
               Order Status:
             </span>
-            {["CREATED", "APPROVED", "IN_PRODUCTION", "SHIPPED", "DELIVERED"].map((status) => (
-              <button
-                key={status}
-                onClick={() => updatePOStatus(status)}
-                className={`px-4 py-2 rounded-xl text-sm font-semibold tracking-wide transition-all border whitespace-nowrap ${
-                  order?.status === status
-                    ? "bg-orange-500 text-white border-orange-600 shadow-md"
-                    : "bg-[#0F141D] border-[#2A3142] text-zinc-400 hover:text-white hover:border-zinc-600"
-                }`}
-              >
-                {status.replaceAll("_", " ")}
-              </button>
-            ))}
+            <select
+              value={order?.status || ""}
+              onChange={(e) => updatePOStatus(e.target.value)}
+              className="flex-1 max-w-xs px-4 py-2.5 rounded-xl bg-[#0F141D] border border-[#2A3142] text-white text-sm font-semibold outline-none focus:border-orange-500 cursor-pointer"
+            >
+              {[
+                "CREATED",
+                "APPROVED",
+                "TNA_PENDING",
+                "FABRIC_BOOKED",
+                "IN_PRODUCTION",
+                "INLINE_QC",
+                "FINAL_QC",
+                "READY_TO_SHIP",
+                "SHIPPED",
+                "DELIVERED",
+                "CLOSED",
+                "CANCELLED",
+              ].map((status) => (
+                <option key={status} value={status}>
+                  {status.replaceAll("_", " ")}
+                </option>
+              ))}
+            </select>
           </div>
         )}
 

@@ -134,7 +134,7 @@ def get_internal_users(
 def get_my_tnas(
     db: Session = Depends(get_db),
     current_user=Depends(
-        require_roles([UserRole.ADMIN, UserRole.MERCHANDISER, UserRole.MEMBER])
+        require_roles([UserRole.ADMIN, UserRole.MERCHANDISER, UserRole.MEMBER, UserRole.QUALITY_CONTROL])
     ),
 ):
     return get_my_tnas_service(current_user, db)

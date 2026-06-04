@@ -33,6 +33,11 @@ from app.services.user_services.get_all_users import (
 from app.core.security import get_current_user
 from app.models.supplier_model import Supplier
 from app.services.user_services import addNewUser
+from app.models.Tna_model import TNA
+from app.models.rfqCollaborator_model import RFQCollaborator
+from app.models.rfq_model import RFQ
+from app.models.purchaseOrder_model import PurchaseOrder
+from app.models.po_style_model import POStyle
 
 router = APIRouter(
     prefix="/users",
@@ -103,7 +108,8 @@ def update_user(
             UserRole.ADMIN,
             UserRole.MEMBER,
             UserRole.SUPPLIER,
-            UserRole.MERCHANDISER
+            UserRole.MERCHANDISER,
+            UserRole.QUALITY_CONTROL
         ])
     )
 ):
@@ -223,8 +229,129 @@ def delete_user(user_id: int,
 def get_my_profile(
     current_user=Depends(get_current_user)
 ):
-    return current_user
+    return {
+        "id": current_user.id,
+        "userName": current_user.userName,
+        "email": current_user.email,
+        "role": current_user.role.value,
+    }
 
+
+@router.get("/qc-team")
+def get_qc_team(
+    db: Session = Depends(get_db),
+    current_user=Depends(
+        require_roles([
+            UserRole.ADMIN,
+            UserRole.MERCHANDISER
+        ])
+    )
+):
+    users = (
+        db.query(User)
+        .filter(User.role == UserRole.QUALITY_CONTROL)
+        .all()
+    )
+
+    result = []
+    for u in users:
+        tna_count = db.query(TNA).filter(TNA.assigned_to == u.id).count()
+        rfq_count = (
+            db.query(RFQCollaborator)
+            .filter(RFQCollaborator.user_id == u.id)
+            .count()
+        )
+        result.append({
+            "id": u.id,
+            "userName": u.userName,
+            "email": u.email,
+            "role": u.role.value,
+            "tna_count": tna_count,
+            "rfq_count": rfq_count,
+        })
+
+    return result
+
+
+@router.get("/{user_id}/qc-detail")
+def get_qc_user_detail(
+    user_id: int,
+    db: Session = Depends(get_db),
+    current_user=Depends(
+        require_roles([
+            UserRole.ADMIN,
+            UserRole.MERCHANDISER
+        ])
+    )
+):
+    user = db.query(User).filter(User.id == user_id).first()
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Assigned TNAs with PO and style context
+    tnas_raw = (
+        db.query(TNA)
+        .filter(TNA.assigned_to == user_id)
+        .all()
+    )
+
+    tna_list = []
+    for t in tnas_raw:
+        po = db.query(PurchaseOrder).filter(PurchaseOrder.id == t.po_id).first() if t.po_id else None
+        style = db.query(POStyle).filter(POStyle.id == t.style_id).first() if t.style_id else None
+        tna_list.append({
+            "id": t.id,
+            "activity_type": t.activity_type.value if t.activity_type else None,
+            "status": t.status.value if t.status else None,
+            "priority": t.priority.value if t.priority else None,
+            "planned_date": str(t.planned_date) if t.planned_date else None,
+            "actual_date": str(t.actual_date) if t.actual_date else None,
+            "delayed_reason": t.delayed_reason,
+            "remarks": t.remarks,
+            "po_id": t.po_id,
+            "po_number": po.po_number if po else None,
+            "style_id": t.style_id,
+            "style_name": style.style_name if style else None,
+            "style_code": style.style_code if style else None,
+        })
+
+    # RFQs where user is a collaborator
+    collab_rfq_ids = (
+        db.query(RFQCollaborator.rfq_id)
+        .filter(RFQCollaborator.user_id == user_id)
+        .all()
+    )
+    rfq_id_list = [r[0] for r in collab_rfq_ids]
+
+    rfqs_raw = (
+        db.query(RFQ)
+        .filter(RFQ.id.in_(rfq_id_list))
+        .all()
+    ) if rfq_id_list else []
+
+    rfq_list = [
+        {
+            "id": r.id,
+            "rfq_number": r.rfq_number,
+            "brand": r.brand,
+            "garment_type": r.garment_type,
+            "status": r.status.value if r.status else None,
+            "delivery_date": str(r.delivery_date) if r.delivery_date else None,
+        }
+        for r in rfqs_raw
+    ]
+
+    return {
+        "user": {
+            "id": user.id,
+            "userName": user.userName,
+            "email": user.email,
+            "role": user.role.value,
+        },
+        "rfqs": rfq_list,
+        "tnas": tna_list,
+    }
 
 
 @router.get("/{user_id}")
@@ -235,9 +362,18 @@ def get_single_user(
     db: Session = Depends(get_db),
 
     current_user=Depends(
-        get_current_user
+        require_roles([
+            UserRole.ADMIN,
+            UserRole.MERCHANDISER,
+            UserRole.MEMBER,
+            UserRole.QUALITY_CONTROL,
+            UserRole.SUPPLIER,
+        ])
     )
 ):
+    is_privileged = current_user.role in (UserRole.ADMIN, UserRole.MERCHANDISER)
+    if not is_privileged and current_user.id != user_id:
+        raise HTTPException(status_code=403, detail="Access denied")
 
     user = db.query(User).filter(
         User.id == user_id

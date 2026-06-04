@@ -279,6 +279,7 @@ const [isEditMode, setIsEditMode] =
                   <option value="MEMBER">MEMBER</option>
                   <option value="MERCHANDISER">MERCHANDISER</option>
                   <option value="SUPPLIER">SUPPLIER</option>
+                  <option value="QUALITY_CONTROL">QUALITY CONTROL</option>
                 </select>
               </div>
 
