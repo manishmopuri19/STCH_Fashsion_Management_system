@@ -187,7 +187,7 @@ def _grid(pairs: list) -> Table:
         if len(row) == 2:
             rows.append(row); row = []
     if row:
-        rows.append(row + [[""]])
+        rows.append(row + [[Paragraph("", STYLES["value"])]])
     if not rows:
         return Spacer(1, 1)
     t = Table(rows, colWidths=[col, col])
