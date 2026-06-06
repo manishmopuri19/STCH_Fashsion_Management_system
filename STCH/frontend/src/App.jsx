@@ -24,6 +24,8 @@ import StyleDetailPage from "./pages/Orders/StyleDetailPage";
 import CataloguePage from "./pages/CataloguePage";
 import QCPage from "./pages/QC/QCPage";
 import QCUserDetailPage from "./pages/QC/QCUserDetailPage";
+import CustomersPage from "./pages/CustomersPage";
+import CustomerDetailPage from "./pages/CustomerDetailPage";
 
 function App() {
   return (
@@ -192,7 +194,7 @@ element={
 <Route
   path="/qc"
   element={
-    <ProtectedRoute allowedRoles={["ADMIN", "MERCHANDISER"]}>
+    <ProtectedRoute allowedRoles={["ADMIN", "MERCHANDISER", "QUALITY_CONTROL"]}>
       <QCPage />
     </ProtectedRoute>
   }
@@ -203,6 +205,24 @@ element={
   element={
     <ProtectedRoute allowedRoles={["ADMIN", "MERCHANDISER"]}>
       <QCUserDetailPage />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/customers"
+  element={
+    <ProtectedRoute allowedRoles={["ADMIN", "MERCHANDISER"]}>
+      <CustomersPage />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/customers/:id"
+  element={
+    <ProtectedRoute allowedRoles={["ADMIN", "MERCHANDISER"]}>
+      <CustomerDetailPage />
     </ProtectedRoute>
   }
 />

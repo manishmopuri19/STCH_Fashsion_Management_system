@@ -25,6 +25,11 @@ def run_db_migrations(engine):
     migrations = [
         "ALTER TABLE tnas ADD COLUMN style_id INTEGER",
         "ALTER TABLE tnas ADD COLUMN delayed_reason TEXT",
+        "ALTER TABLE quality_inspections ADD COLUMN assigned_to INTEGER REFERENCES users(id)",
+        "ALTER TABLE rfqs ADD COLUMN customer_id INTEGER REFERENCES customers(id)",
+        "ALTER TABLE users ADD COLUMN phone TEXT",
+        "ALTER TABLE users ADD COLUMN department TEXT",
+        "ALTER TABLE users ADD COLUMN designation TEXT",
     ]
     with engine.connect() as conn:
         for sql in migrations:
@@ -82,6 +87,7 @@ from app.routes.style_sheet_routes import (router as style_sheet_router)
 from app.routes.sampling_routes import (router as sampling_router)
 from app.routes.product_dev_routes import (router as product_dev_router)
 from app.routes.style_routes import (router as style_router)
+from app.routes.customer_routes import (router as customer_router)
 
 run_db_migrations(engine)
 Base.metadata.create_all(bind=engine)
@@ -141,7 +147,7 @@ allowed_origins = os.getenv(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins="*",
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -166,6 +172,7 @@ app.include_router(style_sheet_router)
 app.include_router(sampling_router)
 app.include_router(product_dev_router)
 app.include_router(style_router)
+app.include_router(customer_router)
 
 @app.get("/")
 def root():

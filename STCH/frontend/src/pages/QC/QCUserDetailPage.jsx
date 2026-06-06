@@ -92,7 +92,7 @@ function QCUserDetailPage() {
                 <ShieldCheck size={14} className="text-emerald-400" />
                 <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest">Quality Control</span>
               </div>
-              <h1 className="text-4xl font-black text-white tracking-tight">{user.userName}</h1>
+              <h1 className="text-xl font-bold text-white tracking-tight">{user.userName}</h1>
               <p className="text-zinc-500 mt-1">{user.email}</p>
             </div>
           </div>

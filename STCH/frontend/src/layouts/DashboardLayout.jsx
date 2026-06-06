@@ -1,12 +1,12 @@
 import { useState } from "react";
-
+import { useLocation } from "react-router-dom";
 import Sidebar from "../components/layout/Sidebar";
 import Topbar from "../components/layout/Topbar";
 
 function DashboardLayout({ children }) {
 
-  const [sidebarOpen, setSidebarOpen] =
-    useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { pathname } = useLocation();
 
   return (
     <div className="min-h-screen bg-[#0F1115] text-white">
@@ -39,13 +39,10 @@ function DashboardLayout({ children }) {
           setSidebarOpen={setSidebarOpen}
         />
 
-        <main className="
-          p-4
-          sm:p-6
-          lg:p-8
-          space-y-8
-          overflow-hidden
-        ">
+        <main
+          key={pathname}
+          className="page-enter p-4 sm:p-6 lg:p-8 space-y-8 overflow-hidden"
+        >
           {children}
         </main>
 

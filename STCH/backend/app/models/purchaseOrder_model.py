@@ -62,7 +62,7 @@ class PurchaseOrder(Base):
         default=POStatus.CREATED
     )
 
-    created_by = Column(Integer)
+    created_by = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
 
     created_at = Column(
         DateTime(timezone=True),

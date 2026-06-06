@@ -18,8 +18,8 @@ const RFQHeader = ({ total }) => {
   return (
     <div className="flex items-center justify-between">
       <div>
-        <h1 className="text-3xl font-bold text-white">RFQ Pipeline</h1>
-        <p className="text-zinc-500 text-sm mt-1">Total RFQs: {total}</p>
+        <h1 className="text-lg font-semibold text-white">RFQ Pipeline</h1>
+        <p className="text-zinc-500 text-xs mt-0.5">Total RFQs: {total}</p>
       </div>
 
       {canCreate && (

@@ -478,10 +478,7 @@ function RFQDetailPage() {
 
               <div>
 
-                <h1 className="
-                  text-4xl
-                  font-bold
-                ">
+                <h1 className="text-lg font-semibold text-white">
                   {rfq.rfq_number}
                 </h1>
 

@@ -21,12 +21,12 @@ def get_db():
 
 
 @router.get("/")
-def get_bom(
+async def get_bom(
     rfq_id: int,
     db: Session = Depends(get_db),
     current_user=Depends(require_roles([UserRole.ADMIN, UserRole.MERCHANDISER, UserRole.SUPPLIER]))
 ):
-    return get_bom_service(rfq_id, db, current_user)
+    return await get_bom_service(rfq_id, db, current_user)
 
 
 @router.put("/")

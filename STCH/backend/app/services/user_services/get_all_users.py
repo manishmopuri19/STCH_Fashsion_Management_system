@@ -9,6 +9,9 @@ def getAllUsers(db: Session):
             "userName": u.userName,
             "email": u.email,
             "role": u.role.value,
+            "phone": u.phone,
+            "department": u.department,
+            "designation": u.designation,
         }
         for u in users
     ]

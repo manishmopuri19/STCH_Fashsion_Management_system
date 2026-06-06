@@ -24,6 +24,9 @@ def create_inspection_service(
         inspected_by=
         current_user.id,
 
+        assigned_to=
+        payload.assigned_to,
+
         aql_level=
         payload.aql_level,
 

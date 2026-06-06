@@ -3,9 +3,9 @@ from app.models.bom_model import BOM
 from app.utils.rfq_permissions import can_access_rfq
 
 
-def get_bom_service(rfq_id: int, db: Session, current_user):
+async def get_bom_service(rfq_id: int, db: Session, current_user):
     can_access_rfq(rfq_id, current_user, db)
-    record = db.query(BOM).options(
+    record = await db.query(BOM).options(
         joinedload(BOM.items)
     ).filter(BOM.rfq_id == rfq_id).first()
     if not record:

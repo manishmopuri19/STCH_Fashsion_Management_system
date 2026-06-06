@@ -39,6 +39,12 @@ class QualityInspection(Base):
         ForeignKey("users.id")
     )
 
+    assigned_to = Column(
+        Integer,
+        ForeignKey("users.id"),
+        nullable=True
+    )
+
     aql_level = Column(String)
 
     total_checked = Column(Integer)

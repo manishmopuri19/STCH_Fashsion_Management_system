@@ -1,11 +1,16 @@
 from typing import Optional
 from pydantic import BaseModel
 from app.enums.user_enums import UserRole
+
+
 class NewUser(BaseModel):
-    userName:str
+    userName: str
     email: str
     password: str
     role: Optional[UserRole] = UserRole.MEMBER
+    phone: Optional[str] = None
+    department: Optional[str] = None
+    designation: Optional[str] = None
 
 
 class UpdateUser(BaseModel):
@@ -13,3 +18,6 @@ class UpdateUser(BaseModel):
     email: Optional[str] = None
     password: Optional[str] = None
     role: Optional[UserRole] = None
+    phone: Optional[str] = None
+    department: Optional[str] = None
+    designation: Optional[str] = None

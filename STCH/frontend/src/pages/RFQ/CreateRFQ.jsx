@@ -127,6 +127,7 @@ const handleSubmit = async () => {
   try {
     const payload = {
       brand: formData.brand,
+      customer_id: formData.customerId || null,
       season: formData.season,
       department: formData.department,
       category: formData.category,

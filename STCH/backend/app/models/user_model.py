@@ -3,6 +3,7 @@ from sqlalchemy import (
     Integer,
     String,
     Enum,
+    Text,
 )
 from sqlalchemy.orm import relationship
 from app.db.database import Base
@@ -38,6 +39,12 @@ class User(Base):
         Enum(UserRole),
         nullable=False
     )
+
+    phone = Column(String, nullable=True)
+
+    department = Column(String, nullable=True)
+
+    designation = Column(String, nullable=True)
 
     supplier = relationship(
     "Supplier",

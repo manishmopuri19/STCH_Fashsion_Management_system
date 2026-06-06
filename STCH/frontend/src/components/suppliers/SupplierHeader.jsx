@@ -10,20 +10,8 @@ function SupplierHeader({ total }) {
 
       <div>
 
-        <h1 className="
-          text-4xl
-          font-bold
-          text-white
-        ">
-          Suppliers
-        </h1>
-
-        <p className="
-          text-zinc-500
-          mt-2
-        ">
-          Supplier sourcing network
-        </p>
+        <h1 className="text-lg font-semibold text-white">Suppliers</h1>
+        <p className="text-zinc-500 text-xs mt-0.5">Supplier sourcing network</p>
 
       </div>
 

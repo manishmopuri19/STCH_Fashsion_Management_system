@@ -60,6 +60,12 @@ class RFQ(Base):
     is_new = Column(Boolean, default=True) # New flag to track unread RFQs
 
     # META
+    customer_id = Column(
+        Integer,
+        ForeignKey("customers.id"),
+        nullable=True
+    )
+
     created_by = Column(
 
     Integer,
@@ -117,4 +123,9 @@ class RFQ(Base):
     "SamplingRecord",
     back_populates="rfq",
     cascade="all, delete"
+    )
+
+    customer = relationship(
+    "Customer",
+    back_populates="rfqs"
     )

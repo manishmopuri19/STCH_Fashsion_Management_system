@@ -13,6 +13,7 @@ _BLOCKED_SCHEMES = ("javascript:", "data:", "vbscript:", "file:")
 class RFQCreate(BaseModel):
 
     # STEP 1
+    customer_id: Optional[int] = None
     brand: str
     season: str
     department: str

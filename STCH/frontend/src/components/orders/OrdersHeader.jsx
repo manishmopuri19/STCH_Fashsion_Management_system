@@ -47,21 +47,8 @@ function OrdersHeader({ total }) {
 
           <div>
 
-            <h1 className="
-              text-4xl
-              font-bold
-              text-white
-            ">
-              Purchase Orders
-            </h1>
-
-            <p className="
-              text-zinc-500
-              mt-1
-            ">
-              Manage sourcing &
-              production workflow
-            </p>
+            <h1 className="text-lg font-semibold text-white">Purchase Orders</h1>
+            <p className="text-zinc-500 text-xs mt-0.5">Manage sourcing & production workflow</p>
 
           </div>
 

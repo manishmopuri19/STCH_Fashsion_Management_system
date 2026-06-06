@@ -3,8 +3,20 @@ import { useNavigate } from "react-router-dom";
 import { ShieldCheck, ClipboardList, FileText, ArrowRight, Loader2, Users } from "lucide-react";
 import API from "../../api/axios";
 import DashboardLayout from "../../layouts/DashboardLayout";
+import { useAuth } from "../../context/AuthContext";
+import QCWorkerDashboard from "./QCWorkerDashboard";
 
 function QCPage() {
+  const { user } = useAuth();
+
+  if (user?.role === "QUALITY_CONTROL") {
+    return <QCWorkerDashboard />;
+  }
+
+  return <QCTeamManagementPage />;
+}
+
+function QCTeamManagementPage() {
   const [team, setTeam] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -28,8 +40,8 @@ function QCPage() {
               <ShieldCheck size={20} className="text-emerald-400" />
             </div>
             <div>
-              <h1 className="text-3xl font-black text-white tracking-tight">Quality Control</h1>
-              <p className="text-zinc-500 text-sm">Manage and track your QC team's assignments</p>
+              <h1 className="text-lg font-semibold text-white">Quality Control</h1>
+              <p className="text-zinc-500 text-xs mt-0.5">Manage and track your QC team's assignments</p>
             </div>
           </div>
         </div>

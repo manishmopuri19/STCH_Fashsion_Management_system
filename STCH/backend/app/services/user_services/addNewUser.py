@@ -56,7 +56,13 @@ def create_user_service(
             payload.password
         ),
 
-        role=payload.role
+        role=payload.role,
+
+        phone=payload.phone,
+
+        department=payload.department,
+
+        designation=payload.designation,
     )
 
     db.add(new_user)

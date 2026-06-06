@@ -153,6 +153,15 @@ def update_user(
 
         user.role = data_in.role
 
+    if data_in.phone is not None:
+        user.phone = data_in.phone
+
+    if data_in.department is not None:
+        user.department = data_in.department
+
+    if data_in.designation is not None:
+        user.designation = data_in.designation
+
 
     # PASSWORD UPDATE
     if (
@@ -193,7 +202,16 @@ def update_user(
             user.email,
 
             "role":
-            user.role.value
+            user.role.value,
+
+            "phone":
+            user.phone,
+
+            "department":
+            user.department,
+
+            "designation":
+            user.designation,
         }
     }
 # DELETE USER

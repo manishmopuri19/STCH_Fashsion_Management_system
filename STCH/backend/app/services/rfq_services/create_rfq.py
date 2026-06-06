@@ -32,6 +32,8 @@ def create_rfq_service(
 
             rfq_number=generate_rfq_number(),
 
+            customer_id=payload.customer_id,
+
             brand=payload.brand,
 
             season=payload.season,

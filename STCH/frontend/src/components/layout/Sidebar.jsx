@@ -2,17 +2,15 @@ import {
   LayoutDashboard,
   FileText,
   Package,
-  ClipboardList,
   ShieldCheck,
   Users,
+  Briefcase,
   X,
-  Settings,LogOut,
-  ChevronUp,
+  Settings,
   Layers3
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { useState } from "react";
 
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
@@ -25,15 +23,13 @@ const menuItems = [
 },
   { icon: ShieldCheck, label: "QC", path: "/qc" },
   { icon: Users, label: "Suppliers", path: "/suppliers" },
+  { icon: Briefcase, label: "Customers", path: "/customers" },
   { icon: Settings, label: "User Management", path: "/users" },
+  
 ];
 
 function Sidebar({ sidebarOpen, setSidebarOpen }) {
   const { user } = useAuth();
-
-const [profileMenuOpen,
-setProfileMenuOpen] =
-useState(false);
 
   const roleBasedMenus = {
 
@@ -44,6 +40,7 @@ useState(false);
     "Catalogs",
     "QC",
     "Suppliers",
+    "Customers",
     "User Management",
   ],
 
@@ -54,6 +51,7 @@ useState(false);
     "Catalogs",
     "QC",
     "Suppliers",
+    "Customers",
   ],
   MEMBER: [
     "Dashboard",
@@ -96,8 +94,7 @@ const filteredMenuItems =
 
       {/* DESKTOP SIDEBAR */}
       <div className="hidden lg:flex fixed left-5 top-5 h-[calc(100vh-40px)] w-[92px] bg-[#151821] border border-[#2A3142] rounded-3xl flex-col items-center py-6 shadow-2xl z-50">
-        <SidebarContent filteredMenuItems={filteredMenuItems} user={user}  profileMenuOpen={profileMenuOpen}
-  setProfileMenuOpen={setProfileMenuOpen}/>
+        <SidebarContent filteredMenuItems={filteredMenuItems} />
       </div>
 
       {/* MOBILE SIDEBAR */}
@@ -129,19 +126,7 @@ const filteredMenuItems =
   );
 }
 
-function SidebarContent({
-
-  filteredMenuItems,
-
-  user,
-
-  profileMenuOpen,
-
-  setProfileMenuOpen
-
-}) {
-
-  const navigate = useNavigate();
+function SidebarContent({ filteredMenuItems }) {
 
   return (
     <>
@@ -160,155 +145,6 @@ function SidebarContent({
 
       </div>
 
-      {/* PROFILE */}
-      <div className="mt-auto relative">
-
-        {/* AVATAR */}
-        <button
-
-          onClick={() =>
-            setProfileMenuOpen(
-              !profileMenuOpen
-            )
-          }
-
-          className="
-            w-12
-            h-12
-            rounded-full
-            bg-gradient-to-br
-            from-orange-400
-            to-orange-600
-            flex
-            items-center
-            justify-center
-            text-sm
-            font-semibold
-            text-white
-            cursor-pointer
-            hover:scale-105
-            transition-all
-            duration-300
-          "
-        >
-
-          {
-            user?.userName
-            ?.charAt(0)
-            ?.toUpperCase() || "A"
-          }
-
-        </button>
-
-        {/* DROPDOWN */}
-        {profileMenuOpen && (
-
-          <div className="
-            absolute
-            bottom-16
-            left-0
-            w-56
-            rounded-2xl
-            border
-            border-[#2A3142]
-            bg-[#151821]
-            shadow-2xl
-            overflow-hidden
-            z-50
-          ">
-
-            {/* USER INFO */}
-            <div className="
-              px-4
-              py-4
-              border-b
-              border-[#2A3142]
-            ">
-
-              <p className="
-                text-sm
-                font-semibold
-                text-white
-              ">
-                {user?.userName}
-              </p>
-
-              <p className="
-                text-xs
-                text-zinc-500
-                mt-1
-              ">
-                {user?.email}
-              </p>
-
-            </div>
-
-            {/* SETTINGS */}
-            <button
-
-              onClick={() =>
-                navigate("/settings")
-              }
-
-              className="
-                w-full
-                flex
-                items-center
-                gap-3
-                px-4
-                py-3
-                text-sm
-                text-zinc-300
-                hover:bg-[#1D2230]
-                transition-all
-              "
-            >
-
-              <Settings size={16} />
-
-              Settings
-
-            </button>
-
-            {/* LOGOUT */}
-            <button
-
-              onClick={() => {
-
-                localStorage.removeItem(
-                  "token"
-                );
-
-                localStorage.removeItem(
-                  "user"
-                );
-
-                navigate("/login");
-              }}
-
-              className="
-                w-full
-                flex
-                items-center
-                gap-3
-                px-4
-                py-3
-                text-sm
-                text-red-400
-                hover:bg-[#1D2230]
-                transition-all
-              "
-            >
-
-              Logout
-
-            </button>
-
-          </div>
-        )}
-
-      </div>
-
     </>
   );
 }
@@ -317,7 +153,9 @@ function SidebarItem({ item }) {
   const Icon = item.icon;
   const navigate = useNavigate();
   const location = useLocation();
-  const isActive = location.pathname === item.path;
+  const isActive =
+    location.pathname === item.path ||
+    (item.path !== "/dashboard" && location.pathname.startsWith(item.path + "/"));
 
   return (
     <div className="group relative">
@@ -346,7 +184,9 @@ function MobileSidebarItem({ item, setSidebarOpen }) {
   const Icon = item.icon;
   const navigate = useNavigate();
   const location = useLocation();
-  const isActive = location.pathname === item.path;
+  const isActive =
+    location.pathname === item.path ||
+    (item.path !== "/dashboard" && location.pathname.startsWith(item.path + "/"));
 
   const handleNavigation = () => {
     navigate(item.path);

@@ -149,9 +149,8 @@ def export_rfq_pdf(
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
-        tb = traceback.format_exc()
-        print("PDF GENERATION ERROR:\n", tb)
-        raise HTTPException(status_code=500, detail=tb)
+        print("PDF GENERATION ERROR:\n", traceback.format_exc())
+        raise HTTPException(status_code=500, detail="PDF generation failed")
 
     rfq_num = f"rfq-{rfq_id}"
     return StreamingResponse(

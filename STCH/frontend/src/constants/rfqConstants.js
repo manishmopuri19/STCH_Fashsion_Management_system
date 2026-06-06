@@ -61,6 +61,7 @@ export const STEPS = [
 
 export const INITIAL_FORM_DATA = {
   // Step 1 – Brand Info
+  customerId: null,
   brand: "",
   season: "",
   department: "",

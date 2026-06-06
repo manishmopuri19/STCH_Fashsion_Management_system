@@ -213,7 +213,7 @@ function StyleDetailPage() {
 
         {/* Style Header */}
         <div className="rounded-[28px] border border-[#2A3142] bg-[#151821] p-7">
-          <h1 className="text-3xl font-black text-white">{style.style_name}</h1>
+          <h1 className="text-lg font-semibold text-white">{style.style_name}</h1>
           {style.description && (
             <p className="text-zinc-400 text-sm mt-2">{style.description}</p>
           )}

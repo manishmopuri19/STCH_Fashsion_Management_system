@@ -68,8 +68,8 @@ function StyleSpecificationPage() {
 
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-black text-white tracking-tight">Style Specification</h1>
-            <p className="text-zinc-500 text-sm mt-1">Define styles, colors, and size breakdowns for this purchase order.</p>
+            <h1 className="text-lg font-semibold text-white">Style Specification</h1>
+            <p className="text-zinc-500 text-xs mt-0.5">Define styles, colors, and size breakdowns for this purchase order.</p>
           </div>
           <button
             onClick={() => setShowModal(true)}

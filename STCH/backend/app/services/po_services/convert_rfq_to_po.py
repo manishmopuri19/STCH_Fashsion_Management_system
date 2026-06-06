@@ -12,12 +12,6 @@ from app.services.tna_services.generate_default_tna import (generate_default_tna
 
 
 
-def generate_po_number(db: Session):
-
-    total = db.query(PurchaseOrder).count()
-    return f"PO-2026-{total + 1:04d}"
-
-
 def convert_rfq_to_po_service(rfq_id: int,payload, db: Session,current_user):
 
     rfq = db.query(RFQ).filter(
@@ -91,8 +85,7 @@ def convert_rfq_to_po_service(rfq_id: int,payload, db: Session,current_user):
 
     po = PurchaseOrder(
 
-        po_number=
-        generate_po_number(db),
+        po_number="TMP",
 
         rfq_id=rfq.id,
 
@@ -122,6 +115,9 @@ def convert_rfq_to_po_service(rfq_id: int,payload, db: Session,current_user):
     )
 
     db.add(po)
+    db.flush()  # get po.id before committing
+
+    po.po_number = f"PO-2026-{po.id:04d}"
 
     rfq.status = (
         RFQStatus.PO_CREATED

@@ -4,7 +4,8 @@ from app.models.Tna_model import TNA
 from sqlalchemy.orm import Session
 from app.enums.TNAStatus_enums import (
     TNAStatus,
-    TNAActivityType
+    TNAActivityType,
+    TNAPriority,
 )
 
 
@@ -59,7 +60,9 @@ def generate_default_tna_service(
             planned_date=
             today + timedelta(days=days),
 
-            status=TNAStatus.PENDING
+            status=TNAStatus.PENDING,
+
+            priority=TNAPriority.MEDIUM,
         )
 
         db.add(tna)

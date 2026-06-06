@@ -3,13 +3,13 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from app.models.quality_inspection_model import QualityInspection
-from app.schemas.qc_schema import CreateInspectionSchema
+from app.schemas.qc_schema import UpdateInspectionStatusSchema
 
 def update_inspection_status_service(
 
     inspection_id: int,
 
-    payload:CreateInspectionSchema,
+    payload: UpdateInspectionStatusSchema,
 
     db: Session
 ):
