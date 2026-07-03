@@ -10,19 +10,17 @@ from app.schemas.style_schema import POStyleCreate
 from datetime import date, timedelta
 
 
+# days before delivery_date for each step's default planned_date
 DEFAULT_STYLE_TNA_SCHEDULE = [
-    (TNAActivityType.FABRIC_BOOKING, 60),
-    (TNAActivityType.LAB_DIP_APPROVAL, 55),
-    (TNAActivityType.TRIMS_APPROVAL, 50),
-    (TNAActivityType.PP_SAMPLE, 45),
-    (TNAActivityType.SIZE_SET_SAMPLE, 40),
-    (TNAActivityType.CUTTING_START, 30),
-    (TNAActivityType.STITCHING_START, 25),
-    (TNAActivityType.INLINE_INSPECTION, 20),
-    (TNAActivityType.FINISHING, 15),
-    (TNAActivityType.FINAL_INSPECTION, 10),
-    (TNAActivityType.PACKING, 7),
-    (TNAActivityType.DISPATCH, 0),
+    (TNAActivityType.FABRIC_BOOKING,     65),
+    (TNAActivityType.CUTTING,            50),
+    (TNAActivityType.STITCHING_STARTED,  40),
+    (TNAActivityType.WASHING,            32),
+    (TNAActivityType.DRYING,             26),
+    (TNAActivityType.SAMPLE_TESTING,     20),
+    (TNAActivityType.APPROVED,           14),
+    (TNAActivityType.IRONING,             7),
+    (TNAActivityType.PACKAGING,           3),
 ]
 
 

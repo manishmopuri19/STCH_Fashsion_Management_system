@@ -43,6 +43,12 @@ def update_tna_service(tna_id: int, payload: UpdateTNASchema, current_user, db: 
         if payload.priority is not None:
             tna.priority = payload.priority
         if payload.planned_date is not None:
+            po = db.query(PurchaseOrder).filter(PurchaseOrder.id == tna.po_id).first()
+            if po and po.delivery_date and payload.planned_date > po.delivery_date:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Planned date cannot be after the delivery date ({po.delivery_date}).",
+                )
             tna.planned_date = payload.planned_date
         if payload.actual_date is not None:
             tna.actual_date = payload.actual_date

@@ -23,6 +23,8 @@ from app.services.tna_services.update_tna_status import (update_tna_status_servi
 
 from app.services.tna_services.get_delayed_tnas import (get_delayed_tnas_service)
 
+from app.services.tna_services.reset_style_tnas import (reset_style_tnas_service)
+
 from app.core.permissions import (require_roles)
 
 from app.enums.user_enums import ( UserRole)
@@ -135,6 +137,27 @@ def update_tna_status(
         payload.status,
         payload.delayed_reason,
         current_user,
+        db
+    )
+
+
+@router.post("/style/{style_id}/reset")
+def reset_style_tnas(
+
+    style_id: int,
+
+    db: Session = Depends(get_db),
+
+    current_user=Depends(
+        require_roles([
+            UserRole.ADMIN,
+            UserRole.MERCHANDISER
+        ])
+    )
+):
+
+    return reset_style_tnas_service(
+        style_id,
         db
     )
 

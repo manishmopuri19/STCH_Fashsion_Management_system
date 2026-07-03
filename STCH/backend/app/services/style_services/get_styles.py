@@ -4,6 +4,46 @@ from sqlalchemy.orm import Session
 from app.models.po_style_model import POStyle
 from app.models.style_color_model import StyleColor
 from app.models.color_size_model import ColorSize
+from app.models.Tna_model import TNA
+from app.enums.TNAStatus_enums import TNAActivityType, TNAStatus, TNA_WORKFLOW_ORDER
+
+
+def _get_tna_progress(style_id: int, db: Session) -> dict:
+    tnas = db.query(TNA).filter(TNA.style_id == style_id).all()
+
+    tna_map = {}
+    for t in tnas:
+        try:
+            act = TNAActivityType(t.activity_type)
+            if act in TNA_WORKFLOW_ORDER:
+                tna_map[act] = TNAStatus(t.status)
+        except (ValueError, KeyError):
+            pass
+
+    total = len(TNA_WORKFLOW_ORDER)
+    completed_count = sum(1 for a in TNA_WORKFLOW_ORDER if tna_map.get(a) == TNAStatus.COMPLETED)
+
+    current_step = None
+    for i, step in enumerate(TNA_WORKFLOW_ORDER):
+        st = tna_map.get(step)
+        if st == TNAStatus.IN_PROGRESS:
+            current_step = {"index": i, "activity": step.value, "status": "IN_PROGRESS"}
+            break
+        if st != TNAStatus.COMPLETED:
+            current_step = {"index": i, "activity": step.value, "status": st.value if st else "PENDING"}
+            break
+
+    if current_step is None:
+        current_step = {"index": total - 1, "activity": TNA_WORKFLOW_ORDER[-1].value, "status": "COMPLETED"}
+
+    return {
+        "completed_count": completed_count,
+        "total": total,
+        "current_step_index": current_step["index"],
+        "current_activity": current_step["activity"],
+        "current_status": current_step["status"],
+        "all_done": completed_count == total,
+    }
 
 
 def get_styles_service(po_id: int, db: Session):
@@ -46,6 +86,7 @@ def get_styles_service(po_id: int, db: Session):
             "total_quantity": total_quantity,
             "colors": colors,
             "created_at": style.created_at,
+            "tna_progress": _get_tna_progress(style.id, db),
         })
 
     return result

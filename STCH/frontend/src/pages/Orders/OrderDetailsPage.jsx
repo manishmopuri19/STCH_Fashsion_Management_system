@@ -11,6 +11,9 @@ import {
   Palette,
   ArrowRight,
   Plus,
+  CheckCircle2,
+  Circle,
+  Loader2,
 } from "lucide-react";
 import EmptyState from "../../components/common/EmptyState";
 
@@ -204,57 +207,11 @@ function OrderDetailPage() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {styles.map((style) => (
-                <div
+                <StyleCard
                   key={style.id}
+                  style={style}
                   onClick={() => navigate(`/orders/${id}/styles/${style.id}`)}
-                  className="group cursor-pointer rounded-[22px] border border-[#2A3142] bg-[#151821] p-6 space-y-4 hover:border-orange-500/40 hover:bg-[#1A1F2E] transition-all"
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="min-w-0">
-                      <span className="text-xs font-mono text-orange-400 bg-orange-500/10 px-2 py-0.5 rounded border border-orange-500/20">
-                        {style.style_code}
-                      </span>
-                      <h3 className="text-white font-bold text-lg mt-2 truncate">{style.style_name}</h3>
-                      {style.description && (
-                        <p className="text-zinc-500 text-sm mt-0.5 line-clamp-1">{style.description}</p>
-                      )}
-                    </div>
-                    <ArrowRight
-                      size={16}
-                      className="text-zinc-600 group-hover:text-orange-400 transition-all flex-shrink-0 mt-1 ml-2"
-                    />
-                  </div>
-
-                  {/* Color swatches */}
-                  {style.colors?.length > 0 && (
-                    <div className="flex gap-2 flex-wrap">
-                      {style.colors.slice(0, 8).map((c) => (
-                        <div
-                          key={c.id}
-                          title={c.color_name}
-                          className="w-6 h-6 rounded-full border border-[#2A3142] shadow-sm"
-                          style={{ backgroundColor: c.hex_value || "#555" }}
-                        />
-                      ))}
-                      {style.colors.length > 8 && (
-                        <div className="w-6 h-6 rounded-full border border-[#2A3142] bg-zinc-700 flex items-center justify-center text-[9px] text-zinc-400 font-bold">
-                          +{style.colors.length - 8}
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  <div className="flex gap-5 pt-2 border-t border-[#2A3142]">
-                    <div className="flex items-center gap-1.5 text-sm text-zinc-500">
-                      <Palette size={13} className="text-purple-400" />
-                      {style.color_count} {style.color_count === 1 ? "Color" : "Colors"}
-                    </div>
-                    <div className="flex items-center gap-1.5 text-sm text-zinc-500">
-                      <Layers size={13} className="text-blue-400" />
-                      {style.total_quantity} Pcs
-                    </div>
-                  </div>
-                </div>
+                />
               ))}
 
               {/* Add style ghost card — privileged only */}
@@ -273,6 +230,105 @@ function OrderDetailPage() {
 
       </div>
     </DashboardLayout>
+  );
+}
+
+const TNA_STEP_LABELS = [
+  "Fabric Booking", "Cutting", "Stitching Started", "Washing",
+  "Drying", "Sample Testing", "Approved", "Ironing", "Packaging",
+];
+
+function TNAProgressBar({ progress }) {
+  if (!progress) return null;
+  const { completed_count, total, current_activity, current_status, all_done } = progress;
+
+  const label = current_activity?.replaceAll("_", " ") ?? "";
+  const pct = Math.round((completed_count / total) * 100);
+
+  let statusColor = "text-zinc-500";
+  let dotColor = "bg-zinc-600";
+  if (all_done) { statusColor = "text-emerald-400"; dotColor = "bg-emerald-400"; }
+  else if (current_status === "IN_PROGRESS") { statusColor = "text-orange-400"; dotColor = "bg-orange-400"; }
+  else if (current_status === "DELAYED") { statusColor = "text-red-400"; dotColor = "bg-red-400"; }
+
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-1.5">
+          <span className={`w-1.5 h-1.5 rounded-full ${dotColor}`} />
+          <span className={`text-xs font-semibold ${statusColor}`}>
+            {all_done ? "All Steps Done" : label}
+          </span>
+        </div>
+        <span className="text-[10px] text-zinc-600 font-mono">{completed_count}/{total}</span>
+      </div>
+      <div className="w-full h-1 rounded-full bg-[#2A3142] overflow-hidden">
+        <div
+          className={`h-full rounded-full transition-all ${all_done ? "bg-emerald-500" : "bg-orange-500"}`}
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+    </div>
+  );
+}
+
+function StyleCard({ style, onClick }) {
+  return (
+    <div
+      onClick={onClick}
+      className="group cursor-pointer rounded-[22px] border border-[#2A3142] bg-[#151821] p-6 space-y-4 hover:border-orange-500/40 hover:bg-[#1A1F2E] transition-all"
+    >
+      <div className="flex items-start justify-between">
+        <div className="min-w-0">
+          <span className="text-xs font-mono text-orange-400 bg-orange-500/10 px-2 py-0.5 rounded border border-orange-500/20">
+            {style.style_code}
+          </span>
+          <h3 className="text-white font-bold text-lg mt-2 truncate">{style.style_name}</h3>
+          {style.description && (
+            <p className="text-zinc-500 text-sm mt-0.5 line-clamp-1">{style.description}</p>
+          )}
+        </div>
+        <ArrowRight
+          size={16}
+          className="text-zinc-600 group-hover:text-orange-400 transition-all flex-shrink-0 mt-1 ml-2"
+        />
+      </div>
+
+      {/* Color swatches */}
+      {style.colors?.length > 0 && (
+        <div className="flex gap-2 flex-wrap">
+          {style.colors.slice(0, 8).map((c) => (
+            <div
+              key={c.id}
+              title={c.color_name}
+              className="w-6 h-6 rounded-full border border-[#2A3142] shadow-sm"
+              style={{ backgroundColor: c.hex_value || "#555" }}
+            />
+          ))}
+          {style.colors.length > 8 && (
+            <div className="w-6 h-6 rounded-full border border-[#2A3142] bg-zinc-700 flex items-center justify-center text-[9px] text-zinc-400 font-bold">
+              +{style.colors.length - 8}
+            </div>
+          )}
+        </div>
+      )}
+
+      <div className="flex gap-5 pt-1">
+        <div className="flex items-center gap-1.5 text-sm text-zinc-500">
+          <Palette size={13} className="text-purple-400" />
+          {style.color_count} {style.color_count === 1 ? "Color" : "Colors"}
+        </div>
+        <div className="flex items-center gap-1.5 text-sm text-zinc-500">
+          <Layers size={13} className="text-blue-400" />
+          {style.total_quantity} Pcs
+        </div>
+      </div>
+
+      {/* TNA Progress */}
+      <div className="pt-2 border-t border-[#2A3142]">
+        <TNAProgressBar progress={style.tna_progress} />
+      </div>
+    </div>
   );
 }
 
